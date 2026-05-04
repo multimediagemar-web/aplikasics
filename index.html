@@ -188,11 +188,6 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Sapaan</label>
                                 <select id="t-sapaan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Sapaan</option>
-                                    <option value="Bapak">Bapak</option>
-                                    <option value="Ibu">Ibu</option>
-                                    <option value="Sdr">Sdr</option>
-                                    <option value="Sdri">Sdri</option>
-                                    <option value="Hamba Allah">Hamba Allah</option>
                                 </select>
                             </div>
 
@@ -290,6 +285,7 @@
                                     <th class="py-3 px-4 border-b">Nama Lengkap</th>
                                     <th class="py-3 px-4 border-b">Program</th>
                                     <th class="py-3 px-4 border-b text-right">Jumlah</th>
+                                    <th class="py-3 px-4 border-b text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="table-transaksi-body" class="text-sm divide-y divide-gray-100">
@@ -347,6 +343,8 @@
                                     <th class="py-3 px-4 border-b">Nama Lengkap</th>
                                     <th class="py-3 px-4 border-b">WhatsApp</th>
                                     <th class="py-3 px-4 border-b">Total Transaksi (Kali)</th>
+                                    <th class="py-3 px-4 border-b text-right">Total Donasi</th>
+                                    <th class="py-3 px-4 border-b text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="table-donatur-body" class="text-sm divide-y divide-gray-100">
@@ -486,6 +484,22 @@
                     </div>
                 </div>
 
+                <!-- Pengaturan Sapaan -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-user-tag text-emerald-600 mr-2"></i>Daftar Sapaan</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-4">
+                            <input type="text" id="input-new-sapaan" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Cth: Bapak / Ibu / Kak">
+                            <button onclick="tambahItem('sapaan')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <ul id="list-sapaan-ui" class="space-y-2 max-h-48 overflow-y-auto">
+                            <!-- Diisi JS -->
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- Pengaturan Manajemen Data CSV -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
@@ -558,6 +572,94 @@
 
         </div>
     </main>
+
+    <!-- Modal Delete Item -->
+    <div id="modal-delete-item" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-2"><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Hapus Data</h3>
+            <p class="text-sm text-gray-600 mb-6">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="hideDeleteModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                <button onclick="executeDeleteItem()" id="btn-execute-delete" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium text-sm">Hapus Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Donatur -->
+    <div id="modal-edit-dn" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Data Donatur</h3>
+            <form id="form-edit-dn" class="space-y-4">
+                <input type="hidden" id="edit-dn-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sapaan</label>
+                    <select id="edit-dn-sapaan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Panggilan</label>
+                    <input type="text" id="edit-dn-panggilan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="edit-dn-lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                    <input type="tel" id="edit-dn-wa" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="hideEditDnModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium text-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Edit Transaksi -->
+    <div id="modal-edit-tx" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-4 my-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Transaksi</h3>
+            <form id="form-edit-tx" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-tx-id">
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <input type="date" id="edit-tx-tanggal" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sapaan</label>
+                    <select id="edit-tx-sapaan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Panggilan</label>
+                    <input type="text" id="edit-tx-panggilan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="edit-tx-lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                    <input type="tel" id="edit-tx-wa" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
+                    <input type="number" id="edit-tx-jumlah" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Rekening</label>
+                    <select id="edit-tx-rekening" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Program</label>
+                    <select id="edit-tx-program" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-sm"></select>
+                </div>
+                <div class="sm:col-span-2 flex justify-end space-x-3 mt-4">
+                    <button type="button" onclick="hideEditTxModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium text-sm">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal Filter Transaksi -->
     <div id="modal-filter-tx" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
@@ -633,7 +735,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi Firebase
         const firebaseConfig = {
@@ -672,6 +774,8 @@
         let csProfile = { nama: '', kode: '' };
         let arrRekening = ['Tunai / Kasir']; 
         let arrProgram = ['Infaq Umum'];
+        let arrSapaan = ['Bapak', 'Ibu', 'Sdr', 'Sdri', 'Hamba Allah'];
+        let targetDelete = { type: null, id: null };
 
         const loginScreen = document.getElementById('login-screen');
         const mainApp = document.getElementById('main-app');
@@ -767,6 +871,7 @@
                     if(data.kodeCS) csProfile.kode = data.kodeCS;
                     if(data.rekening) arrRekening = data.rekening;
                     if(data.program) arrProgram = data.program;
+                    if(data.sapaan) arrSapaan = data.sapaan;
                     
                     // Set Font Size directly on load if exists
                     if(data.fontSize) {
@@ -781,8 +886,10 @@
                 document.getElementById('set-nama-cs').value = csProfile.nama;
                 document.getElementById('set-kode-cs').value = csProfile.kode;
 
+                updateDropdownUI('t-sapaan', arrSapaan, 'Pilih Sapaan');
                 updateDropdownUI('t-rekening', arrRekening, 'Pilih Rekening');
                 updateDropdownUI('t-program', arrProgram, 'Pilih Program');
+                updateSettingsListUI('list-sapaan-ui', arrSapaan, 'sapaan');
                 updateSettingsListUI('list-rekening-ui', arrRekening, 'rekening');
                 updateSettingsListUI('list-program-ui', arrProgram, 'program');
             });
@@ -858,23 +965,37 @@
         });
 
         window.tambahItem = async function(type) {
-            const inputEl = document.getElementById(type === 'rekening' ? 'input-new-rekening' : 'input-new-program');
+            let inputEl;
+            if(type === 'rekening') inputEl = document.getElementById('input-new-rekening');
+            else if(type === 'program') inputEl = document.getElementById('input-new-program');
+            else inputEl = document.getElementById('input-new-sapaan');
+            
             const val = inputEl.value.trim();
             if(!val) return;
 
-            let updatedArray = type === 'rekening' ? [...arrRekening] : [...arrProgram];
+            let updatedArray = [];
+            if(type === 'rekening') updatedArray = [...arrRekening];
+            else if(type === 'program') updatedArray = [...arrProgram];
+            else updatedArray = [...arrSapaan];
+            
             updatedArray.push(val);
 
-            const payload = type === 'rekening' ? { rekening: updatedArray } : { program: updatedArray };
+            const payload = {};
+            payload[type] = updatedArray;
             await setDoc(doc(db, 'users', userId, 'settings', 'general'), payload, { merge: true });
             inputEl.value = '';
         }
 
         window.hapusItem = async function(type, index) {
-            let updatedArray = type === 'rekening' ? [...arrRekening] : [...arrProgram];
+            let updatedArray = [];
+            if(type === 'rekening') updatedArray = [...arrRekening];
+            else if(type === 'program') updatedArray = [...arrProgram];
+            else updatedArray = [...arrSapaan];
+            
             updatedArray.splice(index, 1);
             
-            const payload = type === 'rekening' ? { rekening: updatedArray } : { program: updatedArray };
+            const payload = {};
+            payload[type] = updatedArray;
             await setDoc(doc(db, 'users', userId, 'settings', 'general'), payload, { merge: true });
         }
 
@@ -1058,10 +1179,15 @@
             tbody.innerHTML = '';
             
             // 1. Persiapkan data dan hitung transaksi
-            let filtered = allDonors.map(d => ({
-                ...d,
-                txCount: allTransactions.filter(t => t.donorId === d.id).length
-            }));
+            let filtered = allDonors.map(d => {
+                const txs = allTransactions.filter(t => t.donorId === d.id);
+                const txAmount = txs.reduce((sum, t) => sum + t.jumlah, 0);
+                return {
+                    ...d,
+                    txCount: txs.length,
+                    txAmount: txAmount
+                };
+            });
 
             // 2. Pencarian
             const filterText = document.getElementById('search-donatur').value.toLowerCase();
@@ -1097,6 +1223,7 @@
                 document.getElementById('btn-next-donatur').disabled = true;
             } else {
                 emptyState.classList.add('hidden');
+                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
                 paginatedItems.forEach(d => {
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-gray-50';
@@ -1104,7 +1231,12 @@
                         <td class="py-3 px-4 border-b font-medium text-emerald-700">${d.id}</td>
                         <td class="py-3 px-4 border-b">${d.sapaan} ${d.namaLengkap} <br><span class="text-xs text-gray-500">Panggilan: ${d.namaPanggilan}</span></td>
                         <td class="py-3 px-4 border-b">${d.whatsapp}</td>
-                        <td class="py-3 px-4 border-b">${d.txCount} Transaksi</td>
+                        <td class="py-3 px-4 border-b">${d.txCount} Kali</td>
+                        <td class="py-3 px-4 border-b text-right font-semibold text-emerald-600">${formatter.format(d.txAmount)}</td>
+                        <td class="py-3 px-4 border-b text-center whitespace-nowrap">
+                            <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 mx-1"><i class="fas fa-edit"></i></button>
+                            <button onclick="showDeleteModal('donatur', '${d.id}')" class="text-red-500 hover:text-red-700 mx-1"><i class="fas fa-trash"></i></button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1190,6 +1322,10 @@
                         <td class="py-3 px-4 border-b">${t.namaLengkap}</td>
                         <td class="py-3 px-4 border-b"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">${t.program}</span></td>
                         <td class="py-3 px-4 border-b text-right font-semibold text-emerald-600">${formatter.format(t.jumlah)}</td>
+                        <td class="py-3 px-4 border-b text-center whitespace-nowrap">
+                            <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 mx-1"><i class="fas fa-edit"></i></button>
+                            <button onclick="showDeleteModal('transaksi', '${t.docId}')" class="text-red-500 hover:text-red-700 mx-1"><i class="fas fa-trash"></i></button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1404,6 +1540,118 @@
                 spinner.classList.add('hidden');
             }
         }
+
+        // ----------------------------------------------------
+        // FITUR EDIT DAN HAPUS SPESIFIK
+        // ----------------------------------------------------
+        window.showDeleteModal = function(type, id) {
+            targetDelete = { type, id };
+            document.getElementById('modal-delete-item').classList.remove('hidden');
+        }
+
+        window.hideDeleteModal = function() {
+            document.getElementById('modal-delete-item').classList.add('hidden');
+            targetDelete = { type: null, id: null };
+        }
+
+        window.executeDeleteItem = async function() {
+            if(!user || !targetDelete.id) return;
+            const btn = document.getElementById('btn-execute-delete');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menghapus...';
+            
+            try {
+                const colName = targetDelete.type === 'transaksi' ? 'transactions' : 'donors';
+                await deleteDoc(doc(db, 'users', userId, colName, targetDelete.id));
+                showToast("Data berhasil dihapus!", "success");
+                hideDeleteModal();
+            } catch (e) {
+                console.error(e);
+                showToast("Gagal menghapus data", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Hapus Data';
+            }
+        }
+
+        // Edit Donatur
+        window.editDonatur = function(id) {
+            const dn = allDonors.find(d => d.id === id);
+            if(!dn) return;
+            document.getElementById('edit-dn-id').value = dn.id;
+            updateDropdownUI('edit-dn-sapaan', arrSapaan, 'Pilih Sapaan');
+            document.getElementById('edit-dn-sapaan').value = dn.sapaan || '';
+            document.getElementById('edit-dn-panggilan').value = dn.namaPanggilan || '';
+            document.getElementById('edit-dn-lengkap').value = dn.namaLengkap || '';
+            document.getElementById('edit-dn-wa').value = dn.whatsapp || '';
+            
+            document.getElementById('modal-edit-dn').classList.remove('hidden');
+        }
+        window.hideEditDnModal = function() { document.getElementById('modal-edit-dn').classList.add('hidden'); }
+        
+        document.getElementById('form-edit-dn').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-dn-id').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            try {
+                await updateDoc(doc(db, 'users', userId, 'donors', id), {
+                    sapaan: document.getElementById('edit-dn-sapaan').value,
+                    namaPanggilan: document.getElementById('edit-dn-panggilan').value,
+                    namaLengkap: document.getElementById('edit-dn-lengkap').value,
+                    whatsapp: document.getElementById('edit-dn-wa').value,
+                    lastUpdated: serverTimestamp()
+                });
+                showToast("Data donatur berhasil diubah", "success");
+                hideEditDnModal();
+            } catch(e) { showToast("Gagal mengubah data", "error"); console.error(e); }
+            finally { btn.innerHTML = 'Simpan'; btn.disabled = false; }
+        });
+
+        // Edit Transaksi
+        window.editTransaksi = function(docId) {
+            const tx = allTransactions.find(t => t.docId === docId);
+            if(!tx) return;
+            document.getElementById('edit-tx-id').value = tx.docId;
+            document.getElementById('edit-tx-tanggal').value = tx.tanggal;
+            
+            updateDropdownUI('edit-tx-sapaan', arrSapaan, 'Pilih Sapaan');
+            document.getElementById('edit-tx-sapaan').value = tx.sapaan || '';
+            document.getElementById('edit-tx-panggilan').value = tx.namaPanggilan || '';
+            document.getElementById('edit-tx-lengkap').value = tx.namaLengkap || '';
+            document.getElementById('edit-tx-wa').value = tx.whatsapp || '';
+            document.getElementById('edit-tx-jumlah').value = tx.jumlah || 0;
+            
+            updateDropdownUI('edit-tx-rekening', arrRekening, 'Pilih Rekening');
+            document.getElementById('edit-tx-rekening').value = tx.rekening || '';
+            updateDropdownUI('edit-tx-program', arrProgram, 'Pilih Program');
+            document.getElementById('edit-tx-program').value = tx.program || '';
+            
+            document.getElementById('modal-edit-tx').classList.remove('hidden');
+        }
+        window.hideEditTxModal = function() { document.getElementById('modal-edit-tx').classList.add('hidden'); }
+        
+        document.getElementById('form-edit-tx').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const docId = document.getElementById('edit-tx-id').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            try {
+                await updateDoc(doc(db, 'users', userId, 'transactions', docId), {
+                    tanggal: document.getElementById('edit-tx-tanggal').value,
+                    sapaan: document.getElementById('edit-tx-sapaan').value,
+                    namaPanggilan: document.getElementById('edit-tx-panggilan').value,
+                    namaLengkap: document.getElementById('edit-tx-lengkap').value,
+                    whatsapp: document.getElementById('edit-tx-wa').value,
+                    jumlah: parseInt(document.getElementById('edit-tx-jumlah').value),
+                    rekening: document.getElementById('edit-tx-rekening').value,
+                    program: document.getElementById('edit-tx-program').value,
+                });
+                showToast("Transaksi berhasil diubah", "success");
+                hideEditTxModal();
+            } catch(e) { showToast("Gagal mengubah transaksi", "error"); console.error(e); }
+            finally { btn.innerHTML = 'Simpan Perubahan'; btn.disabled = false; }
+        });
 
     </script>
 
