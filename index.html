@@ -26,7 +26,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center sm:py-6 overflow-hidden">
+<body class="h-[100dvh] flex items-center justify-center sm:py-6 overflow-hidden">
 
     <!-- Mobile Wrapper (Simulates phone on desktop) -->
     <div id="app-wrapper" class="w-full h-full sm:max-w-[400px] sm:h-[95vh] bg-gray-50 relative flex flex-col sm:rounded-[2rem] sm:shadow-2xl sm:border-[6px] sm:border-gray-800 overflow-hidden">
@@ -266,6 +266,7 @@
                                     <tr>
                                         <th class="py-2 px-3 border-b">ID & Nama</th>
                                         <th class="py-2 px-3 border-b">Total Donasi</th>
+                                        <th class="py-2 px-3 border-b text-center">Kategori</th>
                                         <th class="py-2 px-3 border-b text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -373,6 +374,18 @@
                         </form>
                     </div>
 
+                    <!-- Kategori Donatur -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                        <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-tags text-emerald-600 mr-2"></i>Kategori Donatur</h2>
+                        <form id="form-kategori" class="flex gap-2 items-end">
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-medium text-gray-700 mb-1">Batas Waktu Jenuh (Hari)</label>
+                                <input type="number" id="set-hari-jenuh" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" min="1" value="30">
+                            </div>
+                            <button type="submit" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-xs font-medium h-[34px]">Simpan</button>
+                        </form>
+                    </div>
+
                     <!-- CSV -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                         <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-database text-emerald-600 mr-2"></i>Data CSV</h2>
@@ -407,7 +420,7 @@
             </div>
 
             <!-- Bottom Navigation -->
-            <nav class="bg-white border-t border-gray-200 z-40 flex justify-around px-1 py-2 pb-safe shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+            <nav class="bg-white border-t border-gray-200 z-40 flex justify-around px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
                 <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-emerald-600">
                     <i class="fas fa-file-invoice-dollar text-xl mb-1"></i>
                     <span class="text-[10px] font-medium">Input</span>
@@ -625,6 +638,7 @@
         let txProgramFilter = 'all';
         
         // Settings State
+        let batasHariJenuh = 30;
         let tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
         let csProfile = { nama: '', kode: '' };
         let arrRekening = ['Tunai / Kasir']; 
@@ -711,6 +725,7 @@
                     if(data.rekening) arrRekening = data.rekening;
                     if(data.program) arrProgram = data.program;
                     if(data.sapaan) arrSapaan = data.sapaan;
+                    if(data.batasHariJenuh) batasHariJenuh = data.batasHariJenuh;
                     
                     if(data.fontSize) {
                         document.documentElement.style.fontSize = data.fontSize + 'px';
@@ -723,6 +738,7 @@
                 document.getElementById('tg-chatid').value = tgSettings.chatId;
                 document.getElementById('set-nama-cs').value = csProfile.nama;
                 document.getElementById('set-kode-cs').value = csProfile.kode;
+                document.getElementById('set-hari-jenuh').value = batasHariJenuh;
 
                 updateDropdownUI('t-sapaan', arrSapaan, 'Pilih Sapaan');
                 updateDropdownUI('t-rekening', arrRekening, 'Pilih Rekening');
@@ -799,6 +815,23 @@
                 await setDoc(doc(db, 'users', userId, 'settings', 'general'), { fontSize: parseInt(size) }, { merge: true });
                 document.documentElement.style.fontSize = size + 'px';
                 showToast("Ukuran disimpan", "success");
+            } catch(e) { showToast("Gagal menyimpan", "error"); } finally {
+                btn.innerHTML = 'Simpan'; btn.disabled = false;
+            }
+        });
+
+        document.getElementById('form-kategori').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            try {
+                const h = parseInt(document.getElementById('set-hari-jenuh').value) || 30;
+                await setDoc(doc(db, 'users', userId, 'settings', 'general'), { batasHariJenuh: h }, { merge: true });
+                batasHariJenuh = h;
+                showToast("Batas hari disimpan", "success");
+                if(document.getElementById('view-data-donatur') && !document.getElementById('view-data-donatur').classList.contains('hidden')){
+                    window.renderDonaturTable();
+                }
             } catch(e) { showToast("Gagal menyimpan", "error"); } finally {
                 btn.innerHTML = 'Simpan'; btn.disabled = false;
             }
@@ -990,7 +1023,35 @@
             let filtered = allDonors.map(d => {
                 const txs = allTransactions.filter(t => t.donorId === d.id);
                 const txAmount = txs.reduce((sum, t) => sum + t.jumlah, 0);
-                return { ...d, txCount: txs.length, txAmount: txAmount };
+                
+                let kategori = 'Belum Donasi';
+                let katColor = 'bg-gray-100 text-gray-600';
+                
+                if (txs.length > 0) {
+                    const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                    
+                    const lastTxDate = new Date(sortedTxs[0].tanggal);
+                    lastTxDate.setHours(0, 0, 0, 0);
+                    
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const diffDays = Math.floor((today - lastTxDate) / (1000 * 60 * 60 * 24));
+                    const uniqueDays = new Set(txs.map(t => t.tanggal)).size;
+
+                    if (diffDays > batasHariJenuh) {
+                        kategori = 'Jenuh';
+                        katColor = 'bg-red-50 text-red-600 border border-red-200';
+                    } else if (uniqueDays > 1) {
+                        kategori = 'Istiqomah';
+                        katColor = 'bg-emerald-50 text-emerald-600 border border-emerald-200';
+                    } else {
+                        kategori = 'Baru';
+                        katColor = 'bg-blue-50 text-blue-600 border border-blue-200';
+                    }
+                }
+                
+                return { ...d, txCount: txs.length, txAmount: txAmount, kategori: kategori, katColor: katColor };
             });
 
             const filterText = document.getElementById('search-donatur').value.toLowerCase();
@@ -1035,6 +1096,9 @@
                         <td class="py-2 px-3 border-b">
                             <span class="text-emerald-600 font-semibold block">${formatter.format(d.txAmount)}</span>
                             <span class="text-gray-500 text-[10px]">${d.txCount} x donasi</span>
+                        </td>
+                        <td class="py-2 px-3 border-b text-center align-middle">
+                            <span class="${d.katColor} px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${d.kategori}</span>
                         </td>
                         <td class="py-2 px-3 border-b text-center align-middle whitespace-nowrap">
                             <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded mr-1"><i class="fas fa-edit"></i></button>
