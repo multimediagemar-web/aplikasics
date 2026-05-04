@@ -36,6 +36,7 @@
     <!-- Login Screen -->
     <div id="login-screen" class="fixed inset-0 bg-emerald-600 z-40 flex items-center justify-center fade-in">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 relative overflow-hidden">
+            <!-- Decorative shape -->
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-50 rounded-full opacity-50"></div>
             
             <div class="text-center mb-8 relative z-10">
@@ -101,7 +102,7 @@
             </button>
             <button onclick="navigate('pengaturan')" id="nav-pengaturan" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg transition">
                 <i class="fas fa-cog w-5"></i>
-                <span>Pengaturan Sistem</span>
+                <span>Pengaturan & CSV</span>
             </button>
         </nav>
         <div class="p-4 border-t border-emerald-700">
@@ -147,7 +148,7 @@
                     <i class="fas fa-users w-5"></i><span>Data Donatur</span>
                 </button>
                 <button onclick="navigate('pengaturan'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
-                    <i class="fas fa-cog w-5"></i><span>Pengaturan Sistem</span>
+                    <i class="fas fa-cog w-5"></i><span>Pengaturan & CSV</span>
                 </button>
                 <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-600 rounded-lg text-left mt-8">
                     <i class="fas fa-sign-out-alt w-5"></i><span>Keluar</span>
@@ -219,21 +220,28 @@
                                 <input type="number" id="t-jumlah" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: 500000" min="1">
                             </div>
 
-                            <!-- Rekening Tujuan (Dinamis dari Pengaturan) -->
+                            <!-- Rekening Tujuan -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Rekening Tujuan</label>
                                 <select id="t-rekening" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Rekening</option>
-                                    <!-- Diisi dari JS -->
+                                    <option value="BSI - 123456789">BSI - 123456789</option>
+                                    <option value="Mandiri - 987654321">Mandiri - 987654321</option>
+                                    <option value="BCA - 1122334455">BCA - 1122334455</option>
+                                    <option value="Tunai">Tunai / Kasir</option>
                                 </select>
                             </div>
 
-                            <!-- Program (Dinamis dari Pengaturan) -->
+                            <!-- Program -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Program Donasi</label>
                                 <select id="t-program" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Program</option>
-                                    <!-- Diisi dari JS -->
+                                    <option value="Sedekah Subuh">Sedekah Subuh</option>
+                                    <option value="Zakat Maal">Zakat Maal</option>
+                                    <option value="Pembangunan Masjid">Pembangunan Masjid</option>
+                                    <option value="Bantuan Kemanusiaan">Bantuan Kemanusiaan</option>
+                                    <option value="Infaq Umum">Infaq Umum</option>
                                 </select>
                             </div>
 
@@ -293,6 +301,26 @@
                             <p>Belum ada data transaksi.</p>
                         </div>
                     </div>
+                    <!-- Pagination Transaksi -->
+                    <div class="px-6 py-3 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <span>Tampilkan</span>
+                            <select id="transaksi-rows" onchange="changeTransaksiRows()" class="mx-2 border border-gray-300 rounded px-2 py-1 outline-none focus:border-emerald-500 text-sm bg-white">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>baris</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <span id="transaksi-info" class="mr-4 text-gray-600">Menampilkan 0-0 dari 0</span>
+                            <div class="flex space-x-1">
+                                <button onclick="changeTransaksiPage(-1)" id="btn-prev-transaksi" class="px-3 py-1 border border-gray-300 rounded hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 transition"><i class="fas fa-chevron-left"></i></button>
+                                <button onclick="changeTransaksiPage(1)" id="btn-next-transaksi" class="px-3 py-1 border border-gray-300 rounded hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 transition"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -323,6 +351,26 @@
                         <div id="empty-donatur" class="hidden flex flex-col items-center justify-center p-12 text-gray-500">
                             <i class="fas fa-users-slash text-4xl mb-3 text-gray-300"></i>
                             <p>Belum ada data donatur.</p>
+                        </div>
+                    </div>
+                    <!-- Pagination Donatur -->
+                    <div class="px-6 py-3 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <span>Tampilkan</span>
+                            <select id="donatur-rows" onchange="changeDonaturRows()" class="mx-2 border border-gray-300 rounded px-2 py-1 outline-none focus:border-emerald-500 text-sm bg-white">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>baris</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <span id="donatur-info" class="mr-4 text-gray-600">Menampilkan 0-0 dari 0</span>
+                            <div class="flex space-x-1">
+                                <button onclick="changeDonaturPage(-1)" id="btn-prev-donatur" class="px-3 py-1 border border-gray-300 rounded hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 transition"><i class="fas fa-chevron-left"></i></button>
+                                <button onclick="changeDonaturPage(1)" id="btn-next-donatur" class="px-3 py-1 border border-gray-300 rounded hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 transition"><i class="fas fa-chevron-right"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -466,16 +514,50 @@
 
                     </div>
                 </div>
+
+                <!-- Pengaturan Reset Data -->
+                <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-red-200 bg-red-50">
+                        <h2 class="text-lg font-semibold text-red-800"><i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>Reset Data Aplikasi</h2>
+                        <p class="text-sm text-red-600 mt-1">Hapus secara permanen seluruh data riwayat transaksi dan database donatur.</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-gray-600 mb-4">Peringatan: Tindakan ini tidak dapat dibatalkan. Pastikan Anda telah mengekspor (download) data penting sebelum melakukan reset.</p>
+                        <button onclick="showResetModal()" class="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition flex items-center justify-center shadow-md">
+                            <i class="fas fa-trash-alt mr-2"></i> Reset Semua Data
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
         </div>
     </main>
 
+    <!-- Reset Confirmation Modal -->
+    <div id="reset-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Konfirmasi Reset Data</h3>
+            <p class="text-sm text-gray-600 mb-4">Apakah Anda yakin ingin menghapus <b>semua data donatur dan transaksi</b>? Tindakan ini <b>tidak dapat dibatalkan</b>.</p>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ketik <b>RESET</b> untuk konfirmasi:</label>
+                <input type="text" id="reset-confirm-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 outline-none uppercase" placeholder="Ketik RESET disini">
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="hideResetModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium">Batal</button>
+                <button onclick="executeResetData()" id="btn-execute-reset" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-trash-alt mr-2"></i> Hapus Data
+                    <i id="reset-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi Firebase Milik Anda
         const firebaseConfig = {
@@ -498,6 +580,12 @@
         let allDonors = [];
         let allTransactions = [];
         let isLoginMode = true;
+        
+        // State Pagination
+        let donaturPage = 1;
+        let donaturRows = 10;
+        let transaksiPage = 1;
+        let transaksiRows = 10;
         
         // Settings State
         let tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
@@ -834,6 +922,7 @@
             const tbody = document.getElementById('table-donatur-body');
             const emptyState = document.getElementById('empty-donatur');
             tbody.innerHTML = '';
+            
             let filtered = allDonors;
             if (filterText) {
                 const lowerFilter = filterText.toLowerCase();
@@ -843,11 +932,23 @@
                     d.whatsapp.toLowerCase().includes(lowerFilter)
                 );
             }
-            if (filtered.length === 0) {
+
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / donaturRows);
+            if (donaturPage > totalPages && totalPages > 0) donaturPage = totalPages;
+
+            const startIndex = (donaturPage - 1) * donaturRows;
+            const endIndex = Math.min(startIndex + donaturRows, totalItems);
+            const paginatedItems = filtered.slice(startIndex, endIndex);
+
+            if (paginatedItems.length === 0) {
                 emptyState.classList.remove('hidden');
+                document.getElementById('donatur-info').textContent = 'Menampilkan 0-0 dari 0';
+                document.getElementById('btn-prev-donatur').disabled = true;
+                document.getElementById('btn-next-donatur').disabled = true;
             } else {
                 emptyState.classList.add('hidden');
-                filtered.forEach(d => {
+                paginatedItems.forEach(d => {
                     const txCount = allTransactions.filter(t => t.donorId === d.id).length;
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-gray-50';
@@ -859,10 +960,26 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
+                document.getElementById('donatur-info').textContent = `Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems}`;
+                document.getElementById('btn-prev-donatur').disabled = donaturPage === 1;
+                document.getElementById('btn-next-donatur').disabled = donaturPage === totalPages;
             }
         }
 
         window.filterDonatur = function() {
+            donaturPage = 1; // Reset ke halaman 1 saat ada pencarian
+            renderDonaturTable(document.getElementById('search-donatur').value);
+        }
+
+        window.changeDonaturPage = function(dir) {
+            donaturPage += dir;
+            renderDonaturTable(document.getElementById('search-donatur').value);
+        }
+
+        window.changeDonaturRows = function() {
+            donaturRows = parseInt(document.getElementById('donatur-rows').value);
+            donaturPage = 1;
             renderDonaturTable(document.getElementById('search-donatur').value);
         }
 
@@ -870,11 +987,23 @@
             const tbody = document.getElementById('table-transaksi-body');
             const emptyState = document.getElementById('empty-transaksi');
             tbody.innerHTML = '';
-            if (allTransactions.length === 0) {
+            
+            const totalItems = allTransactions.length;
+            const totalPages = Math.ceil(totalItems / transaksiRows);
+            if (transaksiPage > totalPages && totalPages > 0) transaksiPage = totalPages;
+
+            const startIndex = (transaksiPage - 1) * transaksiRows;
+            const endIndex = Math.min(startIndex + transaksiRows, totalItems);
+            const paginatedItems = allTransactions.slice(startIndex, endIndex);
+
+            if (paginatedItems.length === 0) {
                 emptyState.classList.remove('hidden');
+                document.getElementById('transaksi-info').textContent = 'Menampilkan 0-0 dari 0';
+                document.getElementById('btn-prev-transaksi').disabled = true;
+                document.getElementById('btn-next-transaksi').disabled = true;
             } else {
                 emptyState.classList.add('hidden');
-                allTransactions.forEach(t => {
+                paginatedItems.forEach(t => {
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-gray-50';
                     const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
@@ -889,8 +1018,23 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
+                document.getElementById('transaksi-info').textContent = `Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems}`;
+                document.getElementById('btn-prev-transaksi').disabled = transaksiPage === 1;
+                document.getElementById('btn-next-transaksi').disabled = transaksiPage === totalPages;
             }
             renderDonaturTable(document.getElementById('search-donatur').value);
+        }
+
+        window.changeTransaksiPage = function(dir) {
+            transaksiPage += dir;
+            renderTransaksiTable();
+        }
+
+        window.changeTransaksiRows = function() {
+            transaksiRows = parseInt(document.getElementById('transaksi-rows').value);
+            transaksiPage = 1;
+            renderTransaksiTable();
         }
 
         document.getElementById('t-id').addEventListener('input', (e) => {
@@ -960,8 +1104,10 @@
                 }
 
                 try {
-                    const batch = writeBatch(db);
+                    let batch = writeBatch(db);
                     let count = 0;
+                    let operationsInBatch = 0;
+
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].replace(/\r/g, '');
                         if (!line.trim()) continue;
@@ -989,11 +1135,24 @@
                                 sapaan: sapaan, namaPanggilan: namaPanggilan, namaLengkap: namaLengkap,
                                 whatsapp: whatsapp, lastUpdated: serverTimestamp()
                             }, { merge: true });
+                            
                             count++;
+                            operationsInBatch += 2;
+
+                            // Firebase limit is 500 ops per batch, so we commit and recreate at 400
+                            if (operationsInBatch >= 400) {
+                                await batch.commit();
+                                batch = writeBatch(db);
+                                operationsInBatch = 0;
+                            }
                         }
                     }
-                    if (count > 0) {
+                    
+                    if (operationsInBatch > 0) {
                         await batch.commit();
+                    }
+
+                    if (count > 0) {
                         showToast(`${count} data transaksi berhasil diimpor!`, "success");
                     } else showToast("Tidak ada data baris yang valid", "error");
                 } catch (err) { showToast("Terjadi kesalahan sistem saat impor", "error"); } 
@@ -1005,6 +1164,68 @@
         function resetImportUI(btn, spinner, fileInput) {
             btn.disabled = false; spinner.classList.add('hidden'); fileInput.value = '';
         }
+
+        // ----------------------------------------------------
+        // FITUR RESET DATA
+        // ----------------------------------------------------
+        const resetModal = document.getElementById('reset-modal');
+        const resetInput = document.getElementById('reset-confirm-input');
+        const btnExecuteReset = document.getElementById('btn-execute-reset');
+
+        window.showResetModal = function() {
+            resetModal.classList.remove('hidden');
+            resetInput.value = '';
+            btnExecuteReset.disabled = true;
+        }
+
+        window.hideResetModal = function() {
+            resetModal.classList.add('hidden');
+        }
+
+        resetInput.addEventListener('input', (e) => {
+            // Aktifkan tombol Hapus hanya jika user mengetik 'RESET'
+            btnExecuteReset.disabled = e.target.value.toUpperCase() !== 'RESET';
+        });
+
+        window.executeResetData = async function() {
+            if(!user) return;
+            if(resetInput.value.toUpperCase() !== 'RESET') return;
+
+            const spinner = document.getElementById('reset-spinner');
+            btnExecuteReset.disabled = true;
+            spinner.classList.remove('hidden');
+
+            try {
+                const BATCH_SIZE = 400;
+
+                // Hapus semua data di koleksi transaksi secara bertahap
+                const txSnapshot = await getDocs(collection(db, 'users', userId, 'transactions'));
+                const txDocs = txSnapshot.docs;
+                for (let i = 0; i < txDocs.length; i += BATCH_SIZE) {
+                    const batch = writeBatch(db);
+                    txDocs.slice(i, i + BATCH_SIZE).forEach((doc) => batch.delete(doc.ref));
+                    await batch.commit();
+                }
+
+                // Hapus semua data di koleksi donatur secara bertahap
+                const donorSnapshot = await getDocs(collection(db, 'users', userId, 'donors'));
+                const donorDocs = donorSnapshot.docs;
+                for (let i = 0; i < donorDocs.length; i += BATCH_SIZE) {
+                    const batch = writeBatch(db);
+                    donorDocs.slice(i, i + BATCH_SIZE).forEach((doc) => batch.delete(doc.ref));
+                    await batch.commit();
+                }
+
+                showToast("Seluruh data berhasil dihapus!", "success");
+                hideResetModal();
+            } catch (error) {
+                console.error("Error resetting data: ", error);
+                showToast("Gagal mereset data", "error");
+            } finally {
+                spinner.classList.add('hidden');
+            }
+        }
+
     </script>
 
     <!-- General UI JS -->
@@ -1074,4 +1295,3 @@
     </script>
 </body>
 </html>
-```eof
