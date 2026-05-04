@@ -68,13 +68,16 @@
                     <i id="login-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
                 </button>
                 
-                <div class="text-center mt-4 border-t pt-4">
-                    <button type="button" id="btn-toggle-auth" class="text-sm text-emerald-600 hover:text-emerald-800 font-medium transition">
-                        Belum punya akun? Daftar disini
-                    </button>
+                <div class="mt-6 border-t pt-6 text-center text-gray-600 px-2">
+                    <p class="text-xs italic leading-relaxed mb-2">"Ambillah zakat dari sebagian harta mereka, dengan zakat itu kamu membersihkan dan mensucikan mereka dan mendoalah untuk mereka. Sesungguhnya doa kamu itu (menjadi) ketenteraman jiwa bagi mereka. Dan Allah Maha Mendengar lagi Maha Mengetahui."</p>
+                    <p class="text-xs font-semibold">(QS. At-Taubah: 103)</p>
                 </div>
             </form>
             <div id="auth-status" class="mt-4 text-center text-sm hidden"></div>
+            
+            <div class="mt-8 text-center text-xs text-gray-400 relative z-10">
+                Aplikasi ini dibuat oleh <br> <a href="https://masjidashqaf.com" target="_blank" class="text-emerald-600 font-medium hover:underline">masjidashqaf.com</a>
+            </div>
         </div>
     </div>
 
@@ -105,12 +108,6 @@
                 <span>Pengaturan & CSV</span>
             </button>
         </nav>
-        <div class="p-4 border-t border-emerald-700">
-            <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-red-600 rounded-lg transition text-white">
-                <i class="fas fa-sign-out-alt w-5"></i>
-                <span>Keluar</span>
-            </button>
-        </div>
     </aside>
 
     <!-- Main Content -->
@@ -121,42 +118,10 @@
                 <i class="fas fa-hand-holding-heart text-xl"></i>
                 <span class="font-bold text-lg">DonasiApp</span>
             </div>
-            <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
+            <div class="text-xs text-gray-500 font-medium px-3 py-1 bg-gray-100 rounded-full truncate max-w-[120px]" id="cs-email-display-mobile">CS</div>
         </header>
 
-        <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu" class="fixed inset-0 bg-emerald-800 z-30 flex flex-col hidden transform transition-transform text-white">
-            <div class="p-4 flex justify-between items-center border-b border-emerald-700">
-                <span class="font-bold text-lg">Menu</span>
-                <button onclick="toggleMobileMenu()" class="text-emerald-200 hover:text-white">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-            <div class="p-4 text-sm text-emerald-200 border-b border-emerald-700 bg-emerald-900">
-                <i class="fas fa-user-circle mr-2"></i> <span id="cs-email-display-mobile">Email CS</span>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="navigate('transaksi'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 bg-emerald-900 rounded-lg">
-                    <i class="fas fa-file-invoice-dollar w-5"></i><span>Input Transaksi</span>
-                </button>
-                <button onclick="navigate('data-transaksi'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
-                    <i class="fas fa-list-alt w-5"></i><span>Data Transaksi</span>
-                </button>
-                <button onclick="navigate('data-donatur'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
-                    <i class="fas fa-users w-5"></i><span>Data Donatur</span>
-                </button>
-                <button onclick="navigate('pengaturan'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
-                    <i class="fas fa-cog w-5"></i><span>Pengaturan & CSV</span>
-                </button>
-                <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-600 rounded-lg text-left mt-8">
-                    <i class="fas fa-sign-out-alt w-5"></i><span>Keluar</span>
-                </button>
-            </nav>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+        <div class="flex-1 overflow-y-auto p-4 pb-24 md:p-8 md:pb-8">
             
             <!-- VIEW: INPUT TRANSAKSI -->
             <div id="view-transaksi" class="fade-in max-w-4xl mx-auto">
@@ -568,10 +533,94 @@
                     </div>
                 </div>
 
+                <!-- Pengaturan Keluar Akun -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-sign-out-alt text-gray-600 mr-2"></i>Keluar Aplikasi</h2>
+                    </div>
+                    <div class="p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p class="text-sm text-gray-600">Akhiri sesi Anda di perangkat ini. Anda harus login kembali untuk mengakses data.</p>
+                        <button onclick="logout()" class="w-full md:w-auto bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-8 rounded-lg transition flex items-center justify-center shadow-md">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Keluar
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
         </div>
+
+        <!-- Bottom Navigation (Mobile Only) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 flex justify-around px-1 py-2 pb-safe shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+            <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-2 text-emerald-600 transition-colors">
+                <i class="fas fa-file-invoice-dollar text-xl mb-1"></i>
+                <span class="text-[10px] font-medium">Input</span>
+            </button>
+            <button onclick="navigate('data-transaksi')" id="bottom-nav-data-transaksi" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-400 hover:text-emerald-600 transition-colors">
+                <i class="fas fa-list-alt text-xl mb-1"></i>
+                <span class="text-[10px] font-medium">Transaksi</span>
+            </button>
+            <button onclick="navigate('data-donatur')" id="bottom-nav-data-donatur" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-400 hover:text-emerald-600 transition-colors">
+                <i class="fas fa-users text-xl mb-1"></i>
+                <span class="text-[10px] font-medium">Donatur</span>
+            </button>
+            <button onclick="navigate('pengaturan')" id="bottom-nav-pengaturan" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-400 hover:text-emerald-600 transition-colors">
+                <i class="fas fa-cog text-xl mb-1"></i>
+                <span class="text-[10px] font-medium">Pengaturan</span>
+            </button>
+        </nav>
     </main>
+
+    <!-- Modal Filter Transaksi -->
+    <div id="modal-filter-tx" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter & Urutkan</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Urutkan Berdasarkan</label>
+                    <select id="filter-tx-sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
+                        <option value="tanggal_desc">Tanggal (Terbaru - Terlama)</option>
+                        <option value="tanggal_asc">Tanggal (Terlama - Terbaru)</option>
+                        <option value="jumlah_desc">Nominal (Terbesar - Terkecil)</option>
+                        <option value="jumlah_asc">Nominal (Terkecil - Terbesar)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Filter Program</label>
+                    <select id="filter-tx-program" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
+                        <option value="all">Semua Program</option>
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="hideFilterModal('transaksi')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                <button onclick="applyFilterTransaksi()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Filter Donatur -->
+    <div id="modal-filter-dn" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-filter text-emerald-600 mr-2"></i>Urutkan Data</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Urutkan Berdasarkan</label>
+                    <select id="filter-dn-sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
+                        <option value="id_asc">ID Donatur (A - Z)</option>
+                        <option value="id_desc">ID Donatur (Z - A)</option>
+                        <option value="tx_desc">Transaksi (Terbanyak - Terdikit)</option>
+                        <option value="tx_asc">Transaksi (Terdikit - Terbanyak)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="hideFilterModal('donatur')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                <button onclick="applyFilterDonatur()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm">Terapkan</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Delete Item -->
     <div id="modal-delete-item" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
@@ -661,57 +710,6 @@
         </div>
     </div>
 
-    <!-- Modal Filter Transaksi -->
-    <div id="modal-filter-tx" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
-            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter & Urutkan</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Urutkan Berdasarkan</label>
-                    <select id="filter-tx-sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
-                        <option value="tanggal_desc">Tanggal (Terbaru - Terlama)</option>
-                        <option value="tanggal_asc">Tanggal (Terlama - Terbaru)</option>
-                        <option value="jumlah_desc">Nominal (Terbesar - Terkecil)</option>
-                        <option value="jumlah_asc">Nominal (Terkecil - Terbesar)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Filter Program</label>
-                    <select id="filter-tx-program" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
-                        <option value="all">Semua Program</option>
-                        <!-- Options generated by JS -->
-                    </select>
-                </div>
-            </div>
-            <div class="flex justify-end space-x-3 mt-6">
-                <button onclick="hideFilterModal('transaksi')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
-                <button onclick="applyFilterTransaksi()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm">Terapkan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Filter Donatur -->
-    <div id="modal-filter-dn" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
-            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-filter text-emerald-600 mr-2"></i>Urutkan Data</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Urutkan Berdasarkan</label>
-                    <select id="filter-dn-sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
-                        <option value="id_asc">ID Donatur (A - Z)</option>
-                        <option value="id_desc">ID Donatur (Z - A)</option>
-                        <option value="tx_desc">Transaksi (Terbanyak - Terdikit)</option>
-                        <option value="tx_asc">Transaksi (Terdikit - Terbanyak)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="flex justify-end space-x-3 mt-6">
-                <button onclick="hideFilterModal('donatur')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
-                <button onclick="applyFilterDonatur()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm">Terapkan</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Reset Confirmation Modal -->
     <div id="reset-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
@@ -757,7 +755,6 @@
         let csEmail = '';
         let allDonors = [];
         let allTransactions = [];
-        let isLoginMode = true;
         
         // State Pagination & Filter
         let donaturPage = 1;
@@ -807,14 +804,6 @@
             }
         });
 
-        document.getElementById('btn-toggle-auth').addEventListener('click', (e) => {
-            isLoginMode = !isLoginMode;
-            document.getElementById('form-title').textContent = isLoginMode ? 'Login CS' : 'Daftar CS Baru';
-            document.getElementById('login-text').textContent = isLoginMode ? 'Masuk Sekarang' : 'Daftar Sekarang';
-            e.target.textContent = isLoginMode ? 'Belum punya akun? Daftar disini' : 'Sudah punya akun? Masuk disini';
-            authStatus.classList.add('hidden');
-        });
-
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('cs-email').value.trim();
@@ -825,23 +814,17 @@
             btn.disabled = true;
             spinner.classList.remove('hidden');
             authStatus.classList.remove('hidden');
-            authStatus.textContent = isLoginMode ? "Sedang memverifikasi..." : "Sedang membuat akun...";
+            authStatus.textContent = "Sedang memverifikasi...";
             authStatus.className = "mt-4 text-center text-sm font-medium text-emerald-600 block";
 
             try {
-                if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
+                await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 let errorMsg = "Terjadi kesalahan.";
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                     errorMsg = "Email atau Password salah!";
-                } else if (error.code === 'auth/email-already-in-use') {
-                    errorMsg = "Email sudah terdaftar. Silakan login.";
-                } else if (error.code === 'auth/weak-password') {
-                    errorMsg = "Password minimal 6 karakter.";
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMsg = "Akun tidak ditemukan. Hubungi Admin.";
                 }
                 authStatus.textContent = errorMsg;
                 authStatus.className = "mt-4 text-center text-sm font-medium text-red-500 block";
@@ -928,23 +911,27 @@
         // FUNGSI UPDATE UI DROPDOWN & LIST SETTINGS
         function updateDropdownUI(elementId, dataArray, placeholder) {
             const el = document.getElementById(elementId);
-            el.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
-            dataArray.forEach(item => {
-                el.innerHTML += `<option value="${item}">${item}</option>`;
-            });
+            if(el) {
+                el.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
+                dataArray.forEach(item => {
+                    el.innerHTML += `<option value="${item}">${item}</option>`;
+                });
+            }
         }
 
         function updateSettingsListUI(elementId, dataArray, type) {
             const ul = document.getElementById(elementId);
-            ul.innerHTML = '';
-            dataArray.forEach((item, index) => {
-                ul.innerHTML += `
-                    <li class="flex justify-between items-center bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm">
-                        <span>${item}</span>
-                        <button onclick="hapusItem('${type}', ${index})" class="text-red-500 hover:text-red-700 p-1"><i class="fas fa-trash-alt"></i></button>
-                    </li>
-                `;
-            });
+            if(ul) {
+                ul.innerHTML = '';
+                dataArray.forEach((item, index) => {
+                    ul.innerHTML += `
+                        <li class="flex justify-between items-center bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm">
+                            <span>${item}</span>
+                            <button onclick="hapusItem('${type}', ${index})" class="text-red-500 hover:text-red-700 p-1"><i class="fas fa-trash-alt"></i></button>
+                        </li>
+                    `;
+                });
+            }
         }
 
         // FUNGSI SAVE SETTINGS
@@ -1176,6 +1163,7 @@
         window.renderDonaturTable = function() {
             const tbody = document.getElementById('table-donatur-body');
             const emptyState = document.getElementById('empty-donatur');
+            if(!tbody) return;
             tbody.innerHTML = '';
             
             // 1. Persiapkan data dan hitung transaksi
@@ -1267,6 +1255,7 @@
         window.renderTransaksiTable = function() {
             const tbody = document.getElementById('table-transaksi-body');
             const emptyState = document.getElementById('empty-transaksi');
+            if(!tbody) return;
             tbody.innerHTML = '';
             
             let filteredTx = [...allTransactions];
@@ -1335,7 +1324,7 @@
                 document.getElementById('btn-next-transaksi').disabled = transaksiPage === totalPages;
             }
             // Sinkronisasi pembaruan count di tabel donatur (jika diperlukan)
-            if(document.getElementById('view-data-donatur').classList.contains('hidden') === false){
+            if(document.getElementById('view-data-donatur') && !document.getElementById('view-data-donatur').classList.contains('hidden')){
                 window.renderDonaturTable();
             }
         }
@@ -1659,17 +1648,31 @@
     <script>
         const views = ['view-transaksi', 'view-data-transaksi', 'view-data-donatur', 'view-pengaturan'];
         const navIds = ['nav-transaksi', 'nav-data-transaksi', 'nav-data-donatur', 'nav-pengaturan'];
+        const bottomNavIds = ['bottom-nav-transaksi', 'bottom-nav-data-transaksi', 'bottom-nav-data-donatur', 'bottom-nav-pengaturan'];
 
         function navigate(viewName) {
             views.forEach(v => document.getElementById(v).classList.add('hidden'));
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
 
+            // Update Desktop Sidebar
             navIds.forEach(n => {
                 const el = document.getElementById(n);
                 if (n === `nav-${viewName}`) {
                     el.classList.remove('hover:bg-emerald-700'); el.classList.add('bg-emerald-900');
                 } else {
                     el.classList.add('hover:bg-emerald-700'); el.classList.remove('bg-emerald-900');
+                }
+            });
+
+            // Update Mobile Bottom Nav
+            bottomNavIds.forEach(n => {
+                const el = document.getElementById(n);
+                if(el) {
+                    if (n === `bottom-nav-${viewName}`) {
+                        el.classList.remove('text-gray-400'); el.classList.add('text-emerald-600');
+                    } else {
+                        el.classList.add('text-gray-400'); el.classList.remove('text-emerald-600');
+                    }
                 }
             });
 
