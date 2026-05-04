@@ -53,8 +53,9 @@
                     <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
-                    <h1 class="text-xl font-bold text-gray-800" id="form-title">Login CS</h1>
-                    <p class="text-gray-500 text-xs mt-1">Sistem pendataan transaksi donasi</p>
+                    <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi CS Donatur</h1>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 1.1.0</div>
+                    <p class="text-gray-500 text-[11px] mt-1">Sistem pendataan transaksi donasi</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
@@ -218,8 +219,7 @@
                                     <tr>
                                         <th class="py-2 px-3 border-b">Tanggal</th>
                                         <th class="py-2 px-3 border-b">Donatur</th>
-                                        <th class="py-2 px-3 border-b">Program</th>
-                                        <th class="py-2 px-3 border-b text-right">Jumlah</th>
+                                        <th class="py-2 px-3 border-b text-right">Program & Jumlah</th>
                                         <th class="py-2 px-3 border-b text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -1114,8 +1114,10 @@
                             <span class="font-semibold block">${t.donorId}</span>
                             <span class="text-[10px] text-gray-500">${t.namaLengkap}</span>
                         </td>
-                        <td class="py-2 px-3 border-b"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${t.program}</span></td>
-                        <td class="py-2 px-3 border-b text-right font-semibold text-emerald-600">${formatter.format(t.jumlah)}</td>
+                        <td class="py-2 px-3 border-b text-right">
+                            <span class="font-semibold text-emerald-600 block">${formatter.format(t.jumlah)}</span>
+                            <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap inline-block mt-1">${t.program}</span>
+                        </td>
                         <td class="py-2 px-3 border-b text-center align-middle whitespace-nowrap">
                             <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded mr-1"><i class="fas fa-edit"></i></button>
                             <button onclick="showDeleteModal('transaksi', '${t.docId}')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded"><i class="fas fa-trash"></i></button>
@@ -1473,16 +1475,34 @@
             toast.classList.remove('translate-y-0', 'opacity-100');
         }
 
-        // Tambahan Registrasi Service Worker untuk PWA
+        // Tambahan Registrasi Service Worker untuk PWA dengan Auto-Update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(registration => {
                         console.log('ServiceWorker terdaftar dengan sukses: ', registration.scope);
+                        
+                        // Deteksi update file dari GitHub
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Beritahu Service Worker baru untuk langsung mengambil alih
+                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                }
+                            });
+                        });
                     })
-                    .catch(error => {
-                        console.log('Pendaftaran ServiceWorker gagal: ', error);
-                    });
+                    .catch(error => console.log('Pendaftaran ServiceWorker gagal: ', error));
+            });
+
+            // Otomatis reload halaman jika Service Worker baru aktif
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                showToast("Update terbaru tersedia! Memperbarui aplikasi...", "success");
+                setTimeout(() => window.location.reload(), 2000);
             });
         }
     </script>
