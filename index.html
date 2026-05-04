@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Data Donatur CS</title>
     
-    <!-- Tambahan Tag PWA -->
+    <!-- Tag PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#059669">
     <link rel="apple-touch-icon" href="icon-192x192.png">
@@ -261,11 +261,13 @@
                             </div>
                         </div>
                         <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
-                            <table class="w-full min-w-[500px] text-left border-collapse">
+                            <table class="w-full min-w-[700px] text-left border-collapse">
                                 <thead class="bg-gray-50 text-gray-600 text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
                                     <tr>
                                         <th class="py-2 px-3 border-b">ID & Nama</th>
                                         <th class="py-2 px-3 border-b">Total Donasi</th>
+                                        <th class="py-2 px-3 border-b">Donasi Pertama</th>
+                                        <th class="py-2 px-3 border-b">Donasi Terakhir</th>
                                         <th class="py-2 px-3 border-b text-center">Kategori</th>
                                         <th class="py-2 px-3 border-b text-center">Aksi</th>
                                     </tr>
@@ -440,7 +442,7 @@
             </nav>
         </main>
 
-        <!-- Modal Filter Transaksi (Absolute to wrapper) -->
+        <!-- Modal Filter Transaksi -->
         <div id="modal-filter-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter Transaksi</h3>
@@ -1026,11 +1028,18 @@
                 
                 let kategori = 'Belum Donasi';
                 let katColor = 'bg-gray-100 text-gray-600';
+                let tglPertama = '-';
+                let tglTerakhir = '-';
                 
                 if (txs.length > 0) {
                     const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
                     
                     const lastTxDate = new Date(sortedTxs[0].tanggal);
+                    const firstTxDate = new Date(sortedTxs[sortedTxs.length - 1].tanggal);
+                    
+                    tglTerakhir = lastTxDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' });
+                    tglPertama = firstTxDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' });
+                    
                     lastTxDate.setHours(0, 0, 0, 0);
                     
                     const today = new Date();
@@ -1051,7 +1060,15 @@
                     }
                 }
                 
-                return { ...d, txCount: txs.length, txAmount: txAmount, kategori: kategori, katColor: katColor };
+                return { 
+                    ...d, 
+                    txCount: txs.length, 
+                    txAmount: txAmount, 
+                    kategori: kategori, 
+                    katColor: katColor,
+                    tglPertama: tglPertama,
+                    tglTerakhir: tglTerakhir
+                };
             });
 
             const filterText = document.getElementById('search-donatur').value.toLowerCase();
@@ -1097,6 +1114,8 @@
                             <span class="text-emerald-600 font-semibold block">${formatter.format(d.txAmount)}</span>
                             <span class="text-gray-500 text-[10px]">${d.txCount} x donasi</span>
                         </td>
+                        <td class="py-2 px-3 border-b text-[10px] text-gray-500 whitespace-nowrap">${d.tglPertama}</td>
+                        <td class="py-2 px-3 border-b text-[10px] text-gray-500 whitespace-nowrap">${d.tglTerakhir}</td>
                         <td class="py-2 px-3 border-b text-center align-middle">
                             <span class="${d.katColor} px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${d.kategori}</span>
                         </td>
@@ -1228,10 +1247,40 @@
             let csvContent = "";
             let filename = "";
             if (type === 'donatur') {
-                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp\n";
+                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori\n";
                 allDonors.forEach(d => {
+                    const txs = allTransactions.filter(t => t.donorId === d.id);
+                    const txCount = txs.length;
+                    const txAmount = txs.reduce((sum, t) => sum + t.jumlah, 0);
+                    
+                    let lastTxDate = "-";
+                    let firstTxDate = "-";
+                    let kategori = "Belum Donasi";
+                    
+                    if (txs.length > 0) {
+                        const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                        lastTxDate = sortedTxs[0].tanggal;
+                        firstTxDate = sortedTxs[sortedTxs.length - 1].tanggal;
+                        
+                        const lastDateObj = new Date(sortedTxs[0].tanggal);
+                        lastDateObj.setHours(0, 0, 0, 0);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        
+                        const diffDays = Math.floor((today - lastDateObj) / (1000 * 60 * 60 * 24));
+                        const uniqueDays = new Set(txs.map(t => t.tanggal)).size;
+
+                        if (diffDays > batasHariJenuh) {
+                            kategori = 'Jenuh';
+                        } else if (uniqueDays > 1) {
+                            kategori = 'Istiqomah';
+                        } else {
+                            kategori = 'Baru';
+                        }
+                    }
+
                     const nm = d.namaLengkap.replace(/"/g, '""');
-                    csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp}\n`;
+                    csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori}\n`;
                 });
                 filename = "data_donatur.csv";
             } else if (type === 'transaksi') {
