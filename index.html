@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Data Donatur CS</title>
+    
+    <!-- Tambahan Tag PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#059669">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -1465,6 +1471,19 @@
             const toast = document.getElementById('toast');
             toast.classList.add('-translate-y-[150%]', 'opacity-0');
             toast.classList.remove('translate-y-0', 'opacity-100');
+        }
+
+        // Tambahan Registrasi Service Worker untuk PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker terdaftar dengan sukses: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Pendaftaran ServiceWorker gagal: ', error);
+                    });
+            });
         }
     </script>
 </body>
