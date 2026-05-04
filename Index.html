@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Data Donatur CS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        html { font-size: 12px; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen overflow-hidden flex">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 right-5 transform translate-x-full transition-transform duration-300 z-50 flex items-center p-4 mb-4 text-white rounded-lg shadow-lg" role="alert">
+        <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white bg-opacity-20">
+            <i id="toast-icon" class="fas fa-check"></i>
+        </div>
+        <div id="toast-message" class="ml-3 text-sm font-medium">Pesan</div>
+        <button type="button" onclick="hideToast()" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 hover:bg-white hover:bg-opacity-20 inline-flex h-8 w-8 text-white">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 bg-emerald-600 z-40 flex items-center justify-center fade-in">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 relative overflow-hidden">
+            <!-- Decorative shape -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-50 rounded-full opacity-50"></div>
+            
+            <div class="text-center mb-8 relative z-10">
+                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                    <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800" id="form-title">Login CS</h1>
+                <p class="text-gray-500 text-sm mt-2">Sistem pendataan transaksi donasi</p>
+            </div>
+            
+            <form id="login-form" class="space-y-4 relative z-10">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+                        <input type="email" id="cs-email" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" placeholder="email@lembaga.org">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+                        <input type="password" id="cs-password" required class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <button type="submit" id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg shadow-md transition duration-200 flex items-center justify-center mt-2">
+                    <span id="login-text">Masuk Sekarang</span>
+                    <i id="login-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                </button>
+                
+                <div class="text-center mt-4 border-t pt-4">
+                    <button type="button" id="btn-toggle-auth" class="text-sm text-emerald-600 hover:text-emerald-800 font-medium transition">
+                        Belum punya akun? Daftar disini
+                    </button>
+                </div>
+            </form>
+            <div id="auth-status" class="mt-4 text-center text-sm hidden"></div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-emerald-800 text-white w-64 flex-shrink-0 flex flex-col transition-all duration-300 hidden md:flex">
+        <div class="p-6 flex items-center space-x-3 border-b border-emerald-700">
+            <i class="fas fa-hand-holding-heart text-2xl"></i>
+            <span class="text-xl font-bold tracking-wider">DonasiApp</span>
+        </div>
+        <div class="p-4 text-sm text-emerald-200 border-b border-emerald-700">
+            <i class="fas fa-user-circle mr-2"></i> <span id="cs-email-display" class="truncate inline-block align-middle w-40">Email CS</span>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="navigate('transaksi')" id="nav-transaksi" class="w-full flex items-center space-x-3 px-4 py-3 bg-emerald-900 rounded-lg transition">
+                <i class="fas fa-file-invoice-dollar w-5"></i>
+                <span>Input Transaksi</span>
+            </button>
+            <button onclick="navigate('data-transaksi')" id="nav-data-transaksi" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg transition">
+                <i class="fas fa-list-alt w-5"></i>
+                <span>Data Transaksi</span>
+            </button>
+            <button onclick="navigate('data-donatur')" id="nav-data-donatur" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg transition">
+                <i class="fas fa-users w-5"></i>
+                <span>Data Donatur</span>
+            </button>
+            <button onclick="navigate('pengaturan')" id="nav-pengaturan" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg transition">
+                <i class="fas fa-cog w-5"></i>
+                <span>Pengaturan & CSV</span>
+            </button>
+        </nav>
+        <div class="p-4 border-t border-emerald-700">
+            <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-red-600 rounded-lg transition text-white">
+                <i class="fas fa-sign-out-alt w-5"></i>
+                <span>Keluar</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen relative hidden" id="main-app">
+        <!-- Mobile Header -->
+        <header class="bg-white shadow-sm md:hidden p-4 flex justify-between items-center z-10">
+            <div class="flex items-center space-x-2 text-emerald-700">
+                <i class="fas fa-hand-holding-heart text-xl"></i>
+                <span class="font-bold text-lg">DonasiApp</span>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-emerald-800 z-30 flex flex-col hidden transform transition-transform text-white">
+            <div class="p-4 flex justify-between items-center border-b border-emerald-700">
+                <span class="font-bold text-lg">Menu</span>
+                <button onclick="toggleMobileMenu()" class="text-emerald-200 hover:text-white">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-4 text-sm text-emerald-200 border-b border-emerald-700 bg-emerald-900">
+                <i class="fas fa-user-circle mr-2"></i> <span id="cs-email-display-mobile">Email CS</span>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="navigate('transaksi'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 bg-emerald-900 rounded-lg">
+                    <i class="fas fa-file-invoice-dollar w-5"></i><span>Input Transaksi</span>
+                </button>
+                <button onclick="navigate('data-transaksi'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
+                    <i class="fas fa-list-alt w-5"></i><span>Data Transaksi</span>
+                </button>
+                <button onclick="navigate('data-donatur'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
+                    <i class="fas fa-users w-5"></i><span>Data Donatur</span>
+                </button>
+                <button onclick="navigate('pengaturan'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
+                    <i class="fas fa-cog w-5"></i><span>Pengaturan & CSV</span>
+                </button>
+                <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-600 rounded-lg text-left mt-8">
+                    <i class="fas fa-sign-out-alt w-5"></i><span>Keluar</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+            
+            <!-- VIEW: INPUT TRANSAKSI -->
+            <div id="view-transaksi" class="fade-in max-w-4xl mx-auto">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>Input Transaksi Baru</h2>
+                    </div>
+                    <div class="p-6">
+                        <form id="form-transaksi" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Tanggal -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Transaksi</label>
+                                <input type="date" id="t-tanggal" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+                            </div>
+
+                            <!-- ID Donatur -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ID Donatur</label>
+                                <div class="relative">
+                                    <input type="text" id="t-id" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none uppercase" placeholder="Contoh: DON-001" autocomplete="off" list="donor-list">
+                                    <datalist id="donor-list"></datalist>
+                                    <p class="text-xs text-emerald-600 mt-1"><i class="fas fa-info-circle"></i> Ketik ID untuk auto-fill data donatur lama.</p>
+                                </div>
+                            </div>
+
+                            <!-- Sapaan -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sapaan</label>
+                                <select id="t-sapaan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+                                    <option value="" disabled selected>Pilih Sapaan</option>
+                                    <option value="Bapak">Bapak</option>
+                                    <option value="Ibu">Ibu</option>
+                                    <option value="Sdr">Sdr</option>
+                                    <option value="Sdri">Sdri</option>
+                                    <option value="Hamba Allah">Hamba Allah</option>
+                                </select>
+                            </div>
+
+                            <!-- Nama Panggilan -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Panggilan</label>
+                                <input type="text" id="t-panggilan" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: Budi">
+                            </div>
+
+                            <!-- Nama Lengkap -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <input type="text" id="t-lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: Budi Santoso">
+                            </div>
+
+                            <!-- WhatsApp -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
+                                <input type="tel" id="t-wa" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: 08123456789">
+                            </div>
+
+                            <!-- Jumlah -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Donasi (Rp)</label>
+                                <input type="number" id="t-jumlah" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: 500000" min="1">
+                            </div>
+
+                            <!-- Rekening Tujuan -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Rekening Tujuan</label>
+                                <select id="t-rekening" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+                                    <option value="" disabled selected>Pilih Rekening</option>
+                                    <option value="BSI - 123456789">BSI - 123456789</option>
+                                    <option value="Mandiri - 987654321">Mandiri - 987654321</option>
+                                    <option value="BCA - 1122334455">BCA - 1122334455</option>
+                                    <option value="Tunai">Tunai / Kasir</option>
+                                </select>
+                            </div>
+
+                            <!-- Program -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Program Donasi</label>
+                                <select id="t-program" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+                                    <option value="" disabled selected>Pilih Program</option>
+                                    <option value="Sedekah Subuh">Sedekah Subuh</option>
+                                    <option value="Zakat Maal">Zakat Maal</option>
+                                    <option value="Pembangunan Masjid">Pembangunan Masjid</option>
+                                    <option value="Bantuan Kemanusiaan">Bantuan Kemanusiaan</option>
+                                    <option value="Infaq Umum">Infaq Umum</option>
+                                </select>
+                            </div>
+
+                            <!-- Foto Bukti -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Foto Bukti Transfer <span class="text-red-500">*</span></label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 transition relative">
+                                    <div class="space-y-1 text-center">
+                                        <i class="fas fa-image text-3xl text-gray-400 mb-2" id="preview-icon"></i>
+                                        <img id="image-preview" class="hidden mx-auto h-32 object-cover rounded-md mb-2 shadow-sm">
+                                        <div class="flex text-sm text-gray-600 justify-center">
+                                            <label for="t-foto" class="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none px-2 py-1 border border-emerald-200">
+                                                <span>Pilih File Gambar</span>
+                                                <input id="t-foto" name="t-foto" type="file" class="sr-only" accept="image/*" required onchange="previewImage(event)">
+                                            </label>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-2">PNG, JPG up to 5MB</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="md:col-span-2 mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                                <button type="submit" id="btn-submit-transaksi" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-200 flex items-center justify-center">
+                                    <i class="fas fa-paper-plane mr-2"></i> <span>Kirim & Simpan Data</span>
+                                    <i id="submit-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: DATA TRANSAKSI -->
+            <div id="view-data-transaksi" class="fade-in hidden h-full flex flex-col">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-list-alt text-emerald-600 mr-2"></i>Riwayat Transaksi</h2>
+                    </div>
+                    <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
+                        <table class="w-full min-w-[600px] text-left border-collapse">
+                            <thead class="bg-gray-50 text-gray-600 text-sm sticky top-0 shadow-sm z-10">
+                                <tr>
+                                    <th class="py-3 px-4 border-b">Tanggal</th>
+                                    <th class="py-3 px-4 border-b">ID Donatur</th>
+                                    <th class="py-3 px-4 border-b">Nama Lengkap</th>
+                                    <th class="py-3 px-4 border-b">Program</th>
+                                    <th class="py-3 px-4 border-b text-right">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-transaksi-body" class="text-sm divide-y divide-gray-100">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                        <div id="empty-transaksi" class="hidden flex flex-col items-center justify-center p-12 text-gray-500">
+                            <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
+                            <p>Belum ada data transaksi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: DATA DONATUR -->
+            <div id="view-data-donatur" class="fade-in hidden h-full flex flex-col">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-users text-emerald-600 mr-2"></i>Database Donatur</h2>
+                        <div class="relative w-full md:w-auto">
+                            <input type="text" id="search-donatur" placeholder="Cari donatur..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 outline-none md:w-64" onkeyup="filterDonatur()">
+                            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
+                        <table class="w-full min-w-[600px] text-left border-collapse">
+                            <thead class="bg-gray-50 text-gray-600 text-sm sticky top-0 shadow-sm z-10">
+                                <tr>
+                                    <th class="py-3 px-4 border-b">ID Donatur</th>
+                                    <th class="py-3 px-4 border-b">Nama Lengkap</th>
+                                    <th class="py-3 px-4 border-b">WhatsApp</th>
+                                    <th class="py-3 px-4 border-b">Total Transaksi (Kali)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-donatur-body" class="text-sm divide-y divide-gray-100">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                        <div id="empty-donatur" class="hidden flex flex-col items-center justify-center p-12 text-gray-500">
+                            <i class="fas fa-users-slash text-4xl mb-3 text-gray-300"></i>
+                            <p>Belum ada data donatur.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: PENGATURAN -->
+            <div id="view-pengaturan" class="fade-in hidden max-w-2xl mx-auto pb-10">
+                <!-- Pengaturan Telegram -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-cog text-emerald-600 mr-2"></i>Pengaturan Integrasi Telegram</h2>
+                        <p class="text-sm text-gray-500 mt-1">Konfigurasi bot agar laporan dapat terkirim ke Grup Telegram otomatis.</p>
+                    </div>
+                    <div class="p-6">
+                        <form id="form-pengaturan" class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Bot Token</label>
+                                <input type="text" id="tg-token" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-sm" value="8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo" placeholder="1234567890:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Chat ID Grup</label>
+                                <input type="text" id="tg-chatid" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-sm" value="-5029904911" placeholder="-100123456789">
+                            </div>
+                            <div class="pt-2 flex justify-end">
+                                <button type="submit" class="w-full md:w-auto bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition">
+                                    Simpan Perubahan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Pengaturan Manajemen Data CSV -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-database text-emerald-600 mr-2"></i>Manajemen Data (CSV)</h2>
+                        <p class="text-sm text-gray-500 mt-1">Ekspor riwayat data atau impor donatur baru secara massal via file Excel/CSV.</p>
+                    </div>
+                    <div class="p-6 space-y-8">
+                        
+                        <!-- Ekspor -->
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 mb-3 border-b pb-2">1. Ekspor Data (Download)</h3>
+                            <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                                <button onclick="exportCSV('donatur')" class="bg-white border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-medium py-2 px-4 rounded-lg transition flex items-center justify-center">
+                                    <i class="fas fa-download mr-2"></i> Download Data Donatur
+                                </button>
+                                <button onclick="exportCSV('transaksi')" class="bg-white border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-medium py-2 px-4 rounded-lg transition flex items-center justify-center">
+                                    <i class="fas fa-download mr-2"></i> Download Data Transaksi
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Impor -->
+                        <div>
+                            <h3 class="text-md font-medium text-gray-800 mb-3 border-b pb-2">2. Impor Data Transaksi (Upload CSV)</h3>
+                            
+                            <!-- Keterangan Format CSV -->
+                            <div class="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm mb-4 mt-4">
+                                <p class="font-bold mb-2"><i class="fas fa-info-circle mr-1"></i> Syarat Format File .csv :</p>
+                                <ul class="list-disc ml-5 mb-3 space-y-1">
+                                    <li>Pastikan baris pertama (Header) sama persis dengan kotak hijau di bawah.</li>
+                                    <li>Pisahkan antar kolom menggunakan <b>koma ( , )</b>.</li>
+                                    <li>Jangan ada tanda koma ( , ) di dalam tulisan Nama, Rekening, Program, atau teks lainnya.</li>
+                                </ul>
+                                
+                                <p class="font-semibold mt-4 mb-1">Contoh Isi File CSV:</p>
+                                <div class="bg-white p-3 rounded border border-blue-200 overflow-x-auto">
+<pre class="font-mono text-xs text-gray-700 m-0">
+<span class="text-emerald-700 font-bold">tanggal,donorId,sapaan,namaPanggilan,namaLengkap,whatsapp,jumlah,rekening,program</span>
+2023-10-25,DON-001,Bapak,Budi,Budi Santoso,08123456789,500000,BSI - 123456789,Sedekah Subuh
+2023-10-26,DON-002,Ibu,Siti,Siti Aminah,08987654321,200000,Mandiri - 987654321,Infaq Umum
+</pre>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row items-center gap-3">
+                                <input type="file" id="csv-file" accept=".csv" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-gray-300 rounded-lg cursor-pointer bg-white">
+                                <button onclick="importCSV()" id="btn-import" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-6 rounded-lg transition whitespace-nowrap flex items-center justify-center">
+                                    <i class="fas fa-upload mr-2"></i> Mulai Impor
+                                    <i id="import-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Firebase Milik Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1Xpv4DKBI4zBHFNjKwZKeWlR0sfTwacs",
+            authDomain: "aplikasicsbaru.firebaseapp.com",
+            projectId: "aplikasicsbaru",
+            storageBucket: "aplikasicsbaru.firebasestorage.app",
+            messagingSenderId: "834050411409",
+            appId: "1:834050411409:web:5d89c9944337054b8fe830"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global Variables
+        let user = null;
+        let userId = null;
+        let csEmail = '';
+        let allDonors = [];
+        let allTransactions = [];
+        let isLoginMode = true;
+        
+        let tgSettings = { 
+            token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', 
+            chatId: '-5029904911' 
+        };
+
+        // UI Elements
+        const loginScreen = document.getElementById('login-screen');
+        const mainApp = document.getElementById('main-app');
+        const authStatus = document.getElementById('auth-status');
+        const csEmailDisplay = document.getElementById('cs-email-display');
+        const csEmailDisplayMobile = document.getElementById('cs-email-display-mobile');
+
+        // Listen for Auth changes
+        onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                user = currentUser;
+                userId = currentUser.uid;
+                csEmail = currentUser.email; 
+                
+                loginScreen.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+                
+                csEmailDisplay.textContent = csEmail;
+                csEmailDisplayMobile.textContent = csEmail;
+                document.getElementById('t-tanggal').valueAsDate = new Date();
+
+                setupDataListeners();
+            } else {
+                user = null;
+                userId = null;
+                csEmail = '';
+                
+                loginScreen.classList.remove('hidden');
+                mainApp.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('btn-toggle-auth').addEventListener('click', (e) => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('form-title').textContent = isLoginMode ? 'Login CS' : 'Daftar CS Baru';
+            document.getElementById('login-text').textContent = isLoginMode ? 'Masuk Sekarang' : 'Daftar Sekarang';
+            e.target.textContent = isLoginMode ? 'Belum punya akun? Daftar disini' : 'Sudah punya akun? Masuk disini';
+            authStatus.classList.add('hidden');
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('cs-email').value.trim();
+            const password = document.getElementById('cs-password').value;
+            const btn = document.getElementById('btn-login');
+            const spinner = document.getElementById('login-spinner');
+            
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            authStatus.classList.remove('hidden');
+            authStatus.textContent = isLoginMode ? "Sedang memverifikasi..." : "Sedang membuat akun...";
+            authStatus.className = "mt-4 text-center text-sm font-medium text-emerald-600 block";
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                
+                let errorMsg = "Terjadi kesalahan.";
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+                    errorMsg = "Email atau Password salah!";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    errorMsg = "Email sudah terdaftar. Silakan login.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMsg = "Password minimal 6 karakter.";
+                }
+
+                authStatus.textContent = errorMsg;
+                authStatus.className = "mt-4 text-center text-sm font-medium text-red-500 block";
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+            }
+        });
+
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Error signing out: ", error);
+            }
+        }
+
+        // Setup Data Listeners
+        function setupDataListeners() {
+            if (!user) return;
+
+            const settingsRef = doc(db, 'users', userId, 'settings', 'telegram');
+            getDoc(settingsRef).then((docSnap) => {
+                if(docSnap.exists()) {
+                    const data = docSnap.data();
+                    if(data.tgToken) tgSettings.token = data.tgToken;
+                    if(data.tgChatId) tgSettings.chatId = data.tgChatId;
+                }
+                document.getElementById('tg-token').value = tgSettings.token;
+                document.getElementById('tg-chatid').value = tgSettings.chatId;
+            }).catch(console.error);
+
+            const donaturRef = collection(db, 'users', userId, 'donors');
+            onSnapshot(donaturRef, (snapshot) => {
+                allDonors = [];
+                const datalist = document.getElementById('donor-list');
+                datalist.innerHTML = '';
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    allDonors.push(data);
+                    
+                    const option = document.createElement('option');
+                    option.value = data.id;
+                    option.text = `${data.namaLengkap} - ${data.whatsapp}`;
+                    datalist.appendChild(option);
+                });
+                renderDonaturTable();
+            });
+
+            const transaksiRef = collection(db, 'users', userId, 'transactions');
+            onSnapshot(transaksiRef, (snapshot) => {
+                allTransactions = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    data.docId = doc.id;
+                    allTransactions.push(data);
+                });
+                allTransactions.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                renderTransaksiTable();
+            });
+        }
+
+        // Render Tables
+        function renderDonaturTable(filterText = '') {
+            const tbody = document.getElementById('table-donatur-body');
+            const emptyState = document.getElementById('empty-donatur');
+            tbody.innerHTML = '';
+
+            let filtered = allDonors;
+            if (filterText) {
+                const lowerFilter = filterText.toLowerCase();
+                filtered = allDonors.filter(d => 
+                    d.id.toLowerCase().includes(lowerFilter) || 
+                    d.namaLengkap.toLowerCase().includes(lowerFilter) ||
+                    d.whatsapp.toLowerCase().includes(lowerFilter)
+                );
+            }
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach(d => {
+                    const txCount = allTransactions.filter(t => t.donorId === d.id).length;
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 border-b font-medium text-emerald-700">${d.id}</td>
+                        <td class="py-3 px-4 border-b">${d.sapaan} ${d.namaLengkap} <br><span class="text-xs text-gray-500">Panggilan: ${d.namaPanggilan}</span></td>
+                        <td class="py-3 px-4 border-b">${d.whatsapp}</td>
+                        <td class="py-3 px-4 border-b">${txCount} Transaksi</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        window.filterDonatur = function() {
+            const text = document.getElementById('search-donatur').value;
+            renderDonaturTable(text);
+        }
+
+        function renderTransaksiTable() {
+            const tbody = document.getElementById('table-transaksi-body');
+            const emptyState = document.getElementById('empty-transaksi');
+            tbody.innerHTML = '';
+
+            if (allTransactions.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                allTransactions.forEach(t => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    
+                    const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                    const jumlahFormat = formatter.format(t.jumlah);
+
+                    const dateObj = new Date(t.tanggal);
+                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 border-b whitespace-nowrap">${tglFormat}</td>
+                        <td class="py-3 px-4 border-b font-medium">${t.donorId}</td>
+                        <td class="py-3 px-4 border-b">${t.namaLengkap}</td>
+                        <td class="py-3 px-4 border-b"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">${t.program}</span></td>
+                        <td class="py-3 px-4 border-b text-right font-semibold text-emerald-600">${jumlahFormat}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            renderDonaturTable(document.getElementById('search-donatur').value);
+        }
+
+        document.getElementById('t-id').addEventListener('input', (e) => {
+            const val = e.target.value.toUpperCase();
+            e.target.value = val; 
+            
+            const found = allDonors.find(d => d.id === val);
+            if(found) {
+                document.getElementById('t-sapaan').value = found.sapaan;
+                document.getElementById('t-panggilan').value = found.namaPanggilan;
+                document.getElementById('t-lengkap').value = found.namaLengkap;
+                document.getElementById('t-wa').value = found.whatsapp;
+            }
+        });
+
+        // Simpan Settings Telegram
+        document.getElementById('form-pengaturan').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!user) return;
+
+            const token = document.getElementById('tg-token').value.trim();
+            const chatId = document.getElementById('tg-chatid').value.trim();
+
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btn.disabled = true;
+
+            try {
+                const settingsRef = doc(db, 'users', userId, 'settings', 'telegram');
+                await setDoc(settingsRef, { tgToken: token, tgChatId: chatId }, { merge: true });
+                tgSettings.token = token;
+                tgSettings.chatId = chatId;
+                showToast("Pengaturan Telegram berhasil diperbarui", "success");
+            } catch (error) {
+                console.error("Error saving settings:", error);
+                showToast("Gagal menyimpan pengaturan", "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Form Submit Transaksi
+        document.getElementById('form-transaksi').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!user) return;
+
+            if(!tgSettings.token || !tgSettings.chatId) {
+                showToast("Harap cek Pengaturan Telegram!", "error");
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btn-submit-transaksi');
+            const spinner = document.getElementById('submit-spinner');
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-70');
+            spinner.classList.remove('hidden');
+
+            try {
+                const tgl = document.getElementById('t-tanggal').value;
+                const idDonatur = document.getElementById('t-id').value.toUpperCase();
+                const sapaan = document.getElementById('t-sapaan').value;
+                const panggilan = document.getElementById('t-panggilan').value;
+                const lengkap = document.getElementById('t-lengkap').value;
+                const wa = document.getElementById('t-wa').value;
+                const jumlah = document.getElementById('t-jumlah').value;
+                const rekening = document.getElementById('t-rekening').value;
+                const program = document.getElementById('t-program').value;
+                const fotoFile = document.getElementById('t-foto').files[0];
+
+                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                const jmlFormatted = formatter.format(jumlah);
+                const tglObj = new Date(tgl);
+                const tglString = tglObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+                const caption = `🔔 *INFO DONASI BARU* 🔔\n\n` +
+                                `📅 *Tanggal:* ${tglString}\n` +
+                                `🆔 *ID Donatur:* \`${idDonatur}\`\n` +
+                                `👤 *Nama:* ${sapaan} ${lengkap} (${panggilan})\n` +
+                                `📱 *WhatsApp:* ${wa}\n` +
+                                `💰 *Jumlah:* ${jmlFormatted}\n` +
+                                `💳 *Rekening:* ${rekening}\n` +
+                                `📦 *Program:* ${program}\n\n` +
+                                `👩‍💻 *CS Input:* ${csEmail}`;
+
+                const tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendPhoto`;
+                const formData = new FormData();
+                formData.append('chat_id', tgSettings.chatId);
+                formData.append('photo', fotoFile);
+                formData.append('caption', caption);
+                formData.append('parse_mode', 'Markdown');
+
+                const tgResponse = await fetch(tgUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const tgResult = await tgResponse.json();
+                
+                if (!tgResult.ok) {
+                    throw new Error(`Telegram Error: ${tgResult.description}`);
+                }
+
+                // Simpan ke Firestore
+                const txId = Date.now().toString(); 
+                const transRef = doc(db, 'users', userId, 'transactions', txId);
+                await setDoc(transRef, {
+                    tanggal: tgl,
+                    donorId: idDonatur,
+                    sapaan: sapaan,
+                    namaPanggilan: panggilan,
+                    namaLengkap: lengkap,
+                    whatsapp: wa,
+                    jumlah: parseInt(jumlah),
+                    rekening: rekening,
+                    program: program,
+                    csEmail: csEmail,
+                    timestamp: serverTimestamp()
+                });
+
+                const donaturRef = doc(db, 'users', userId, 'donors', idDonatur);
+                await setDoc(donaturRef, {
+                    sapaan: sapaan,
+                    namaPanggilan: panggilan,
+                    namaLengkap: lengkap,
+                    whatsapp: wa,
+                    lastUpdated: serverTimestamp()
+                }, { merge: true });
+
+                showToast("Transaksi berhasil dikirim ke Telegram!", "success");
+                
+                document.getElementById('form-transaksi').reset();
+                document.getElementById('t-tanggal').valueAsDate = new Date();
+                document.getElementById('image-preview').classList.add('hidden');
+                document.getElementById('preview-icon').classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                showToast(error.message || "Terjadi kesalahan sistem", "error");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-70');
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // ----------------------------------------------------
+        // FITUR EXPORT / IMPORT CSV
+        // ----------------------------------------------------
+        
+        // Export Logic
+        window.exportCSV = function(type) {
+            if(!user) return;
+            
+            let csvContent = "";
+            let filename = "";
+
+            if (type === 'donatur') {
+                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp\n";
+                allDonors.forEach(d => {
+                    // Escape data (just in case they have commas)
+                    const nm = d.namaLengkap.replace(/"/g, '""');
+                    csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp}\n`;
+                });
+                filename = "data_donatur.csv";
+            } else if (type === 'transaksi') {
+                csvContent += "docId,tanggal,donorId,sapaan,namaPanggilan,namaLengkap,whatsapp,jumlah,rekening,program,csEmail\n";
+                allTransactions.forEach(t => {
+                    const nm = t.namaLengkap.replace(/"/g, '""');
+                    csvContent += `${t.docId},${t.tanggal},${t.donorId},${t.sapaan},${t.namaPanggilan},"${nm}",${t.whatsapp},${t.jumlah},"${t.rekening}","${t.program}",${t.csEmail}\n`;
+                });
+                filename = "data_transaksi.csv";
+            }
+
+            // Gunakan Blob agar lebih aman format teksnya di berbagai perangkat
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Import Logic
+        window.importCSV = async function() {
+            if(!user) return;
+            const fileInput = document.getElementById('csv-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast("Pilih file CSV terlebih dahulu", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btn-import');
+            const spinner = document.getElementById('import-spinner');
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                
+                if (lines.length < 2) {
+                    showToast("Format CSV kosong atau salah", "error");
+                    resetImportUI(btn, spinner, fileInput);
+                    return;
+                }
+
+                // Cek Validitas Header CSV Transaksi
+                const header = lines[0].toLowerCase().replace(/\r/g, '').split(',');
+                if (!header.includes('tanggal') || !header.includes('donorid') || !header.includes('jumlah')) {
+                    showToast("Format Header kolom tidak sesuai sample!", "error");
+                    resetImportUI(btn, spinner, fileInput);
+                    return;
+                }
+
+                try {
+                    // Gunakan Batch Write agar proses simpan massal lebih cepat
+                    const batch = writeBatch(db);
+                    let count = 0;
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].replace(/\r/g, '');
+                        if (!line.trim()) continue; // Skip baris kosong
+
+                        const values = line.split(',');
+                        if (values.length >= 9) {
+                            const tanggal = values[0].trim();
+                            const donorId = values[1].trim().toUpperCase();
+                            const sapaan = values[2].trim();
+                            const namaPanggilan = values[3].trim();
+                            const namaLengkap = values[4].replace(/"/g, '').trim();
+                            const whatsapp = values[5].trim();
+                            const jumlah = parseInt(values[6].replace(/"/g, '').trim()) || 0;
+                            const rekening = values[7].replace(/"/g, '').trim();
+                            const program = values[8].replace(/"/g, '').trim();
+                            
+                            // 1. Simpan Transaksi
+                            const txId = Date.now().toString() + count;
+                            const transRef = doc(db, 'users', userId, 'transactions', txId);
+                            batch.set(transRef, {
+                                tanggal: tanggal,
+                                donorId: donorId,
+                                sapaan: sapaan,
+                                namaPanggilan: namaPanggilan,
+                                namaLengkap: namaLengkap,
+                                whatsapp: whatsapp,
+                                jumlah: jumlah,
+                                rekening: rekening,
+                                program: program,
+                                csEmail: csEmail,
+                                timestamp: serverTimestamp()
+                            });
+                            
+                            // 2. Simpan/Update profil donatur agar data di tab 'Data Donatur' ikut sinkron
+                            const donaturRef = doc(db, 'users', userId, 'donors', donorId);
+                            batch.set(donaturRef, {
+                                sapaan: sapaan,
+                                namaPanggilan: namaPanggilan,
+                                namaLengkap: namaLengkap,
+                                whatsapp: whatsapp,
+                                lastUpdated: serverTimestamp()
+                            }, { merge: true });
+                            
+                            count++;
+                        }
+                    }
+
+                    if (count > 0) {
+                        await batch.commit();
+                        showToast(`${count} data transaksi berhasil diimpor!`, "success");
+                    } else {
+                        showToast("Tidak ada data baris yang valid untuk diimpor", "error");
+                    }
+                } catch (err) {
+                    console.error("Error import:", err);
+                    showToast("Terjadi kesalahan sistem saat impor", "error");
+                } finally {
+                    resetImportUI(btn, spinner, fileInput);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetImportUI(btn, spinner, fileInput) {
+            btn.disabled = false;
+            spinner.classList.add('hidden');
+            fileInput.value = '';
+        }
+
+    </script>
+
+    <!-- General UI JS -->
+    <script>
+        const views = ['view-transaksi', 'view-data-transaksi', 'view-data-donatur', 'view-pengaturan'];
+        const navIds = ['nav-transaksi', 'nav-data-transaksi', 'nav-data-donatur', 'nav-pengaturan'];
+
+        function navigate(viewName) {
+            views.forEach(v => {
+                document.getElementById(v).classList.add('hidden');
+            });
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+            navIds.forEach(n => {
+                const el = document.getElementById(n);
+                if (n === `nav-${viewName}`) {
+                    el.classList.remove('hover:bg-emerald-700');
+                    el.classList.add('bg-emerald-900');
+                } else {
+                    el.classList.add('hover:bg-emerald-700');
+                    el.classList.remove('bg-emerald-900');
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('image-preview');
+            const icon = document.getElementById('preview-icon');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    icon.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.classList.add('hidden');
+                icon.classList.remove('hidden');
+            }
+        }
+
+        let toastTimeout;
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            
+            toast.className = `fixed top-5 right-5 transform transition-transform duration-300 z-50 flex items-center p-4 mb-4 text-white rounded-lg shadow-lg ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`;
+            
+            if(type === 'success') {
+                iconEl.className = "fas fa-check text-emerald-600";
+                iconEl.parentElement.className = "inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white";
+            } else {
+                iconEl.className = "fas fa-exclamation-triangle text-red-500";
+                iconEl.parentElement.className = "inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white";
+            }
+
+            toast.classList.remove('translate-x-full');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                hideToast();
+            }, 4000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('translate-x-full');
+        }
+    </script>
+</body>
+</html>
