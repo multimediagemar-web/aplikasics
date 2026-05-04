@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        html { font-size: 12px; }
+        html { font-size: 12px; transition: font-size 0.3s ease; }
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -225,10 +225,6 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Rekening Tujuan</label>
                                 <select id="t-rekening" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Rekening</option>
-                                    <option value="BSI - 123456789">BSI - 123456789</option>
-                                    <option value="Mandiri - 987654321">Mandiri - 987654321</option>
-                                    <option value="BCA - 1122334455">BCA - 1122334455</option>
-                                    <option value="Tunai">Tunai / Kasir</option>
                                 </select>
                             </div>
 
@@ -237,11 +233,6 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Program Donasi</label>
                                 <select id="t-program" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Program</option>
-                                    <option value="Sedekah Subuh">Sedekah Subuh</option>
-                                    <option value="Zakat Maal">Zakat Maal</option>
-                                    <option value="Pembangunan Masjid">Pembangunan Masjid</option>
-                                    <option value="Bantuan Kemanusiaan">Bantuan Kemanusiaan</option>
-                                    <option value="Infaq Umum">Infaq Umum</option>
                                 </select>
                             </div>
 
@@ -278,8 +269,17 @@
             <!-- VIEW: DATA TRANSAKSI -->
             <div id="view-data-transaksi" class="fade-in hidden h-full flex flex-col">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-list-alt text-emerald-600 mr-2"></i>Riwayat Transaksi</h2>
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <h2 class="text-lg font-semibold text-gray-800 whitespace-nowrap"><i class="fas fa-list-alt text-emerald-600 mr-2"></i>Riwayat Transaksi</h2>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <div class="relative flex-1 md:w-64">
+                                <input type="text" id="search-transaksi" placeholder="Cari ID, Nama, Program..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 outline-none" onkeyup="filterTransaksi()">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                            </div>
+                            <button onclick="showFilterModal('transaksi')" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition flex items-center justify-center whitespace-nowrap shadow-sm">
+                                <i class="fas fa-filter md:mr-2"></i> <span class="hidden md:inline">Filter & Urutkan</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
                         <table class="w-full min-w-[600px] text-left border-collapse">
@@ -298,7 +298,7 @@
                         </table>
                         <div id="empty-transaksi" class="hidden flex flex-col items-center justify-center p-12 text-gray-500">
                             <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
-                            <p>Belum ada data transaksi.</p>
+                            <p>Tidak ada data ditemukan.</p>
                         </div>
                     </div>
                     <!-- Pagination Transaksi -->
@@ -328,10 +328,15 @@
             <div id="view-data-donatur" class="fade-in hidden h-full flex flex-col">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-users text-emerald-600 mr-2"></i>Database Donatur</h2>
-                        <div class="relative w-full md:w-auto">
-                            <input type="text" id="search-donatur" placeholder="Cari donatur..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 outline-none md:w-64" onkeyup="filterDonatur()">
-                            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                        <h2 class="text-lg font-semibold text-gray-800 whitespace-nowrap"><i class="fas fa-users text-emerald-600 mr-2"></i>Database Donatur</h2>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <div class="relative flex-1 md:w-64">
+                                <input type="text" id="search-donatur" placeholder="Cari donatur..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 outline-none" onkeyup="filterDonatur()">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                            </div>
+                            <button onclick="showFilterModal('donatur')" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition flex items-center justify-center whitespace-nowrap shadow-sm">
+                                <i class="fas fa-filter md:mr-2"></i> <span class="hidden md:inline">Filter & Urutkan</span>
+                            </button>
                         </div>
                     </div>
                     <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
@@ -350,7 +355,7 @@
                         </table>
                         <div id="empty-donatur" class="hidden flex flex-col items-center justify-center p-12 text-gray-500">
                             <i class="fas fa-users-slash text-4xl mb-3 text-gray-300"></i>
-                            <p>Belum ada data donatur.</p>
+                            <p>Tidak ada data ditemukan.</p>
                         </div>
                     </div>
                     <!-- Pagination Donatur -->
@@ -380,30 +385,52 @@
             <div id="view-pengaturan" class="fade-in hidden max-w-4xl mx-auto pb-10 space-y-6">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Pengaturan Profil CS -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                            <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-id-badge text-emerald-600 mr-2"></i>Profil CS</h2>
+                    <!-- Pengaturan Tampilan & Profil -->
+                    <div class="space-y-6">
+                        <!-- Pengaturan Tampilan -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                                <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-font text-emerald-600 mr-2"></i>Tampilan Aplikasi</h2>
+                            </div>
+                            <div class="p-6">
+                                <form id="form-tampilan" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ukuran Font Dasar (px)</label>
+                                        <input type="number" id="set-font-size" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" min="10" max="20" value="12">
+                                        <p class="text-xs text-gray-500 mt-1">Ubah ukuran teks, tabel, dan form aplikasi (Default: 12px).</p>
+                                    </div>
+                                    <div class="pt-2 flex justify-end">
+                                        <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition w-full md:w-auto">Simpan Ukuran</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <form id="form-profil-cs" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama CS</label>
-                                    <input type="text" id="set-nama-cs" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: Nisa">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kode CS</label>
-                                    <input type="text" id="set-kode-cs" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: CS-01">
-                                </div>
-                                <div class="pt-2 flex justify-end">
-                                    <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition w-full md:w-auto">Simpan Profil</button>
-                                </div>
-                            </form>
+
+                        <!-- Pengaturan Profil CS -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                                <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-id-badge text-emerald-600 mr-2"></i>Profil CS</h2>
+                            </div>
+                            <div class="p-6">
+                                <form id="form-profil-cs" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama CS</label>
+                                        <input type="text" id="set-nama-cs" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: Nisa">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Kode CS</label>
+                                        <input type="text" id="set-kode-cs" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: CS-01">
+                                    </div>
+                                    <div class="pt-2 flex justify-end">
+                                        <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition w-full md:w-auto">Simpan Profil</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Pengaturan Telegram -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-max">
                         <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
                             <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-paper-plane text-emerald-600 mr-2"></i>Bot Telegram</h2>
                         </div>
@@ -436,7 +463,7 @@
                                 <input type="text" id="input-new-rekening" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Cth: BSI - 123456789">
                                 <button onclick="tambahItem('rekening')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus"></i></button>
                             </div>
-                            <ul id="list-rekening-ui" class="space-y-2">
+                            <ul id="list-rekening-ui" class="space-y-2 max-h-48 overflow-y-auto">
                                 <!-- Diisi JS -->
                             </ul>
                         </div>
@@ -452,7 +479,7 @@
                                 <input type="text" id="input-new-program" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Cth: Sedekah Subuh">
                                 <button onclick="tambahItem('program')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus"></i></button>
                             </div>
-                            <ul id="list-program-ui" class="space-y-2">
+                            <ul id="list-program-ui" class="space-y-2 max-h-48 overflow-y-auto">
                                 <!-- Diisi JS -->
                             </ul>
                         </div>
@@ -483,8 +510,6 @@
                         <!-- Impor -->
                         <div>
                             <h3 class="text-md font-medium text-gray-800 mb-3 border-b pb-2">2. Impor Data Transaksi (Upload CSV)</h3>
-                            
-                            <!-- Keterangan Format CSV -->
                             <div class="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm mb-4 mt-4">
                                 <p class="font-bold mb-2"><i class="fas fa-info-circle mr-1"></i> Syarat Format File .csv :</p>
                                 <ul class="list-disc ml-5 mb-3 space-y-1">
@@ -534,6 +559,57 @@
         </div>
     </main>
 
+    <!-- Modal Filter Transaksi -->
+    <div id="modal-filter-tx" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter & Urutkan</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Urutkan Berdasarkan</label>
+                    <select id="filter-tx-sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
+                        <option value="tanggal_desc">Tanggal (Terbaru - Terlama)</option>
+                        <option value="tanggal_asc">Tanggal (Terlama - Terbaru)</option>
+                        <option value="jumlah_desc">Nominal (Terbesar - Terkecil)</option>
+                        <option value="jumlah_asc">Nominal (Terkecil - Terbesar)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Filter Program</label>
+                    <select id="filter-tx-program" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
+                        <option value="all">Semua Program</option>
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="hideFilterModal('transaksi')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                <button onclick="applyFilterTransaksi()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Filter Donatur -->
+    <div id="modal-filter-dn" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-filter text-emerald-600 mr-2"></i>Urutkan Data</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Urutkan Berdasarkan</label>
+                    <select id="filter-dn-sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
+                        <option value="id_asc">ID Donatur (A - Z)</option>
+                        <option value="id_desc">ID Donatur (Z - A)</option>
+                        <option value="tx_desc">Transaksi (Terbanyak - Terdikit)</option>
+                        <option value="tx_asc">Transaksi (Terdikit - Terbanyak)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="hideFilterModal('donatur')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                <button onclick="applyFilterDonatur()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Reset Confirmation Modal -->
     <div id="reset-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden fade-in">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
@@ -544,8 +620,8 @@
                 <input type="text" id="reset-confirm-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 outline-none uppercase" placeholder="Ketik RESET disini">
             </div>
             <div class="flex justify-end space-x-3">
-                <button onclick="hideResetModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium">Batal</button>
-                <button onclick="executeResetData()" id="btn-execute-reset" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <button onclick="hideResetModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition font-medium text-sm">Batal</button>
+                <button onclick="executeResetData()" id="btn-execute-reset" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                     <i class="fas fa-trash-alt mr-2"></i> Hapus Data
                     <i id="reset-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
                 </button>
@@ -559,7 +635,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Konfigurasi Firebase Milik Anda
+        // Konfigurasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC1Xpv4DKBI4zBHFNjKwZKeWlR0sfTwacs",
             authDomain: "aplikasicsbaru.firebaseapp.com",
@@ -581,11 +657,15 @@
         let allTransactions = [];
         let isLoginMode = true;
         
-        // State Pagination
+        // State Pagination & Filter
         let donaturPage = 1;
         let donaturRows = 10;
+        let dnSortBy = 'id_asc';
+
         let transaksiPage = 1;
         let transaksiRows = 10;
+        let txSortBy = 'tanggal_desc';
+        let txProgramFilter = 'all';
         
         // Settings State
         let tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
@@ -675,7 +755,7 @@
         function setupDataListeners() {
             if (!user) return;
 
-            // 1. Settings General (Telegram, CS Profile, Rekening, Program)
+            // 1. Settings General
             const settingsRef = doc(db, 'users', userId, 'settings', 'general');
             onSnapshot(settingsRef, (docSnap) => {
                 if(docSnap.exists()) {
@@ -687,19 +767,22 @@
                     if(data.kodeCS) csProfile.kode = data.kodeCS;
                     if(data.rekening) arrRekening = data.rekening;
                     if(data.program) arrProgram = data.program;
+                    
+                    // Set Font Size directly on load if exists
+                    if(data.fontSize) {
+                        document.documentElement.style.fontSize = data.fontSize + 'px';
+                        document.getElementById('set-font-size').value = data.fontSize;
+                    }
                 }
                 
-                // Update UI Profil & Telegram
+                // Update UI Settings
                 document.getElementById('tg-token').value = tgSettings.token;
                 document.getElementById('tg-chatid').value = tgSettings.chatId;
                 document.getElementById('set-nama-cs').value = csProfile.nama;
                 document.getElementById('set-kode-cs').value = csProfile.kode;
 
-                // Update UI Dropdown List Input Transaksi
                 updateDropdownUI('t-rekening', arrRekening, 'Pilih Rekening');
                 updateDropdownUI('t-program', arrProgram, 'Pilih Program');
-
-                // Update UI List Pengaturan
                 updateSettingsListUI('list-rekening-ui', arrRekening, 'rekening');
                 updateSettingsListUI('list-program-ui', arrProgram, 'program');
             });
@@ -719,7 +802,7 @@
                     option.text = `${data.namaLengkap} - ${data.whatsapp}`;
                     datalist.appendChild(option);
                 });
-                renderDonaturTable();
+                window.renderDonaturTable();
             });
 
             // 3. Data Transaksi
@@ -731,8 +814,7 @@
                     data.docId = doc.id;
                     allTransactions.push(data);
                 });
-                allTransactions.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-                renderTransaksiTable();
+                window.renderTransaksiTable();
             });
         }
 
@@ -759,6 +841,22 @@
         }
 
         // FUNGSI SAVE SETTINGS
+        document.getElementById('form-tampilan').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btn.disabled = true;
+            try {
+                const size = document.getElementById('set-font-size').value;
+                await setDoc(doc(db, 'users', userId, 'settings', 'general'), { fontSize: parseInt(size) }, { merge: true });
+                document.documentElement.style.fontSize = size + 'px';
+                showToast("Pengaturan tampilan berhasil disimpan", "success");
+            } catch(e) { showToast("Gagal menyimpan", "error"); } finally {
+                btn.innerHTML = 'Simpan Ukuran';
+                btn.disabled = false;
+            }
+        });
+
         window.tambahItem = async function(type) {
             const inputEl = document.getElementById(type === 'rekening' ? 'input-new-rekening' : 'input-new-program');
             const val = inputEl.value.trim();
@@ -916,23 +1014,74 @@
         });
 
         // ----------------------------------------------------
-        // RENDER TABLES & CSV LOGIC
+        // RENDER TABLES, PAGINATION & FILTERS
         // ----------------------------------------------------
-        function renderDonaturTable(filterText = '') {
+
+        // Modals Filter Logic
+        window.showFilterModal = function(type) {
+            if (type === 'transaksi') {
+                const progSelect = document.getElementById('filter-tx-program');
+                progSelect.innerHTML = '<option value="all">Semua Program</option>';
+                arrProgram.forEach(p => {
+                    progSelect.innerHTML += `<option value="${p}" ${txProgramFilter === p ? 'selected' : ''}>${p}</option>`;
+                });
+                document.getElementById('filter-tx-sort').value = txSortBy;
+                document.getElementById('modal-filter-tx').classList.remove('hidden');
+            } else {
+                document.getElementById('filter-dn-sort').value = dnSortBy;
+                document.getElementById('modal-filter-dn').classList.remove('hidden');
+            }
+        }
+
+        window.hideFilterModal = function(type) {
+            if (type === 'transaksi') document.getElementById('modal-filter-tx').classList.add('hidden');
+            else document.getElementById('modal-filter-dn').classList.add('hidden');
+        }
+
+        window.applyFilterTransaksi = function() {
+            txSortBy = document.getElementById('filter-tx-sort').value;
+            txProgramFilter = document.getElementById('filter-tx-program').value;
+            window.hideFilterModal('transaksi');
+            window.filterTransaksi();
+        }
+
+        window.applyFilterDonatur = function() {
+            dnSortBy = document.getElementById('filter-dn-sort').value;
+            window.hideFilterModal('donatur');
+            window.filterDonatur();
+        }
+
+        // Render Donatur Table
+        window.renderDonaturTable = function() {
             const tbody = document.getElementById('table-donatur-body');
             const emptyState = document.getElementById('empty-donatur');
             tbody.innerHTML = '';
             
-            let filtered = allDonors;
+            // 1. Persiapkan data dan hitung transaksi
+            let filtered = allDonors.map(d => ({
+                ...d,
+                txCount: allTransactions.filter(t => t.donorId === d.id).length
+            }));
+
+            // 2. Pencarian
+            const filterText = document.getElementById('search-donatur').value.toLowerCase();
             if (filterText) {
-                const lowerFilter = filterText.toLowerCase();
-                filtered = allDonors.filter(d => 
-                    d.id.toLowerCase().includes(lowerFilter) || 
-                    d.namaLengkap.toLowerCase().includes(lowerFilter) ||
-                    d.whatsapp.toLowerCase().includes(lowerFilter)
+                filtered = filtered.filter(d => 
+                    d.id.toLowerCase().includes(filterText) || 
+                    d.namaLengkap.toLowerCase().includes(filterText) ||
+                    d.whatsapp.toLowerCase().includes(filterText)
                 );
             }
 
+            // 3. Sorting
+            filtered.sort((a, b) => {
+                if (dnSortBy === 'id_asc') return a.id.localeCompare(b.id);
+                if (dnSortBy === 'id_desc') return b.id.localeCompare(a.id);
+                if (dnSortBy === 'tx_desc') return b.txCount - a.txCount;
+                if (dnSortBy === 'tx_asc') return a.txCount - b.txCount;
+            });
+
+            // 4. Pagination
             const totalItems = filtered.length;
             const totalPages = Math.ceil(totalItems / donaturRows);
             if (donaturPage > totalPages && totalPages > 0) donaturPage = totalPages;
@@ -949,14 +1098,13 @@
             } else {
                 emptyState.classList.add('hidden');
                 paginatedItems.forEach(d => {
-                    const txCount = allTransactions.filter(t => t.donorId === d.id).length;
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-gray-50';
                     tr.innerHTML = `
                         <td class="py-3 px-4 border-b font-medium text-emerald-700">${d.id}</td>
                         <td class="py-3 px-4 border-b">${d.sapaan} ${d.namaLengkap} <br><span class="text-xs text-gray-500">Panggilan: ${d.namaPanggilan}</span></td>
                         <td class="py-3 px-4 border-b">${d.whatsapp}</td>
-                        <td class="py-3 px-4 border-b">${txCount} Transaksi</td>
+                        <td class="py-3 px-4 border-b">${d.txCount} Transaksi</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -968,33 +1116,60 @@
         }
 
         window.filterDonatur = function() {
-            donaturPage = 1; // Reset ke halaman 1 saat ada pencarian
-            renderDonaturTable(document.getElementById('search-donatur').value);
+            donaturPage = 1; 
+            window.renderDonaturTable();
         }
 
         window.changeDonaturPage = function(dir) {
             donaturPage += dir;
-            renderDonaturTable(document.getElementById('search-donatur').value);
+            window.renderDonaturTable();
         }
 
         window.changeDonaturRows = function() {
             donaturRows = parseInt(document.getElementById('donatur-rows').value);
             donaturPage = 1;
-            renderDonaturTable(document.getElementById('search-donatur').value);
+            window.renderDonaturTable();
         }
 
-        function renderTransaksiTable() {
+        // Render Transaksi Table
+        window.renderTransaksiTable = function() {
             const tbody = document.getElementById('table-transaksi-body');
             const emptyState = document.getElementById('empty-transaksi');
             tbody.innerHTML = '';
             
-            const totalItems = allTransactions.length;
+            let filteredTx = [...allTransactions];
+            
+            // 1. Pencarian
+            const searchText = document.getElementById('search-transaksi').value.toLowerCase();
+            if (searchText) {
+                filteredTx = filteredTx.filter(t => 
+                    t.donorId.toLowerCase().includes(searchText) ||
+                    t.namaLengkap.toLowerCase().includes(searchText) ||
+                    t.program.toLowerCase().includes(searchText)
+                );
+            }
+
+            // 2. Filter Program
+            if (txProgramFilter !== 'all') {
+                filteredTx = filteredTx.filter(t => t.program === txProgramFilter);
+            }
+
+            // 3. Sorting
+            filteredTx.sort((a, b) => {
+                if (txSortBy === 'tanggal_desc') return new Date(b.tanggal) - new Date(a.tanggal);
+                if (txSortBy === 'tanggal_asc') return new Date(a.tanggal) - new Date(b.tanggal);
+                if (txSortBy === 'jumlah_desc') return b.jumlah - a.jumlah;
+                if (txSortBy === 'jumlah_asc') return a.jumlah - b.jumlah;
+            });
+
+            // 4. Pagination
+            const totalItems = filteredTx.length;
             const totalPages = Math.ceil(totalItems / transaksiRows);
             if (transaksiPage > totalPages && totalPages > 0) transaksiPage = totalPages;
 
             const startIndex = (transaksiPage - 1) * transaksiRows;
             const endIndex = Math.min(startIndex + transaksiRows, totalItems);
-            const paginatedItems = allTransactions.slice(startIndex, endIndex);
+            const paginatedItems = filteredTx.slice(startIndex, endIndex);
 
             if (paginatedItems.length === 0) {
                 emptyState.classList.remove('hidden');
@@ -1023,18 +1198,26 @@
                 document.getElementById('btn-prev-transaksi').disabled = transaksiPage === 1;
                 document.getElementById('btn-next-transaksi').disabled = transaksiPage === totalPages;
             }
-            renderDonaturTable(document.getElementById('search-donatur').value);
+            // Sinkronisasi pembaruan count di tabel donatur (jika diperlukan)
+            if(document.getElementById('view-data-donatur').classList.contains('hidden') === false){
+                window.renderDonaturTable();
+            }
+        }
+
+        window.filterTransaksi = function() {
+            transaksiPage = 1;
+            window.renderTransaksiTable();
         }
 
         window.changeTransaksiPage = function(dir) {
             transaksiPage += dir;
-            renderTransaksiTable();
+            window.renderTransaksiTable();
         }
 
         window.changeTransaksiRows = function() {
             transaksiRows = parseInt(document.getElementById('transaksi-rows').value);
             transaksiPage = 1;
-            renderTransaksiTable();
+            window.renderTransaksiTable();
         }
 
         document.getElementById('t-id').addEventListener('input', (e) => {
@@ -1139,7 +1322,6 @@
                             count++;
                             operationsInBatch += 2;
 
-                            // Firebase limit is 500 ops per batch, so we commit and recreate at 400
                             if (operationsInBatch >= 400) {
                                 await batch.commit();
                                 batch = writeBatch(db);
@@ -1183,7 +1365,6 @@
         }
 
         resetInput.addEventListener('input', (e) => {
-            // Aktifkan tombol Hapus hanya jika user mengetik 'RESET'
             btnExecuteReset.disabled = e.target.value.toUpperCase() !== 'RESET';
         });
 
@@ -1198,7 +1379,6 @@
             try {
                 const BATCH_SIZE = 400;
 
-                // Hapus semua data di koleksi transaksi secara bertahap
                 const txSnapshot = await getDocs(collection(db, 'users', userId, 'transactions'));
                 const txDocs = txSnapshot.docs;
                 for (let i = 0; i < txDocs.length; i += BATCH_SIZE) {
@@ -1207,7 +1387,6 @@
                     await batch.commit();
                 }
 
-                // Hapus semua data di koleksi donatur secara bertahap
                 const donorSnapshot = await getDocs(collection(db, 'users', userId, 'donors'));
                 const donorDocs = donorSnapshot.docs;
                 for (let i = 0; i < donorDocs.length; i += BATCH_SIZE) {
@@ -1245,6 +1424,10 @@
                     el.classList.add('hover:bg-emerald-700'); el.classList.remove('bg-emerald-900');
                 }
             });
+
+            // Re-render saat membuka tab agar urutan & pagination tetap fresh
+            if(viewName === 'data-transaksi') window.renderTransaksiTable();
+            if(viewName === 'data-donatur') window.renderDonaturTable();
         }
 
         function toggleMobileMenu() {
