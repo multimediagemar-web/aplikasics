@@ -36,7 +36,6 @@
     <!-- Login Screen -->
     <div id="login-screen" class="fixed inset-0 bg-emerald-600 z-40 flex items-center justify-center fade-in">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 relative overflow-hidden">
-            <!-- Decorative shape -->
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-50 rounded-full opacity-50"></div>
             
             <div class="text-center mb-8 relative z-10">
@@ -102,7 +101,7 @@
             </button>
             <button onclick="navigate('pengaturan')" id="nav-pengaturan" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg transition">
                 <i class="fas fa-cog w-5"></i>
-                <span>Pengaturan & CSV</span>
+                <span>Pengaturan Sistem</span>
             </button>
         </nav>
         <div class="p-4 border-t border-emerald-700">
@@ -148,7 +147,7 @@
                     <i class="fas fa-users w-5"></i><span>Data Donatur</span>
                 </button>
                 <button onclick="navigate('pengaturan'); toggleMobileMenu()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-700 rounded-lg">
-                    <i class="fas fa-cog w-5"></i><span>Pengaturan & CSV</span>
+                    <i class="fas fa-cog w-5"></i><span>Pengaturan Sistem</span>
                 </button>
                 <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-600 rounded-lg text-left mt-8">
                     <i class="fas fa-sign-out-alt w-5"></i><span>Keluar</span>
@@ -220,28 +219,21 @@
                                 <input type="number" id="t-jumlah" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: 500000" min="1">
                             </div>
 
-                            <!-- Rekening Tujuan -->
+                            <!-- Rekening Tujuan (Dinamis dari Pengaturan) -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Rekening Tujuan</label>
                                 <select id="t-rekening" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Rekening</option>
-                                    <option value="BSI - 123456789">BSI - 123456789</option>
-                                    <option value="Mandiri - 987654321">Mandiri - 987654321</option>
-                                    <option value="BCA - 1122334455">BCA - 1122334455</option>
-                                    <option value="Tunai">Tunai / Kasir</option>
+                                    <!-- Diisi dari JS -->
                                 </select>
                             </div>
 
-                            <!-- Program -->
+                            <!-- Program (Dinamis dari Pengaturan) -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Program Donasi</label>
                                 <select id="t-program" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
                                     <option value="" disabled selected>Pilih Program</option>
-                                    <option value="Sedekah Subuh">Sedekah Subuh</option>
-                                    <option value="Zakat Maal">Zakat Maal</option>
-                                    <option value="Pembangunan Masjid">Pembangunan Masjid</option>
-                                    <option value="Bantuan Kemanusiaan">Bantuan Kemanusiaan</option>
-                                    <option value="Infaq Umum">Infaq Umum</option>
+                                    <!-- Diisi dari JS -->
                                 </select>
                             </div>
 
@@ -337,29 +329,85 @@
             </div>
 
             <!-- VIEW: PENGATURAN -->
-            <div id="view-pengaturan" class="fade-in hidden max-w-2xl mx-auto pb-10">
-                <!-- Pengaturan Telegram -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                        <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-cog text-emerald-600 mr-2"></i>Pengaturan Integrasi Telegram</h2>
-                        <p class="text-sm text-gray-500 mt-1">Konfigurasi bot agar laporan dapat terkirim ke Grup Telegram otomatis.</p>
+            <div id="view-pengaturan" class="fade-in hidden max-w-4xl mx-auto pb-10 space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Pengaturan Profil CS -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-id-badge text-emerald-600 mr-2"></i>Profil CS</h2>
+                        </div>
+                        <div class="p-6">
+                            <form id="form-profil-cs" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama CS</label>
+                                    <input type="text" id="set-nama-cs" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: Nisa">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kode CS</label>
+                                    <input type="text" id="set-kode-cs" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none" placeholder="Cth: CS-01">
+                                </div>
+                                <div class="pt-2 flex justify-end">
+                                    <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition w-full md:w-auto">Simpan Profil</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="p-6">
-                        <form id="form-pengaturan" class="space-y-5">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Bot Token</label>
-                                <input type="text" id="tg-token" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-sm" value="8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo" placeholder="1234567890:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+
+                    <!-- Pengaturan Telegram -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-paper-plane text-emerald-600 mr-2"></i>Bot Telegram</h2>
+                        </div>
+                        <div class="p-6">
+                            <form id="form-telegram" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Bot Token</label>
+                                    <input type="text" id="tg-token" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-xs" value="8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Chat ID Grup</label>
+                                    <input type="text" id="tg-chatid" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-xs" value="-5029904911">
+                                </div>
+                                <div class="pt-2 flex justify-end">
+                                    <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition w-full md:w-auto">Simpan Telegram</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Pengaturan Rekening -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-money-check text-emerald-600 mr-2"></i>Daftar Rekening</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex gap-2 mb-4">
+                                <input type="text" id="input-new-rekening" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Cth: BSI - 123456789">
+                                <button onclick="tambahItem('rekening')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus"></i></button>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Chat ID Grup</label>
-                                <input type="text" id="tg-chatid" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-sm" value="-5029904911" placeholder="-100123456789">
+                            <ul id="list-rekening-ui" class="space-y-2">
+                                <!-- Diisi JS -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Pengaturan Program -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-lg font-semibold text-gray-800"><i class="fas fa-box text-emerald-600 mr-2"></i>Daftar Program Donasi</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex gap-2 mb-4">
+                                <input type="text" id="input-new-program" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Cth: Sedekah Subuh">
+                                <button onclick="tambahItem('program')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus"></i></button>
                             </div>
-                            <div class="pt-2 flex justify-end">
-                                <button type="submit" class="w-full md:w-auto bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-6 rounded-lg transition">
-                                    Simpan Perubahan
-                                </button>
-                            </div>
-                        </form>
+                            <ul id="list-program-ui" class="space-y-2">
+                                <!-- Diisi JS -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
@@ -439,7 +487,6 @@
             appId: "1:834050411409:web:5d89c9944337054b8fe830"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -452,19 +499,18 @@
         let allTransactions = [];
         let isLoginMode = true;
         
-        let tgSettings = { 
-            token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', 
-            chatId: '-5029904911' 
-        };
+        // Settings State
+        let tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
+        let csProfile = { nama: '', kode: '' };
+        let arrRekening = ['Tunai / Kasir']; 
+        let arrProgram = ['Infaq Umum'];
 
-        // UI Elements
         const loginScreen = document.getElementById('login-screen');
         const mainApp = document.getElementById('main-app');
         const authStatus = document.getElementById('auth-status');
         const csEmailDisplay = document.getElementById('cs-email-display');
         const csEmailDisplayMobile = document.getElementById('cs-email-display-mobile');
 
-        // Listen for Auth changes
         onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 user = currentUser;
@@ -499,7 +545,6 @@
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('cs-email').value.trim();
             const password = document.getElementById('cs-password').value;
             const btn = document.getElementById('btn-login');
@@ -518,8 +563,6 @@
                     await createUserWithEmailAndPassword(auth, email, password);
                 }
             } catch (error) {
-                console.error("Auth Error:", error);
-                
                 let errorMsg = "Terjadi kesalahan.";
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                     errorMsg = "Email atau Password salah!";
@@ -528,7 +571,6 @@
                 } else if (error.code === 'auth/weak-password') {
                     errorMsg = "Password minimal 6 karakter.";
                 }
-
                 authStatus.textContent = errorMsg;
                 authStatus.className = "mt-4 text-center text-sm font-medium text-red-500 block";
             } finally {
@@ -538,39 +580,52 @@
         });
 
         window.logout = async function() {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Error signing out: ", error);
-            }
+            try { await signOut(auth); } catch (error) { console.error(error); }
         }
 
-        // Setup Data Listeners
+        // Setup Listener
         function setupDataListeners() {
             if (!user) return;
 
-            const settingsRef = doc(db, 'users', userId, 'settings', 'telegram');
-            getDoc(settingsRef).then((docSnap) => {
+            // 1. Settings General (Telegram, CS Profile, Rekening, Program)
+            const settingsRef = doc(db, 'users', userId, 'settings', 'general');
+            onSnapshot(settingsRef, (docSnap) => {
                 if(docSnap.exists()) {
                     const data = docSnap.data();
+                    
                     if(data.tgToken) tgSettings.token = data.tgToken;
                     if(data.tgChatId) tgSettings.chatId = data.tgChatId;
+                    if(data.namaCS) csProfile.nama = data.namaCS;
+                    if(data.kodeCS) csProfile.kode = data.kodeCS;
+                    if(data.rekening) arrRekening = data.rekening;
+                    if(data.program) arrProgram = data.program;
                 }
+                
+                // Update UI Profil & Telegram
                 document.getElementById('tg-token').value = tgSettings.token;
                 document.getElementById('tg-chatid').value = tgSettings.chatId;
-            }).catch(console.error);
+                document.getElementById('set-nama-cs').value = csProfile.nama;
+                document.getElementById('set-kode-cs').value = csProfile.kode;
 
+                // Update UI Dropdown List Input Transaksi
+                updateDropdownUI('t-rekening', arrRekening, 'Pilih Rekening');
+                updateDropdownUI('t-program', arrProgram, 'Pilih Program');
+
+                // Update UI List Pengaturan
+                updateSettingsListUI('list-rekening-ui', arrRekening, 'rekening');
+                updateSettingsListUI('list-program-ui', arrProgram, 'program');
+            });
+
+            // 2. Data Donatur 
             const donaturRef = collection(db, 'users', userId, 'donors');
             onSnapshot(donaturRef, (snapshot) => {
                 allDonors = [];
                 const datalist = document.getElementById('donor-list');
                 datalist.innerHTML = '';
-
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     data.id = doc.id;
                     allDonors.push(data);
-                    
                     const option = document.createElement('option');
                     option.value = data.id;
                     option.text = `${data.namaLengkap} - ${data.whatsapp}`;
@@ -579,6 +634,7 @@
                 renderDonaturTable();
             });
 
+            // 3. Data Transaksi
             const transaksiRef = collection(db, 'users', userId, 'transactions');
             onSnapshot(transaksiRef, (snapshot) => {
                 allTransactions = [];
@@ -592,121 +648,83 @@
             });
         }
 
-        // Render Tables
-        function renderDonaturTable(filterText = '') {
-            const tbody = document.getElementById('table-donatur-body');
-            const emptyState = document.getElementById('empty-donatur');
-            tbody.innerHTML = '';
-
-            let filtered = allDonors;
-            if (filterText) {
-                const lowerFilter = filterText.toLowerCase();
-                filtered = allDonors.filter(d => 
-                    d.id.toLowerCase().includes(lowerFilter) || 
-                    d.namaLengkap.toLowerCase().includes(lowerFilter) ||
-                    d.whatsapp.toLowerCase().includes(lowerFilter)
-                );
-            }
-
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                filtered.forEach(d => {
-                    const txCount = allTransactions.filter(t => t.donorId === d.id).length;
-                    
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-50';
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 border-b font-medium text-emerald-700">${d.id}</td>
-                        <td class="py-3 px-4 border-b">${d.sapaan} ${d.namaLengkap} <br><span class="text-xs text-gray-500">Panggilan: ${d.namaPanggilan}</span></td>
-                        <td class="py-3 px-4 border-b">${d.whatsapp}</td>
-                        <td class="py-3 px-4 border-b">${txCount} Transaksi</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
+        // FUNGSI UPDATE UI DROPDOWN & LIST SETTINGS
+        function updateDropdownUI(elementId, dataArray, placeholder) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
+            dataArray.forEach(item => {
+                el.innerHTML += `<option value="${item}">${item}</option>`;
+            });
         }
 
-        window.filterDonatur = function() {
-            const text = document.getElementById('search-donatur').value;
-            renderDonaturTable(text);
+        function updateSettingsListUI(elementId, dataArray, type) {
+            const ul = document.getElementById(elementId);
+            ul.innerHTML = '';
+            dataArray.forEach((item, index) => {
+                ul.innerHTML += `
+                    <li class="flex justify-between items-center bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm">
+                        <span>${item}</span>
+                        <button onclick="hapusItem('${type}', ${index})" class="text-red-500 hover:text-red-700 p-1"><i class="fas fa-trash-alt"></i></button>
+                    </li>
+                `;
+            });
         }
 
-        function renderTransaksiTable() {
-            const tbody = document.getElementById('table-transaksi-body');
-            const emptyState = document.getElementById('empty-transaksi');
-            tbody.innerHTML = '';
+        // FUNGSI SAVE SETTINGS
+        window.tambahItem = async function(type) {
+            const inputEl = document.getElementById(type === 'rekening' ? 'input-new-rekening' : 'input-new-program');
+            const val = inputEl.value.trim();
+            if(!val) return;
 
-            if (allTransactions.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                allTransactions.forEach(t => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-50';
-                    
-                    const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-                    const jumlahFormat = formatter.format(t.jumlah);
+            let updatedArray = type === 'rekening' ? [...arrRekening] : [...arrProgram];
+            updatedArray.push(val);
 
-                    const dateObj = new Date(t.tanggal);
-                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 border-b whitespace-nowrap">${tglFormat}</td>
-                        <td class="py-3 px-4 border-b font-medium">${t.donorId}</td>
-                        <td class="py-3 px-4 border-b">${t.namaLengkap}</td>
-                        <td class="py-3 px-4 border-b"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">${t.program}</span></td>
-                        <td class="py-3 px-4 border-b text-right font-semibold text-emerald-600">${jumlahFormat}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-            renderDonaturTable(document.getElementById('search-donatur').value);
+            const payload = type === 'rekening' ? { rekening: updatedArray } : { program: updatedArray };
+            await setDoc(doc(db, 'users', userId, 'settings', 'general'), payload, { merge: true });
+            inputEl.value = '';
         }
 
-        document.getElementById('t-id').addEventListener('input', (e) => {
-            const val = e.target.value.toUpperCase();
-            e.target.value = val; 
+        window.hapusItem = async function(type, index) {
+            let updatedArray = type === 'rekening' ? [...arrRekening] : [...arrProgram];
+            updatedArray.splice(index, 1);
             
-            const found = allDonors.find(d => d.id === val);
-            if(found) {
-                document.getElementById('t-sapaan').value = found.sapaan;
-                document.getElementById('t-panggilan').value = found.namaPanggilan;
-                document.getElementById('t-lengkap').value = found.namaLengkap;
-                document.getElementById('t-wa').value = found.whatsapp;
-            }
-        });
+            const payload = type === 'rekening' ? { rekening: updatedArray } : { program: updatedArray };
+            await setDoc(doc(db, 'users', userId, 'settings', 'general'), payload, { merge: true });
+        }
 
-        // Simpan Settings Telegram
-        document.getElementById('form-pengaturan').addEventListener('submit', async (e) => {
+        document.getElementById('form-profil-cs').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!user) return;
-
-            const token = document.getElementById('tg-token').value.trim();
-            const chatId = document.getElementById('tg-chatid').value.trim();
-
             const btn = e.target.querySelector('button');
-            const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             btn.disabled = true;
-
             try {
-                const settingsRef = doc(db, 'users', userId, 'settings', 'telegram');
-                await setDoc(settingsRef, { tgToken: token, tgChatId: chatId }, { merge: true });
-                tgSettings.token = token;
-                tgSettings.chatId = chatId;
-                showToast("Pengaturan Telegram berhasil diperbarui", "success");
-            } catch (error) {
-                console.error("Error saving settings:", error);
-                showToast("Gagal menyimpan pengaturan", "error");
-            } finally {
-                btn.innerHTML = originalText;
+                const n = document.getElementById('set-nama-cs').value.trim();
+                const k = document.getElementById('set-kode-cs').value.trim();
+                await setDoc(doc(db, 'users', userId, 'settings', 'general'), { namaCS: n, kodeCS: k }, { merge: true });
+                showToast("Profil CS berhasil disimpan", "success");
+            } catch(e) { showToast("Gagal menyimpan", "error"); } finally {
+                btn.innerHTML = 'Simpan Profil';
                 btn.disabled = false;
             }
         });
 
-        // Form Submit Transaksi
+        document.getElementById('form-telegram').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btn.disabled = true;
+            try {
+                const t = document.getElementById('tg-token').value.trim();
+                const c = document.getElementById('tg-chatid').value.trim();
+                await setDoc(doc(db, 'users', userId, 'settings', 'general'), { tgToken: t, tgChatId: c }, { merge: true });
+                showToast("Pengaturan Telegram diperbarui", "success");
+            } catch(e) { showToast("Gagal menyimpan", "error"); } finally {
+                btn.innerHTML = 'Simpan Telegram';
+                btn.disabled = false;
+            }
+        });
+
+        // FORM SUBMIT TRANSAKSI
         document.getElementById('form-transaksi').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!user) return;
@@ -739,6 +757,9 @@
                 const tglObj = new Date(tgl);
                 const tglString = tglObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 
+                // Identitas CS untuk Telegram
+                const infoCS = csProfile.nama ? `${csProfile.nama} (${csProfile.kode})` : csEmail;
+
                 const caption = `🔔 *INFO DONASI BARU* 🔔\n\n` +
                                 `📅 *Tanggal:* ${tglString}\n` +
                                 `🆔 *ID Donatur:* \`${idDonatur}\`\n` +
@@ -747,7 +768,7 @@
                                 `💰 *Jumlah:* ${jmlFormatted}\n` +
                                 `💳 *Rekening:* ${rekening}\n` +
                                 `📦 *Program:* ${program}\n\n` +
-                                `👩‍💻 *CS Input:* ${csEmail}`;
+                                `👩‍💻 *CS Input:* ${infoCS}`;
 
                 const tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendPhoto`;
                 const formData = new FormData();
@@ -756,16 +777,10 @@
                 formData.append('caption', caption);
                 formData.append('parse_mode', 'Markdown');
 
-                const tgResponse = await fetch(tgUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const tgResponse = await fetch(tgUrl, { method: 'POST', body: formData });
                 const tgResult = await tgResponse.json();
                 
-                if (!tgResult.ok) {
-                    throw new Error(`Telegram Error: ${tgResult.description}`);
-                }
+                if (!tgResult.ok) throw new Error(`Telegram Error: ${tgResult.description}`);
 
                 // Simpan ke Firestore
                 const txId = Date.now().toString(); 
@@ -781,6 +796,8 @@
                     rekening: rekening,
                     program: program,
                     csEmail: csEmail,
+                    namaCS: csProfile.nama,
+                    kodeCS: csProfile.kode,
                     timestamp: serverTimestamp()
                 });
 
@@ -811,20 +828,91 @@
         });
 
         // ----------------------------------------------------
-        // FITUR EXPORT / IMPORT CSV
+        // RENDER TABLES & CSV LOGIC
         // ----------------------------------------------------
-        
-        // Export Logic
+        function renderDonaturTable(filterText = '') {
+            const tbody = document.getElementById('table-donatur-body');
+            const emptyState = document.getElementById('empty-donatur');
+            tbody.innerHTML = '';
+            let filtered = allDonors;
+            if (filterText) {
+                const lowerFilter = filterText.toLowerCase();
+                filtered = allDonors.filter(d => 
+                    d.id.toLowerCase().includes(lowerFilter) || 
+                    d.namaLengkap.toLowerCase().includes(lowerFilter) ||
+                    d.whatsapp.toLowerCase().includes(lowerFilter)
+                );
+            }
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach(d => {
+                    const txCount = allTransactions.filter(t => t.donorId === d.id).length;
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 border-b font-medium text-emerald-700">${d.id}</td>
+                        <td class="py-3 px-4 border-b">${d.sapaan} ${d.namaLengkap} <br><span class="text-xs text-gray-500">Panggilan: ${d.namaPanggilan}</span></td>
+                        <td class="py-3 px-4 border-b">${d.whatsapp}</td>
+                        <td class="py-3 px-4 border-b">${txCount} Transaksi</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        window.filterDonatur = function() {
+            renderDonaturTable(document.getElementById('search-donatur').value);
+        }
+
+        function renderTransaksiTable() {
+            const tbody = document.getElementById('table-transaksi-body');
+            const emptyState = document.getElementById('empty-transaksi');
+            tbody.innerHTML = '';
+            if (allTransactions.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                allTransactions.forEach(t => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                    const dateObj = new Date(t.tanggal);
+                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 border-b whitespace-nowrap">${tglFormat}</td>
+                        <td class="py-3 px-4 border-b font-medium">${t.donorId}</td>
+                        <td class="py-3 px-4 border-b">${t.namaLengkap}</td>
+                        <td class="py-3 px-4 border-b"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">${t.program}</span></td>
+                        <td class="py-3 px-4 border-b text-right font-semibold text-emerald-600">${formatter.format(t.jumlah)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            renderDonaturTable(document.getElementById('search-donatur').value);
+        }
+
+        document.getElementById('t-id').addEventListener('input', (e) => {
+            const val = e.target.value.toUpperCase();
+            e.target.value = val; 
+            const found = allDonors.find(d => d.id === val);
+            if(found) {
+                document.getElementById('t-sapaan').value = found.sapaan;
+                document.getElementById('t-panggilan').value = found.namaPanggilan;
+                document.getElementById('t-lengkap').value = found.namaLengkap;
+                document.getElementById('t-wa').value = found.whatsapp;
+            }
+        });
+
+        // CSV Export
         window.exportCSV = function(type) {
             if(!user) return;
-            
             let csvContent = "";
             let filename = "";
-
             if (type === 'donatur') {
                 csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp\n";
                 allDonors.forEach(d => {
-                    // Escape data (just in case they have commas)
                     const nm = d.namaLengkap.replace(/"/g, '""');
                     csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp}\n`;
                 });
@@ -837,11 +925,8 @@
                 });
                 filename = "data_transaksi.csv";
             }
-
-            // Gunakan Blob agar lebih aman format teksnya di berbagai perangkat
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
-            
             const link = document.createElement("a");
             link.setAttribute("href", url);
             link.setAttribute("download", filename);
@@ -850,50 +935,36 @@
             document.body.removeChild(link);
         }
 
-        // Import Logic
+        // CSV Import
         window.importCSV = async function() {
             if(!user) return;
             const fileInput = document.getElementById('csv-file');
             const file = fileInput.files[0];
-            
-            if (!file) {
-                showToast("Pilih file CSV terlebih dahulu", "error");
-                return;
-            }
+            if (!file) return showToast("Pilih file CSV terlebih dahulu", "error");
 
             const btn = document.getElementById('btn-import');
             const spinner = document.getElementById('import-spinner');
-            btn.disabled = true;
-            spinner.classList.remove('hidden');
+            btn.disabled = true; spinner.classList.remove('hidden');
 
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n');
-                
+                const lines = e.target.result.split('\n');
                 if (lines.length < 2) {
                     showToast("Format CSV kosong atau salah", "error");
-                    resetImportUI(btn, spinner, fileInput);
-                    return;
+                    return resetImportUI(btn, spinner, fileInput);
                 }
-
-                // Cek Validitas Header CSV Transaksi
                 const header = lines[0].toLowerCase().replace(/\r/g, '').split(',');
                 if (!header.includes('tanggal') || !header.includes('donorid') || !header.includes('jumlah')) {
                     showToast("Format Header kolom tidak sesuai sample!", "error");
-                    resetImportUI(btn, spinner, fileInput);
-                    return;
+                    return resetImportUI(btn, spinner, fileInput);
                 }
 
                 try {
-                    // Gunakan Batch Write agar proses simpan massal lebih cepat
                     const batch = writeBatch(db);
                     let count = 0;
-
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].replace(/\r/g, '');
-                        if (!line.trim()) continue; // Skip baris kosong
-
+                        if (!line.trim()) continue;
                         const values = line.split(',');
                         if (values.length >= 9) {
                             const tanggal = values[0].trim();
@@ -906,59 +977,34 @@
                             const rekening = values[7].replace(/"/g, '').trim();
                             const program = values[8].replace(/"/g, '').trim();
                             
-                            // 1. Simpan Transaksi
                             const txId = Date.now().toString() + count;
-                            const transRef = doc(db, 'users', userId, 'transactions', txId);
-                            batch.set(transRef, {
-                                tanggal: tanggal,
-                                donorId: donorId,
-                                sapaan: sapaan,
-                                namaPanggilan: namaPanggilan,
-                                namaLengkap: namaLengkap,
-                                whatsapp: whatsapp,
-                                jumlah: jumlah,
-                                rekening: rekening,
-                                program: program,
-                                csEmail: csEmail,
-                                timestamp: serverTimestamp()
+                            batch.set(doc(db, 'users', userId, 'transactions', txId), {
+                                tanggal: tanggal, donorId: donorId, sapaan: sapaan,
+                                namaPanggilan: namaPanggilan, namaLengkap: namaLengkap,
+                                whatsapp: whatsapp, jumlah: jumlah, rekening: rekening,
+                                program: program, csEmail: csEmail, timestamp: serverTimestamp()
                             });
                             
-                            // 2. Simpan/Update profil donatur agar data di tab 'Data Donatur' ikut sinkron
-                            const donaturRef = doc(db, 'users', userId, 'donors', donorId);
-                            batch.set(donaturRef, {
-                                sapaan: sapaan,
-                                namaPanggilan: namaPanggilan,
-                                namaLengkap: namaLengkap,
-                                whatsapp: whatsapp,
-                                lastUpdated: serverTimestamp()
+                            batch.set(doc(db, 'users', userId, 'donors', donorId), {
+                                sapaan: sapaan, namaPanggilan: namaPanggilan, namaLengkap: namaLengkap,
+                                whatsapp: whatsapp, lastUpdated: serverTimestamp()
                             }, { merge: true });
-                            
                             count++;
                         }
                     }
-
                     if (count > 0) {
                         await batch.commit();
                         showToast(`${count} data transaksi berhasil diimpor!`, "success");
-                    } else {
-                        showToast("Tidak ada data baris yang valid untuk diimpor", "error");
-                    }
-                } catch (err) {
-                    console.error("Error import:", err);
-                    showToast("Terjadi kesalahan sistem saat impor", "error");
-                } finally {
-                    resetImportUI(btn, spinner, fileInput);
-                }
+                    } else showToast("Tidak ada data baris yang valid", "error");
+                } catch (err) { showToast("Terjadi kesalahan sistem saat impor", "error"); } 
+                finally { resetImportUI(btn, spinner, fileInput); }
             };
             reader.readAsText(file);
         }
 
         function resetImportUI(btn, spinner, fileInput) {
-            btn.disabled = false;
-            spinner.classList.add('hidden');
-            fileInput.value = '';
+            btn.disabled = false; spinner.classList.add('hidden'); fileInput.value = '';
         }
-
     </script>
 
     <!-- General UI JS -->
@@ -967,26 +1013,21 @@
         const navIds = ['nav-transaksi', 'nav-data-transaksi', 'nav-data-donatur', 'nav-pengaturan'];
 
         function navigate(viewName) {
-            views.forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-            });
+            views.forEach(v => document.getElementById(v).classList.add('hidden'));
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
 
             navIds.forEach(n => {
                 const el = document.getElementById(n);
                 if (n === `nav-${viewName}`) {
-                    el.classList.remove('hover:bg-emerald-700');
-                    el.classList.add('bg-emerald-900');
+                    el.classList.remove('hover:bg-emerald-700'); el.classList.add('bg-emerald-900');
                 } else {
-                    el.classList.add('hover:bg-emerald-700');
-                    el.classList.remove('bg-emerald-900');
+                    el.classList.add('hover:bg-emerald-700'); el.classList.remove('bg-emerald-900');
                 }
             });
         }
 
         function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
         function previewImage(event) {
@@ -1015,7 +1056,6 @@
             const iconEl = document.getElementById('toast-icon');
 
             msgEl.textContent = message;
-            
             toast.className = `fixed top-5 right-5 transform transition-transform duration-300 z-50 flex items-center p-4 mb-4 text-white rounded-lg shadow-lg ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`;
             
             if(type === 'success') {
@@ -1025,19 +1065,13 @@
                 iconEl.className = "fas fa-exclamation-triangle text-red-500";
                 iconEl.parentElement.className = "inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white";
             }
-
             toast.classList.remove('translate-x-full');
-            
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                hideToast();
-            }, 4000);
+            toastTimeout = setTimeout(() => hideToast(), 4000);
         }
 
-        function hideToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.add('translate-x-full');
-        }
+        function hideToast() { document.getElementById('toast').classList.add('translate-x-full'); }
     </script>
 </body>
 </html>
+```eof
