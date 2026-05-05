@@ -854,6 +854,9 @@
                 updateSettingsListUI('list-sapaan-ui', arrSapaan, 'sapaan');
                 updateSettingsListUI('list-rekening-ui', arrRekening, 'rekening');
                 updateSettingsListUI('list-program-ui', arrProgram, 'program');
+            }, (error) => {
+                console.error("Firestore Permission Error (Settings):", error);
+                showToast("Akses Ditolak: Periksa Aturan Keamanan Firestore Anda", "error");
             });
 
             // 2. Data Donatur 
@@ -875,6 +878,8 @@
                 });
                 window.renderDonaturTable();
                 window.updateDashboardStats();
+            }, (error) => {
+                console.error("Firestore Permission Error (Donors):", error);
             });
 
             // 3. Data Transaksi
@@ -888,6 +893,8 @@
                 });
                 window.renderTransaksiTable();
                 window.updateDashboardStats();
+            }, (error) => {
+                console.error("Firestore Permission Error (Transactions):", error);
             });
         }
 
