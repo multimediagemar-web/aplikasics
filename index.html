@@ -572,6 +572,37 @@
             </div>
         </div>
 
+        <!-- Modal WhatsApp -->
+        <div id="modal-wa" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
+                <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fab fa-whatsapp text-green-500 mr-2"></i>Kirim Pesan WA</h3>
+                <p class="text-[10px] text-gray-500 mb-2">Ke: <span id="wa-target-name" class="font-bold text-gray-700"></span></p>
+                <input type="hidden" id="wa-target-phone">
+                <textarea id="wa-message" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs outline-none focus:border-green-500 resize-none" placeholder="Tulis pesan di sini..."></textarea>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button onclick="hideWaModal()" class="px-3 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
+                    <button onclick="sendWaMessage()" class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-medium flex items-center"><i class="fas fa-paper-plane mr-2"></i> Kirim ke WA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Riwayat Donasi -->
+        <div id="modal-history" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[80vh] flex flex-col">
+                <div class="flex justify-between items-center mb-3 shrink-0 border-b border-gray-100 pb-2">
+                    <h3 class="text-sm font-bold text-gray-800"><i class="fas fa-history text-emerald-600 mr-2"></i>Riwayat Donasi</h3>
+                    <button onclick="hideHistoryModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+                </div>
+                <p class="text-[10px] text-gray-500 mb-3 shrink-0">Donatur: <span id="history-target-name" class="font-bold text-gray-700 text-xs"></span></p>
+                
+                <div class="flex-1 overflow-y-auto bg-gray-50 rounded-lg border border-gray-200 p-0">
+                    <ul id="history-list" class="divide-y divide-gray-200 text-xs">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal Filter Transaksi -->
         <div id="modal-filter-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
@@ -1552,11 +1583,11 @@
                     tr.innerHTML = `
                         <td class="py-2 px-3 border-b">
                             <span class="font-semibold text-emerald-700 block">${d.id}</span>
-                            <span class="text-gray-800">${d.namaLengkap}</span>
+                            <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" onclick="showWaModal('${d.whatsapp}', '${d.namaLengkap.replace(/'/g, "\\'")}')">${d.namaLengkap}</span>
                         </td>
-                        <td class="py-2 px-3 border-b">
-                            <span class="text-emerald-600 font-semibold block">${formatter.format(d.txAmount)}</span>
-                            <span class="text-gray-500 text-[10px]">${d.txCount} x donasi</span>
+                        <td class="py-2 px-3 border-b cursor-pointer hover:bg-emerald-50 rounded transition-colors group" onclick="showHistoryModal('${d.id}', '${d.namaLengkap.replace(/'/g, "\\'")}')">
+                            <span class="text-emerald-600 font-semibold block group-hover:text-emerald-800">${formatter.format(d.txAmount)}</span>
+                            <span class="text-gray-500 text-[10px] group-hover:text-emerald-600"><i class="fas fa-search-plus mr-1"></i>${d.txCount} x donasi</span>
                         </td>
                         <td class="py-2 px-3 border-b text-[10px] text-gray-500 whitespace-nowrap">${d.tglPertama}</td>
                         <td class="py-2 px-3 border-b text-[10px] text-gray-500 whitespace-nowrap">${d.tglTerakhir}</td>
@@ -1639,7 +1670,7 @@
                         <td class="py-2 px-3 border-b text-gray-500 whitespace-nowrap">${tglFormat}</td>
                         <td class="py-2 px-3 border-b">
                             <span class="font-semibold block">${t.donorId}</span>
-                            <span class="text-[10px] text-gray-500">${t.namaLengkap}</span>
+                            <span class="text-[10px] text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" onclick="showWaModal('${t.whatsapp}', '${t.namaLengkap.replace(/'/g, "\\'")}')">${t.namaLengkap}</span>
                         </td>
                         <td class="py-2 px-3 border-b text-right">
                             <span class="font-semibold text-emerald-600 block">${formatter.format(t.jumlah)}</span>
@@ -1958,6 +1989,72 @@
             } catch(e) { showToast("Gagal", "error"); }
             finally { btn.innerHTML = 'Simpan'; btn.disabled = false; }
         });
+
+        // ==========================
+        // FITUR WA & RIWAYAT
+        // ==========================
+        window.showWaModal = function(phone, name) {
+            document.getElementById('wa-target-name').textContent = name;
+            
+            // Format nomor telepon untuk awalan 62
+            let formattedPhone = phone.replace(/\D/g, '');
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '62' + formattedPhone.substring(1);
+            }
+            
+            document.getElementById('wa-target-phone').value = formattedPhone;
+            document.getElementById('wa-message').value = `Assalamu'alaikum Warahmatullahi Wabarakatuh, ${name}...\n\n`;
+            document.getElementById('modal-wa').classList.remove('hidden');
+        }
+
+        window.hideWaModal = function() {
+            document.getElementById('modal-wa').classList.add('hidden');
+        }
+
+        window.sendWaMessage = function() {
+            const phone = document.getElementById('wa-target-phone').value;
+            const message = document.getElementById('wa-message').value;
+            if (!phone) {
+                showToast("Nomor WA tidak valid", "error");
+                return;
+            }
+            const encodedMsg = encodeURIComponent(message);
+            window.open(`https://wa.me/${phone}?text=${encodedMsg}`, '_blank');
+            hideWaModal();
+        }
+
+        window.showHistoryModal = function(donorId, donorName) {
+            document.getElementById('history-target-name').textContent = donorName;
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+
+            const txs = allTransactions.filter(t => t.donorId === donorId);
+            const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            
+            if (sortedTxs.length === 0) {
+                historyList.innerHTML = '<li class="p-4 text-center text-gray-400">Tidak ada riwayat donasi</li>';
+            } else {
+                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                sortedTxs.forEach(tx => {
+                    const dateObj = new Date(tx.tanggal);
+                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                    historyList.innerHTML += `
+                        <li class="p-3 flex justify-between items-center hover:bg-white transition-colors">
+                            <div>
+                                <span class="font-semibold text-gray-800 block">${tx.program}</span>
+                                <span class="text-[10px] text-gray-500">${tglFormat}</span>
+                            </div>
+                            <span class="font-bold text-emerald-600">${formatter.format(tx.jumlah)}</span>
+                        </li>
+                    `;
+                });
+            }
+            document.getElementById('modal-history').classList.remove('hidden');
+        }
+
+        window.hideHistoryModal = function() {
+            document.getElementById('modal-history').classList.add('hidden');
+        }
 
     </script>
 
