@@ -54,16 +54,27 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi CS Donatur</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 2.4.0</div>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 2.5.0</div>
                     <p class="text-gray-500 text-[11px] mt-1">Sistem pendataan transaksi donasi</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
                     <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Cabang / Lembaga</label>
+                        <div class="relative">
+                            <i class="fas fa-building absolute left-3 top-2.5 text-gray-400"></i>
+                            <select id="cs-lembaga" class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm bg-white">
+                                <option value="pusat">Cabang Pusat</option>
+                                <option value="cabang_a">Cabang A (Baru)</option>
+                                <option value="cabang_b">Cabang B (Ketiga)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">Email</label>
                         <div class="relative">
                             <i class="fas fa-envelope absolute left-3 top-2.5 text-gray-400"></i>
-                            <input type="email" id="cs-email" required class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm" placeholder="namacs@kodecs.com">
+                            <input type="email" id="cs-email" required class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm" placeholder="email@lembaga.org">
                         </div>
                     </div>
                     <div>
@@ -765,25 +776,43 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, serverTimestamp, writeBatch, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Konfigurasi Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCkISgwI5uYYrTprNSkzKmavSKz1QZbVg0",
-            authDomain: "aplikasicsnew.firebaseapp.com",
-            projectId: "aplikasicsnew",
-            storageBucket: "aplikasicsnew.firebasestorage.app",
-            messagingSenderId: "550938983762",
-            appId: "1:550938983762:web:d4049577853bf7d736ce8b"
+        // Konfigurasi Multi-Firebase
+        const firebaseConfigs = {
+            'pusat': {
+                apiKey: "AIzaSyC1Xpv4DKBI4zBHFNjKwZKeWlR0sfTwacs",
+                authDomain: "aplikasicsbaru.firebaseapp.com",
+                projectId: "aplikasicsbaru",
+                storageBucket: "aplikasicsbaru.firebasestorage.app",
+                messagingSenderId: "834050411409",
+                appId: "1:834050411409:web:5d89c9944337054b8fe830"
+            },
+            'cabang_a': {
+                apiKey: "AIzaSyCkISgwI5uYYrTprNSkzKmavSKz1QZbVg0",
+                authDomain: "aplikasicsnew.firebaseapp.com",
+                projectId: "aplikasicsnew",
+                storageBucket: "aplikasicsnew.firebasestorage.app",
+                messagingSenderId: "550938983762",
+                appId: "1:550938983762:web:d4049577853bf7d736ce8b"
+            },
+            'cabang_b': {
+                apiKey: "ISI_API_KEY_CABANG_3_DISINI",
+                authDomain: "domain-cabang-3.firebaseapp.com",
+                projectId: "project-cabang-3",
+                storageBucket: "project-cabang-3.firebasestorage.app",
+                messagingSenderId: "SENDER_ID_CABANG_3",
+                appId: "APP_ID_CABANG_3"
+            }
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
         // Global Variables
+        let app = null;
+        let auth = null;
+        let db = null;
+
         let user = null;
         let userId = null;
         let csEmail = '';
@@ -818,33 +847,61 @@
         const authStatus = document.getElementById('auth-status');
         const csEmailDisplayMobile = document.getElementById('cs-email-display-mobile');
 
-        onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser) {
-                user = currentUser;
-                userId = currentUser.uid;
-                csEmail = currentUser.email; 
-                
-                loginScreen.classList.add('hidden');
-                mainApp.classList.remove('hidden');
-                
-                csEmailDisplayMobile.textContent = csEmail;
-                
-                setupDataListeners();
+        // Fungsi untuk menginisialisasi Firebase berdasarkan cabang yang dipilih
+        function initializeSelectedFirebase(cabangId) {
+            // Cek jika firebase belum pernah di-init
+            if (!getApps().length) {
+                app = initializeApp(firebaseConfigs[cabangId]);
             } else {
-                user = null;
-                userId = null;
-                csEmail = '';
-                
-                // Panggil pembersihan data total saat logout
-                if (typeof window.clearAppData === 'function') window.clearAppData();
-                
-                loginScreen.classList.remove('hidden');
-                mainApp.classList.add('hidden');
+                app = getApp();
+            }
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Listener Autentikasi berjalan setelah Firebase berhasil di-init
+            onAuthStateChanged(auth, (currentUser) => {
+                if (currentUser) {
+                    user = currentUser;
+                    userId = currentUser.uid;
+                    csEmail = currentUser.email; 
+                    
+                    loginScreen.classList.add('hidden');
+                    mainApp.classList.remove('hidden');
+                    
+                    csEmailDisplayMobile.textContent = csEmail;
+                    
+                    setupDataListeners();
+                } else {
+                    user = null;
+                    userId = null;
+                    csEmail = '';
+                    
+                    if (typeof window.clearAppData === 'function') window.clearAppData();
+                    
+                    loginScreen.classList.remove('hidden');
+                    mainApp.classList.add('hidden');
+                }
+            });
+        }
+
+        // Cek apakah sebelumnya user sudah memilih cabang dan refresh halaman
+        const savedCabang = localStorage.getItem('activeCabang');
+        if (savedCabang && firebaseConfigs[savedCabang]) {
+            document.getElementById('cs-lembaga').value = savedCabang;
+            initializeSelectedFirebase(savedCabang);
+        }
+
+        // Jika user iseng ganti pilihan cabang di dropdown padahal firebase sudah aktif, reload browser agar bersih
+        document.getElementById('cs-lembaga').addEventListener('change', (e) => {
+            if (app) {
+                localStorage.setItem('activeCabang', e.target.value);
+                window.location.reload();
             }
         });
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const cabangId = document.getElementById('cs-lembaga').value;
             const email = document.getElementById('cs-email').value.trim();
             const password = document.getElementById('cs-password').value;
             const btn = document.getElementById('btn-login');
@@ -857,7 +914,14 @@
             authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-100 block";
 
             try {
+                // Inisialisasi database jika tombol login baru pertama kali diklik
+                if (!app) {
+                    initializeSelectedFirebase(cabangId);
+                }
+                
                 await signInWithEmailAndPassword(auth, email, password);
+                localStorage.setItem('activeCabang', cabangId); // Simpan sesi cabang
+                
             } catch (error) {
                 let errorMsg = "Terjadi kesalahan.";
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
@@ -874,7 +938,11 @@
         });
 
         window.logout = async function() {
-            try { await signOut(auth); } catch (error) { console.error(error); }
+            try { 
+                if (auth) await signOut(auth); 
+                localStorage.removeItem('activeCabang');
+                window.location.reload(); // Wajib reload untuk menghapus sesi firebase sepenuhnya
+            } catch (error) { console.error(error); }
         }
 
         window.clearAppData = function() {
