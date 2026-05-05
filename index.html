@@ -130,7 +130,23 @@
                             </div>
                             <p class="text-[10px] text-gray-500 font-medium mb-1">Total Donasi (<span id="lbl-dash-time">Hari Ini</span>)</p>
                             <h3 class="text-base font-bold text-emerald-600 truncate mb-1" id="dash-total-donasi">Rp 0</h3>
-                            <p class="text-[10px] text-gray-400 font-medium"><i class="fas fa-receipt mr-1"></i> <span id="dash-tx-count">0</span> Transaksi</p>
+                            <p class="text-[10px] text-gray-400 font-medium border-b border-gray-100 pb-1.5 mb-1.5"><i class="fas fa-receipt mr-1"></i> <span id="dash-tx-count">0</span> Transaksi</p>
+                            <div class="flex flex-col text-[9px] font-medium text-gray-500 space-y-0.5 relative z-10">
+                                <div class="flex justify-between items-center">
+                                    <span>Iklan:</span> 
+                                    <div class="text-right">
+                                        <span class="text-emerald-600 font-bold" id="dash-donasi-iklan">Rp 0</span>
+                                        <span class="text-[8px] text-gray-400 ml-0.5" id="dash-tx-iklan">(0 tx)</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>CRM:</span> 
+                                    <div class="text-right">
+                                        <span class="text-blue-600 font-bold" id="dash-donasi-crm">Rp 0</span>
+                                        <span class="text-[8px] text-gray-400 ml-0.5" id="dash-tx-crm">(0 tx)</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
@@ -528,6 +544,22 @@
         <div id="modal-report-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] flex flex-col">
                 <h3 class="text-sm font-bold text-gray-800 mb-3 shrink-0"><i class="fas fa-file-alt text-blue-600 mr-2"></i>Pratinjau Laporan</h3>
+                
+                <div class="grid grid-cols-3 gap-2 mb-3 shrink-0">
+                    <div>
+                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Total Lead</label>
+                        <input type="number" id="input-lead-total" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs outline-none focus:border-blue-500" value="0" min="0" oninput="updateReportPreview()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Lead Aktif</label>
+                        <input type="number" id="input-lead-aktif" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs outline-none focus:border-blue-500" value="0" min="0" oninput="updateReportPreview()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Lead Lost</label>
+                        <input type="number" id="input-lead-lost" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs outline-none focus:border-blue-500" value="0" min="0" oninput="updateReportPreview()">
+                    </div>
+                </div>
+
                 <div class="flex-1 overflow-y-auto mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs font-mono whitespace-pre-wrap text-gray-700" id="report-preview-text">
                     <!-- Preview akan diisi oleh JS -->
                 </div>
@@ -925,12 +957,34 @@
             });
 
             // 3. Hitung Total Donasi & Transaksi pada rentang waktu tersebut
-            const totalDonasi = filteredTx.reduce((sum, tx) => sum + tx.jumlah, 0);
+            let totalDonasi = 0;
+            let donasiIklan = 0;
+            let donasiCRM = 0;
+            let countIklan = 0;
+            let countCRM = 0;
+
+            filteredTx.forEach(tx => {
+                totalDonasi += tx.jumlah;
+                
+                // Cek apakah nama program diawali dengan kata "lead" (case-insensitive)
+                if (tx.program && tx.program.toLowerCase().startsWith("lead")) {
+                    donasiIklan += tx.jumlah;
+                    countIklan++;
+                } else {
+                    donasiCRM += tx.jumlah;
+                    countCRM++;
+                }
+            });
+
             const txCount = filteredTx.length;
             
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
             document.getElementById('dash-total-donasi').textContent = formatter.format(totalDonasi);
             document.getElementById('dash-tx-count').textContent = txCount;
+            document.getElementById('dash-donasi-iklan').textContent = formatter.format(donasiIklan);
+            document.getElementById('dash-tx-iklan').textContent = `(${countIklan} tx)`;
+            document.getElementById('dash-donasi-crm').textContent = formatter.format(donasiCRM);
+            document.getElementById('dash-tx-crm').textContent = `(${countCRM} tx)`;
 
             // 4. Hitung & Tampilkan Donasi per Program
             const programSummary = {};
@@ -1042,6 +1096,17 @@
         // ==========================
         window.showReportModal = function() {
             if(!user) return;
+            
+            // Reset input manual setiap kali modal dibuka
+            document.getElementById('input-lead-total').value = 0;
+            document.getElementById('input-lead-aktif').value = 0;
+            document.getElementById('input-lead-lost').value = 0;
+
+            updateReportPreview();
+            document.getElementById('modal-report-tx').classList.remove('hidden');
+        }
+
+        window.updateReportPreview = function() {
             const previewEl = document.getElementById('report-preview-text');
             
             const startDateInput = document.getElementById('dash-start-date').value;
@@ -1065,6 +1130,22 @@
             const txCount = filteredTx.length;
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
+            // Breakdown Iklan vs CRM
+            let donasiIklan = 0;
+            let donasiCRM = 0;
+            let countIklan = 0;
+            let countCRM = 0;
+            
+            filteredTx.forEach(tx => {
+                if (tx.program && tx.program.toLowerCase().startsWith("lead")) {
+                    donasiIklan += tx.jumlah;
+                    countIklan++;
+                } else {
+                    donasiCRM += tx.jumlah;
+                    countCRM++;
+                }
+            });
+
             // Program breakdown
             const programSummary = {};
             filteredTx.forEach(tx => {
@@ -1081,16 +1162,27 @@
 
             const infoCS = csProfile.nama ? `${csProfile.nama} (${csProfile.kode})` : csEmail;
 
+            // Ambil data lead dari input manual
+            const leadTotal = document.getElementById('input-lead-total').value || 0;
+            const leadAktif = document.getElementById('input-lead-aktif').value || 0;
+            const leadLost = document.getElementById('input-lead-lost').value || 0;
+
             // Template Teks Laporan
             const reportStr = `📊 *LAPORAN DONASI*\n\n` +
                               `🗓 *Periode:* ${startStr} s/d ${endStr}\n` +
                               `💰 *Total Donasi:* ${formatter.format(totalDonasi)}\n` +
                               `📈 *Total Transaksi:* ${txCount} tx\n\n` +
+                              `👥 *Kinerja Lead (Manual):*\n` +
+                              `▫️ Total Lead: ${leadTotal}\n` +
+                              `▫️ Lead Aktif: ${leadAktif}\n` +
+                              `▫️ Lead Lost: ${leadLost}\n\n` +
+                              `🎯 *Sumber Donasi:*\n` +
+                              `▫️ Iklan: ${formatter.format(donasiIklan)} (${countIklan} tx)\n` +
+                              `▫️ CRM: ${formatter.format(donasiCRM)} (${countCRM} tx)\n\n` +
                               `*Rincian per Program:*\n${programText}\n` +
                               `👩‍💻 *Dilaporkan oleh:* ${infoCS}`;
 
             previewEl.textContent = reportStr;
-            document.getElementById('modal-report-tx').classList.remove('hidden');
         }
 
         window.hideReportModal = function() {
