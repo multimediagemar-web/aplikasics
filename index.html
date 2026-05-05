@@ -790,6 +790,10 @@
         let allDonors = [];
         let allTransactions = [];
         
+        let unsubSettings = null;
+        let unsubDonors = null;
+        let unsubTransactions = null;
+        
         // State Pagination & Filter
         let donaturPage = 1;
         let donaturRows = 10;
@@ -831,6 +835,9 @@
                 userId = null;
                 csEmail = '';
                 
+                // Panggil pembersihan data total saat logout
+                if (typeof window.clearAppData === 'function') window.clearAppData();
+                
                 loginScreen.classList.remove('hidden');
                 mainApp.classList.add('hidden');
             }
@@ -870,6 +877,55 @@
             try { await signOut(auth); } catch (error) { console.error(error); }
         }
 
+        window.clearAppData = function() {
+            // Hentikan listener sinkronisasi Firebase agar tidak bocor
+            if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+            if (unsubDonors) { unsubDonors(); unsubDonors = null; }
+            if (unsubTransactions) { unsubTransactions(); unsubTransactions = null; }
+
+            // Reset Variabel State
+            allDonors = [];
+            allTransactions = [];
+            donaturPage = 1;
+            transaksiPage = 1;
+            tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
+            csProfile = { nama: '', kode: '' };
+            arrRekening = ['Tunai / Kasir']; 
+            arrProgram = ['Infaq Umum'];
+            arrSapaan = ['Bapak', 'Ibu', 'Sdr', 'Sdri', 'Hamba Allah'];
+            batasHariJenuh = 30;
+
+            // Bersihkan Tabel & List UI
+            document.getElementById('table-transaksi-body').innerHTML = '';
+            document.getElementById('table-donatur-body').innerHTML = '';
+            document.getElementById('dash-program-list').innerHTML = '<li class="text-center text-gray-400 py-2">Belum ada data</li>';
+            document.getElementById('dash-ranking-list').innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada data</li>';
+            
+            const dList = document.getElementById('donor-list');
+            if (dList) dList.innerHTML = '';
+            
+            // Bersihkan Statistik Dashboard
+            document.getElementById('dash-total-donasi').textContent = 'Rp 0';
+            document.getElementById('dash-tx-count').textContent = '0';
+            document.getElementById('dash-donasi-iklan').textContent = 'Rp 0';
+            document.getElementById('dash-tx-iklan').textContent = '(0 tx)';
+            document.getElementById('dash-donasi-crm').textContent = 'Rp 0';
+            document.getElementById('dash-tx-crm').textContent = '(0 tx)';
+            document.getElementById('dash-kat-istiqomah').textContent = '0';
+            document.getElementById('dash-kat-baru').textContent = '0';
+            document.getElementById('dash-kat-jenuh').textContent = '0';
+            document.getElementById('dash-nama-cs').textContent = 'CS';
+            document.getElementById('cs-email-display-mobile').textContent = 'CS';
+            
+            // Reset Form & Input Pencarian
+            document.getElementById('login-form').reset();
+            document.getElementById('search-donatur').value = '';
+            document.getElementById('search-transaksi').value = '';
+            
+            // Diam-diam kembali ke menu awal (Dashboard) untuk login selanjutnya
+            if (typeof navigate === 'function') navigate('transaksi');
+        }
+
         // Setup Listener
         function setupDataListeners() {
             if (!user) return;
@@ -883,7 +939,7 @@
 
             // 1. Settings General
             const settingsRef = doc(db, 'users', userId, 'settings', 'general');
-            onSnapshot(settingsRef, (docSnap) => {
+            unsubSettings = onSnapshot(settingsRef, (docSnap) => {
                 if(docSnap.exists()) {
                     const data = docSnap.data();
                     
@@ -924,7 +980,7 @@
 
             // 2. Data Donatur 
             const donaturRef = collection(db, 'users', userId, 'donors');
-            onSnapshot(donaturRef, (snapshot) => {
+            unsubDonors = onSnapshot(donaturRef, (snapshot) => {
                 allDonors = [];
                 const datalist = document.getElementById('donor-list');
                 if(datalist) datalist.innerHTML = '';
@@ -947,7 +1003,7 @@
 
             // 3. Data Transaksi
             const transaksiRef = collection(db, 'users', userId, 'transactions');
-            onSnapshot(transaksiRef, (snapshot) => {
+            unsubTransactions = onSnapshot(transaksiRef, (snapshot) => {
                 allTransactions = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
