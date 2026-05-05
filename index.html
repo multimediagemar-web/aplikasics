@@ -54,7 +54,7 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi CS Donatur</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 1.2.0</div>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 1.4.0</div>
                     <p class="text-gray-500 text-[11px] mt-1">Sistem pendataan transaksi donasi</p>
                 </div>
                 
@@ -106,51 +106,83 @@
             <!-- Scrollable Views Area -->
             <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
                 
-                <!-- VIEW: DASHBOARD (MENGGANTIKAN VIEW INPUT TRANSAKSI LAMA) -->
-                <div id="view-transaksi" class="fade-in space-y-4">
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-transaksi" class="fade-in space-y-4 pb-4">
                     
-                    <!-- Dashboard Header -->
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800">Halo, <span id="dash-nama-cs" class="text-emerald-600">CS</span>! 👋</h2>
-                        <p class="text-xs text-gray-500">Berikut ringkasan performa donasi hari ini.</p>
+                    <!-- Dashboard Header & Time Filter -->
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800">Halo, <span id="dash-nama-cs" class="text-emerald-600">CS</span>! 👋</h2>
+                            <p class="text-[10px] text-gray-500">Ringkasan laporan donasi.</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <input type="date" id="dash-start-date" onchange="updateDashboardStats()" class="text-[10px] border border-gray-300 rounded-lg px-1.5 py-1.5 bg-white outline-none focus:border-emerald-500 font-medium text-gray-700 shadow-sm w-[105px]">
+                            <span class="text-xs text-gray-400">-</span>
+                            <input type="date" id="dash-end-date" onchange="updateDashboardStats()" class="text-[10px] border border-gray-300 rounded-lg px-1.5 py-1.5 bg-white outline-none focus:border-emerald-500 font-medium text-gray-700 shadow-sm w-[105px]">
+                        </div>
                     </div>
 
                     <!-- Summary Cards -->
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                            <p class="text-[10px] text-gray-500 font-medium mb-1">Donasi Bulan Ini</p>
-                            <h3 class="text-base font-bold text-emerald-600 truncate" id="dash-total-donasi">Rp 0</h3>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                            <p class="text-[10px] text-gray-500 font-medium mb-1">Tx Hari Ini</p>
-                            <h3 class="text-lg font-bold text-blue-600" id="dash-tx-hari-ini">0</h3>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 col-span-2 flex justify-between items-center">
-                            <div>
-                                <p class="text-[10px] text-gray-500 font-medium mb-1">Total Donatur Aktif</p>
-                                <h3 class="text-lg font-bold text-gray-800" id="dash-total-donatur">0 <span class="text-xs font-normal text-gray-500">Orang</span></h3>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-5 text-emerald-600">
+                                <i class="fas fa-wallet text-6xl"></i>
                             </div>
-                            <div class="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
-                                <i class="fas fa-users text-lg"></i>
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Total Donasi (<span id="lbl-dash-time">Hari Ini</span>)</p>
+                            <h3 class="text-base font-bold text-emerald-600 truncate mb-1" id="dash-total-donasi">Rp 0</h3>
+                            <p class="text-[10px] text-gray-400 font-medium"><i class="fas fa-receipt mr-1"></i> <span id="dash-tx-count">0</span> Transaksi</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                            <p class="text-[10px] text-gray-500 font-medium mb-2 border-b border-gray-100 pb-1.5 text-center">Status Donatur (Total)</p>
+                            <div class="grid grid-cols-3 gap-1 text-center">
+                                <div>
+                                    <span class="block text-sm font-bold text-emerald-600" id="dash-kat-istiqomah">0</span>
+                                    <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Istiqomah</span>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-bold text-blue-600" id="dash-kat-baru">0</span>
+                                    <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Baru</span>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-bold text-red-500" id="dash-kat-jenuh">0</span>
+                                    <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Jenuh</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Floating Action Button Area -->
-                    <button onclick="showInputModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition duration-200 flex items-center justify-center text-sm">
-                        <i class="fas fa-plus-circle text-lg mr-2"></i> <span>Catat Transaksi Baru</span>
-                    </button>
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-2">
+                        <button onclick="showInputModal()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md shadow-emerald-600/20 transition duration-200 flex items-center justify-center text-xs">
+                            <i class="fas fa-plus-circle text-base mr-2"></i> <span>Transaksi Baru</span>
+                        </button>
+                        <button onclick="showReportModal()" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md shadow-blue-600/20 transition duration-200 flex items-center justify-center text-xs">
+                            <i class="fas fa-paper-plane text-base mr-2"></i> <span>Laporan TG</span>
+                        </button>
+                    </div>
 
-                    <!-- Recent Activity -->
+                    <!-- Laporan Per Program -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
+                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-box text-emerald-600 mr-2"></i>Donasi per Program</h2>
+                        </div>
+                        <div class="p-4">
+                            <ul id="dash-program-list" class="space-y-3.5 text-xs">
+                                <li class="text-center text-gray-400 py-2">Belum ada data</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ranking Donatur -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
                         <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                            <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-history text-gray-400 mr-2"></i>Transaksi Terakhir</h2>
-                            <button onclick="navigate('data-transaksi')" class="text-[10px] text-emerald-600 font-medium hover:underline">Lihat Semua</button>
+                            <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-trophy text-yellow-500 mr-2"></i>Ranking Donatur</h2>
+                            <span class="text-[10px] text-gray-500 font-medium bg-gray-200 px-2 py-0.5 rounded-full shadow-inner">Top 5</span>
                         </div>
                         <div class="p-0">
-                            <ul id="dash-recent-tx" class="divide-y divide-gray-100 text-xs">
-                                <!-- Populated by JS -->
-                                <li class="p-4 text-center text-gray-400">Belum ada transaksi</li>
+                            <ul id="dash-ranking-list" class="divide-y divide-gray-100 text-xs">
+                                <li class="p-4 text-center text-gray-400">Belum ada data</li>
                             </ul>
                         </div>
                     </div>
@@ -492,6 +524,22 @@
             </div>
         </div>
 
+        <!-- MODAL: PREVIEW LAPORAN TELEGRAM -->
+        <div id="modal-report-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] flex flex-col">
+                <h3 class="text-sm font-bold text-gray-800 mb-3 shrink-0"><i class="fas fa-file-alt text-blue-600 mr-2"></i>Pratinjau Laporan</h3>
+                <div class="flex-1 overflow-y-auto mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs font-mono whitespace-pre-wrap text-gray-700" id="report-preview-text">
+                    <!-- Preview akan diisi oleh JS -->
+                </div>
+                <div class="flex justify-end space-x-2 shrink-0">
+                    <button onclick="hideReportModal()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium transition">Batal</button>
+                    <button onclick="sendReportTelegram()" id="btn-send-report" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center transition shadow-md shadow-blue-600/20">
+                        <i class="fas fa-paper-plane mr-2"></i> Kirim ke TG <i id="report-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal Filter Transaksi -->
         <div id="modal-filter-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
@@ -763,6 +811,13 @@
         function setupDataListeners() {
             if (!user) return;
 
+            // Set default date range to TODAY
+            if(!document.getElementById('dash-start-date').value) {
+                const today = new Date();
+                document.getElementById('dash-start-date').valueAsDate = today;
+                document.getElementById('dash-end-date').valueAsDate = today;
+            }
+
             // 1. Settings General
             const settingsRef = doc(db, 'users', userId, 'settings', 'general');
             onSnapshot(settingsRef, (docSnap) => {
@@ -839,63 +894,236 @@
         window.updateDashboardStats = function() {
             if(!user) return;
             
-            // Stats Update
-            document.getElementById('dash-total-donatur').innerHTML = `${allDonors.length} <span class="text-xs font-normal text-gray-500">Orang</span>`;
-
             const today = new Date();
-            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            let totalBulanIni = 0;
-            let txHariIni = 0;
+            today.setHours(0, 0, 0, 0);
 
-            // Format tanggal hari ini "YYYY-MM-DD"
-            const tglHariIniStr = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const startDateInput = document.getElementById('dash-start-date').value;
+            const endDateInput = document.getElementById('dash-end-date').value;
+            
+            const startDate = startDateInput ? new Date(startDateInput) : new Date(0);
+            startDate.setHours(0, 0, 0, 0);
+            
+            const endDate = endDateInput ? new Date(endDateInput) : new Date();
+            endDate.setHours(23, 59, 59, 999);
 
-            allTransactions.forEach(tx => {
+            // 1. Labels UI Update
+            const startStr = startDateInput ? new Date(startDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short'}) : 'Awal';
+            const endStr = endDateInput ? new Date(endDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short'}) : 'Akhir';
+            document.getElementById('lbl-dash-time').textContent = `${startStr} - ${endStr}`;
+
+            // 2. Filter Transaksi Berdasarkan Rentang Waktu
+            let filteredTx = allTransactions.filter(tx => {
                 const txDate = new Date(tx.tanggal);
-                if (txDate >= startOfMonth) {
-                    totalBulanIni += tx.jumlah;
-                }
-                if (tx.tanggal === tglHariIniStr) {
-                    txHariIni++;
-                }
+                return txDate >= startDate && txDate <= endDate;
             });
 
-            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-            document.getElementById('dash-total-donasi').textContent = formatter.format(totalBulanIni);
-            document.getElementById('dash-tx-hari-ini').textContent = txHariIni;
-
-            // Recent Transaksi Update
-            const recentList = document.getElementById('dash-recent-tx');
-            recentList.innerHTML = '';
+            // 3. Hitung Total Donasi & Transaksi pada rentang waktu tersebut
+            const totalDonasi = filteredTx.reduce((sum, tx) => sum + tx.jumlah, 0);
+            const txCount = filteredTx.length;
             
-            const sortedTx = [...allTransactions].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-            const top5 = sortedTx.slice(0, 5);
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+            document.getElementById('dash-total-donasi').textContent = formatter.format(totalDonasi);
+            document.getElementById('dash-tx-count').textContent = txCount;
 
-            if(top5.length === 0) {
-                recentList.innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada transaksi</li>';
+            // 4. Hitung & Tampilkan Donasi per Program
+            const programSummary = {};
+            filteredTx.forEach(tx => {
+                if(!programSummary[tx.program]) programSummary[tx.program] = { jumlah: 0, count: 0 };
+                programSummary[tx.program].jumlah += tx.jumlah;
+                programSummary[tx.program].count += 1;
+            });
+            const programArr = Object.keys(programSummary).map(p => ({ 
+                program: p, 
+                jumlah: programSummary[p].jumlah,
+                count: programSummary[p].count
+            })).sort((a,b) => b.jumlah - a.jumlah);
+            
+            const progList = document.getElementById('dash-program-list');
+            progList.innerHTML = '';
+            if(programArr.length === 0) {
+                progList.innerHTML = '<li class="text-center text-gray-400 py-2">Belum ada data pada periode ini</li>';
             } else {
-                top5.forEach(tx => {
-                    const dateObj = new Date(tx.tanggal);
-                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
-                    recentList.innerHTML += `
-                        <li class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-xs font-bold">
-                                    ${tx.namaLengkap.charAt(0).toUpperCase()}
+                programArr.forEach(p => {
+                    const percent = totalDonasi > 0 ? (p.jumlah / totalDonasi) * 100 : 0;
+                    progList.innerHTML += `
+                        <li>
+                            <div class="flex justify-between items-end mb-1">
+                                <div>
+                                    <span class="font-medium text-gray-700">${p.program}</span>
+                                    <span class="text-[9px] text-gray-500 ml-1">(${p.count} tx)</span>
                                 </div>
-                                <div class="truncate max-w-[120px] sm:max-w-[150px]">
-                                    <p class="font-medium text-gray-800 leading-tight truncate">${tx.namaLengkap}</p>
-                                    <p class="text-[10px] text-gray-500 truncate">${tx.program} • ${tglFormat}</p>
-                                </div>
+                                <span class="font-bold text-emerald-600">${formatter.format(p.jumlah)}</span>
                             </div>
-                            <div class="text-right">
-                                <p class="font-bold text-emerald-600 whitespace-nowrap">${formatter.format(tx.jumlah)}</p>
+                            <div class="w-full bg-emerald-50 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${percent}%"></div>
                             </div>
                         </li>
                     `;
                 });
             }
+
+            // 5. Hitung & Tampilkan Ranking Donatur
+            const donorSummary = {};
+            filteredTx.forEach(tx => {
+                if(!donorSummary[tx.donorId]) {
+                    donorSummary[tx.donorId] = { id: tx.donorId, nama: tx.namaLengkap, total: 0, count: 0 };
+                }
+                donorSummary[tx.donorId].total += tx.jumlah;
+                donorSummary[tx.donorId].count += 1;
+            });
+            
+            const rankingArr = Object.values(donorSummary).sort((a,b) => b.total - a.total).slice(0, 5);
+            const rankList = document.getElementById('dash-ranking-list');
+            rankList.innerHTML = '';
+            
+            if(rankingArr.length === 0) {
+                rankList.innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada donatur pada periode ini</li>';
+            } else {
+                rankingArr.forEach((d, index) => {
+                    let medal = `<span class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-[10px]">${index + 1}</span>`;
+                    if(index === 0) medal = `<span class="w-7 h-7 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
+                    if(index === 1) medal = `<span class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
+                    if(index === 2) medal = `<span class="w-7 h-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
+
+                    rankList.innerHTML += `
+                        <li class="px-4 py-3 flex justify-between items-center hover:bg-gray-50 border-b border-gray-50 last:border-0">
+                            <div class="flex items-center">
+                                <div class="mr-3">${medal}</div>
+                                <div class="truncate max-w-[120px] sm:max-w-[150px]">
+                                    <p class="font-medium text-gray-800 leading-tight truncate">${d.nama}</p>
+                                    <p class="text-[10px] text-gray-500 mt-0.5"><i class="fas fa-check-circle text-emerald-500"></i> ${d.count} Transaksi</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-emerald-600 whitespace-nowrap">${formatter.format(d.total)}</p>
+                            </div>
+                        </li>
+                    `;
+                });
+            }
+
+            // 6. Hitung Status Kategori Donatur (Dihitung secara total keseluruhan waktu untuk keakuratan bisnis)
+            let katIstiqomah = 0, katBaru = 0, katJenuh = 0;
+            
+            allDonors.forEach(d => {
+                const txs = allTransactions.filter(t => t.donorId === d.id);
+                if (txs.length === 0) return;
+                
+                const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                const lastTxDate = new Date(sortedTxs[0].tanggal);
+                lastTxDate.setHours(0, 0, 0, 0);
+                
+                const diffDays = Math.floor((today - lastTxDate) / (1000 * 60 * 60 * 24));
+                const uniqueDays = new Set(txs.map(t => t.tanggal)).size;
+
+                if (diffDays > batasHariJenuh) {
+                    katJenuh++;
+                } else if (uniqueDays > 1) {
+                    katIstiqomah++;
+                } else {
+                    katBaru++;
+                }
+            });
+            
+            document.getElementById('dash-kat-istiqomah').textContent = katIstiqomah;
+            document.getElementById('dash-kat-baru').textContent = katBaru;
+            document.getElementById('dash-kat-jenuh').textContent = katJenuh;
         }
+
+        // ==========================
+        // FITUR LAPORAN KE TELEGRAM
+        // ==========================
+        window.showReportModal = function() {
+            if(!user) return;
+            const previewEl = document.getElementById('report-preview-text');
+            
+            const startDateInput = document.getElementById('dash-start-date').value;
+            const endDateInput = document.getElementById('dash-end-date').value;
+            const startStr = startDateInput ? new Date(startDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}) : '-';
+            const endStr = endDateInput ? new Date(endDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}) : '-';
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const startDate = startDateInput ? new Date(startDateInput) : new Date(0);
+            startDate.setHours(0, 0, 0, 0);
+            const endDate = endDateInput ? new Date(endDateInput) : new Date();
+            endDate.setHours(23, 59, 59, 999);
+
+            let filteredTx = allTransactions.filter(tx => {
+                const txDate = new Date(tx.tanggal);
+                return txDate >= startDate && txDate <= endDate;
+            });
+
+            const totalDonasi = filteredTx.reduce((sum, tx) => sum + tx.jumlah, 0);
+            const txCount = filteredTx.length;
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+
+            // Program breakdown
+            const programSummary = {};
+            filteredTx.forEach(tx => {
+                if(!programSummary[tx.program]) programSummary[tx.program] = { jumlah: 0, count: 0 };
+                programSummary[tx.program].jumlah += tx.jumlah;
+                programSummary[tx.program].count += 1;
+            });
+            
+            let programText = "";
+            Object.keys(programSummary).forEach(p => {
+                programText += `▫️ ${p}: ${formatter.format(programSummary[p].jumlah)} (${programSummary[p].count} tx)\n`;
+            });
+            if(programText === "") programText = "Belum ada transaksi donasi.\n";
+
+            const infoCS = csProfile.nama ? `${csProfile.nama} (${csProfile.kode})` : csEmail;
+
+            // Template Teks Laporan
+            const reportStr = `📊 *LAPORAN DONASI*\n\n` +
+                              `🗓 *Periode:* ${startStr} s/d ${endStr}\n` +
+                              `💰 *Total Donasi:* ${formatter.format(totalDonasi)}\n` +
+                              `📈 *Total Transaksi:* ${txCount} tx\n\n` +
+                              `*Rincian per Program:*\n${programText}\n` +
+                              `👩‍💻 *Dilaporkan oleh:* ${infoCS}`;
+
+            previewEl.textContent = reportStr;
+            document.getElementById('modal-report-tx').classList.remove('hidden');
+        }
+
+        window.hideReportModal = function() {
+            document.getElementById('modal-report-tx').classList.add('hidden');
+        }
+
+        window.sendReportTelegram = async function() {
+            if(!tgSettings.token || !tgSettings.chatId) return showToast("Harap isi Pengaturan Telegram!", "error");
+            
+            const btn = document.getElementById('btn-send-report');
+            const spinner = document.getElementById('report-spinner');
+            btn.disabled = true; spinner.classList.remove('hidden');
+
+            const text = document.getElementById('report-preview-text').textContent;
+
+            try {
+                const tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendMessage`;
+                const response = await fetch(tgUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: tgSettings.chatId,
+                        text: text,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                
+                const result = await response.json();
+                if (!result.ok) throw new Error(result.description);
+                
+                showToast("Laporan berhasil dikirim!", "success");
+                hideReportModal();
+            } catch(e) {
+                showToast("Gagal kirim laporan", "error");
+                console.error(e);
+            } finally {
+                btn.disabled = false; spinner.classList.add('hidden');
+            }
+        }
+
 
         function updateDropdownUI(elementId, dataArray, placeholder) {
             const el = document.getElementById(elementId);
