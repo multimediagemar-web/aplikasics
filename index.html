@@ -28,10 +28,10 @@
 </head>
 <body class="h-[100dvh] flex items-center justify-center sm:py-6 overflow-hidden">
 
-    <!-- Mobile Wrapper (Simulates phone on desktop) -->
+    <!-- Mobile Wrapper -->
     <div id="app-wrapper" class="w-full h-full sm:max-w-[400px] sm:h-[95vh] bg-gray-50 relative flex flex-col sm:rounded-[2rem] sm:shadow-2xl sm:border-[6px] sm:border-gray-800 overflow-hidden">
 
-        <!-- Toast Notification (Absolute to Wrapper) -->
+        <!-- Toast Notification -->
         <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 -translate-y-[150%] opacity-0 transition-all duration-300 z-[60] flex items-center p-3 w-[90%] text-white rounded-xl shadow-lg" role="alert">
             <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white bg-opacity-20">
                 <i id="toast-icon" class="fas fa-check"></i>
@@ -54,7 +54,7 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi CS Donatur</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 1.1.0</div>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 1.2.0</div>
                     <p class="text-gray-500 text-[11px] mt-1">Sistem pendataan transaksi donasi</p>
                 </div>
                 
@@ -106,94 +106,52 @@
             <!-- Scrollable Views Area -->
             <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
                 
-                <!-- VIEW: INPUT TRANSAKSI -->
-                <div id="view-transaksi" class="fade-in">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
-                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                            <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>Input Transaksi</h2>
+                <!-- VIEW: DASHBOARD (MENGGANTIKAN VIEW INPUT TRANSAKSI LAMA) -->
+                <div id="view-transaksi" class="fade-in space-y-4">
+                    
+                    <!-- Dashboard Header -->
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800">Halo, <span id="dash-nama-cs" class="text-emerald-600">CS</span>! 👋</h2>
+                        <p class="text-xs text-gray-500">Berikut ringkasan performa donasi hari ini.</p>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Donasi Bulan Ini</p>
+                            <h3 class="text-base font-bold text-emerald-600 truncate" id="dash-total-donasi">Rp 0</h3>
                         </div>
-                        <div class="p-4">
-                            <form id="form-transaksi" class="space-y-4">
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal</label>
-                                    <input type="date" id="t-tanggal" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm">
-                                </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Tx Hari Ini</p>
+                            <h3 class="text-lg font-bold text-blue-600" id="dash-tx-hari-ini">0</h3>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 col-span-2 flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] text-gray-500 font-medium mb-1">Total Donatur Aktif</p>
+                                <h3 class="text-lg font-bold text-gray-800" id="dash-total-donatur">0 <span class="text-xs font-normal text-gray-500">Orang</span></h3>
+                            </div>
+                            <div class="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
+                                <i class="fas fa-users text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
 
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">ID Donatur</label>
-                                    <div class="relative">
-                                        <input type="text" id="t-id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none uppercase text-sm" placeholder="Contoh: DON-001" autocomplete="off" list="donor-list">
-                                        <datalist id="donor-list"></datalist>
-                                        <p class="text-[10px] text-emerald-600 mt-1"><i class="fas fa-info-circle"></i> Ketik ID donatur lama untuk auto-fill.</p>
-                                    </div>
-                                </div>
+                    <!-- Floating Action Button Area -->
+                    <button onclick="showInputModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition duration-200 flex items-center justify-center text-sm">
+                        <i class="fas fa-plus-circle text-lg mr-2"></i> <span>Catat Transaksi Baru</span>
+                    </button>
 
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Sapaan</label>
-                                        <select id="t-sapaan" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white text-sm">
-                                            <option value="" disabled selected>Pilih</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Panggilan</label>
-                                        <input type="text" id="t-panggilan" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Budi">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                                    <input type="text" id="t-lengkap" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Budi Santoso">
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">WhatsApp</label>
-                                    <input type="tel" id="t-wa" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="0812...">
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Jumlah (Rp)</label>
-                                    <input type="number" id="t-jumlah" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="500000" min="1">
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Rekening Tujuan</label>
-                                    <select id="t-rekening" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white text-sm">
-                                        <option value="" disabled selected>Pilih Rekening</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Program</label>
-                                    <select id="t-program" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white text-sm">
-                                        <option value="" disabled selected>Pilih Program</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Bukti Transfer <span class="text-red-500">*</span></label>
-                                    <div class="mt-1 flex justify-center px-4 pt-4 pb-4 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 relative">
-                                        <div class="space-y-1 text-center">
-                                            <i class="fas fa-image text-2xl text-gray-400 mb-1" id="preview-icon"></i>
-                                            <img id="image-preview" class="hidden mx-auto h-24 object-cover rounded-md mb-2 shadow-sm">
-                                            <div class="flex text-xs text-gray-600 justify-center">
-                                                <label for="t-foto" class="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 px-2 py-1 border border-emerald-200">
-                                                    <span>Pilih File</span>
-                                                    <input id="t-foto" name="t-foto" type="file" class="sr-only" accept="image/*" required onchange="previewImage(event)">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="pt-3">
-                                    <button type="submit" id="btn-submit-transaksi" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-200 flex items-center justify-center text-sm">
-                                        <i class="fas fa-paper-plane mr-2"></i> <span>Simpan & Kirim</span>
-                                        <i id="submit-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
-                                    </button>
-                                </div>
-                            </form>
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
+                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                            <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-history text-gray-400 mr-2"></i>Transaksi Terakhir</h2>
+                            <button onclick="navigate('data-transaksi')" class="text-[10px] text-emerald-600 font-medium hover:underline">Lihat Semua</button>
+                        </div>
+                        <div class="p-0">
+                            <ul id="dash-recent-tx" class="divide-y divide-gray-100 text-xs">
+                                <!-- Populated by JS -->
+                                <li class="p-4 text-center text-gray-400">Belum ada transaksi</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -339,7 +297,7 @@
                         </div>
                     </div>
 
-                    <!-- Rekening, Program, Sapaan (Accordion style / stacked) -->
+                    <!-- Rekening, Program, Sapaan -->
                     <div class="space-y-4">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                             <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-money-check text-emerald-600 mr-2"></i>Rekening</h2>
@@ -367,7 +325,7 @@
                         </div>
                     </div>
 
-                    <!-- Tampilan (Font Size) -->
+                    <!-- Tampilan -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                         <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-font text-emerald-600 mr-2"></i>Tampilan</h2>
                         <form id="form-tampilan" class="flex gap-2">
@@ -424,8 +382,8 @@
             <!-- Bottom Navigation -->
             <nav class="bg-white border-t border-gray-200 z-40 flex justify-around px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
                 <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-emerald-600">
-                    <i class="fas fa-file-invoice-dollar text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Input</span>
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Dashboard</span>
                 </button>
                 <button onclick="navigate('data-transaksi')" id="bottom-nav-data-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
                     <i class="fas fa-list-alt text-xl mb-1"></i>
@@ -441,6 +399,98 @@
                 </button>
             </nav>
         </main>
+
+        <!-- MODAL: INPUT TRANSAKSI BARU -->
+        <div id="modal-input-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] overflow-y-auto relative">
+                <div class="flex justify-between items-center mb-4 sticky top-0 bg-white z-10 pb-2 border-b border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-800"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>Input Transaksi Baru</h3>
+                    <button onclick="hideInputModal()" class="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <form id="form-transaksi" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal</label>
+                        <input type="date" id="t-tanggal" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm bg-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">ID Donatur</label>
+                        <div class="relative">
+                            <input type="text" id="t-id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none uppercase text-sm" placeholder="Contoh: DON-001" autocomplete="off" list="donor-list">
+                            <datalist id="donor-list"></datalist>
+                            <p class="text-[10px] text-emerald-600 mt-1"><i class="fas fa-info-circle"></i> Ketik ID lama untuk auto-fill.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Sapaan</label>
+                            <select id="t-sapaan" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white text-sm">
+                                <option value="" disabled selected>Pilih</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Panggilan</label>
+                            <input type="text" id="t-panggilan" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Budi">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                        <input type="text" id="t-lengkap" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="Budi Santoso">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">WhatsApp</label>
+                        <input type="tel" id="t-wa" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="0812...">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Jumlah (Rp)</label>
+                        <input type="number" id="t-jumlah" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm" placeholder="500000" min="1">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Rekening Tujuan</label>
+                        <select id="t-rekening" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white text-sm">
+                            <option value="" disabled selected>Pilih Rekening</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Program</label>
+                        <select id="t-program" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white text-sm">
+                            <option value="" disabled selected>Pilih Program</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Bukti Transfer <span class="text-red-500">*</span></label>
+                        <div class="mt-1 flex justify-center px-4 pt-4 pb-4 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 relative">
+                            <div class="space-y-1 text-center">
+                                <i class="fas fa-image text-2xl text-gray-400 mb-1" id="preview-icon"></i>
+                                <img id="image-preview" class="hidden mx-auto h-24 object-cover rounded-md mb-2 shadow-sm">
+                                <div class="flex text-xs text-gray-600 justify-center">
+                                    <label for="t-foto" class="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 px-2 py-1 border border-emerald-200">
+                                        <span>Pilih File</span>
+                                        <input id="t-foto" name="t-foto" type="file" class="sr-only" accept="image/*" required onchange="previewImage(event)">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 flex space-x-2">
+                        <button type="button" onclick="hideInputModal()" class="w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-lg text-sm transition text-center">Batal</button>
+                        <button type="submit" id="btn-submit-transaksi" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-200 flex items-center justify-center text-sm">
+                            <i class="fas fa-paper-plane mr-2"></i> <span>Kirim</span>
+                            <i id="submit-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- Modal Filter Transaksi -->
         <div id="modal-filter-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
@@ -663,8 +713,7 @@
                 mainApp.classList.remove('hidden');
                 
                 csEmailDisplayMobile.textContent = csEmail;
-                document.getElementById('t-tanggal').valueAsDate = new Date();
-
+                
                 setupDataListeners();
             } else {
                 user = null;
@@ -735,12 +784,14 @@
                     }
                 }
                 
-                // Update UI Settings
+                // Update UI Settings & Dashboard
                 document.getElementById('tg-token').value = tgSettings.token;
                 document.getElementById('tg-chatid').value = tgSettings.chatId;
                 document.getElementById('set-nama-cs').value = csProfile.nama;
                 document.getElementById('set-kode-cs').value = csProfile.kode;
                 document.getElementById('set-hari-jenuh').value = batasHariJenuh;
+                
+                document.getElementById('dash-nama-cs').textContent = csProfile.nama || csEmail.split('@')[0];
 
                 updateDropdownUI('t-sapaan', arrSapaan, 'Pilih Sapaan');
                 updateDropdownUI('t-rekening', arrRekening, 'Pilih Rekening');
@@ -768,6 +819,7 @@
                     }
                 });
                 window.renderDonaturTable();
+                window.updateDashboardStats();
             });
 
             // 3. Data Transaksi
@@ -780,7 +832,69 @@
                     allTransactions.push(data);
                 });
                 window.renderTransaksiTable();
+                window.updateDashboardStats();
             });
+        }
+
+        window.updateDashboardStats = function() {
+            if(!user) return;
+            
+            // Stats Update
+            document.getElementById('dash-total-donatur').innerHTML = `${allDonors.length} <span class="text-xs font-normal text-gray-500">Orang</span>`;
+
+            const today = new Date();
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            let totalBulanIni = 0;
+            let txHariIni = 0;
+
+            // Format tanggal hari ini "YYYY-MM-DD"
+            const tglHariIniStr = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+            allTransactions.forEach(tx => {
+                const txDate = new Date(tx.tanggal);
+                if (txDate >= startOfMonth) {
+                    totalBulanIni += tx.jumlah;
+                }
+                if (tx.tanggal === tglHariIniStr) {
+                    txHariIni++;
+                }
+            });
+
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+            document.getElementById('dash-total-donasi').textContent = formatter.format(totalBulanIni);
+            document.getElementById('dash-tx-hari-ini').textContent = txHariIni;
+
+            // Recent Transaksi Update
+            const recentList = document.getElementById('dash-recent-tx');
+            recentList.innerHTML = '';
+            
+            const sortedTx = [...allTransactions].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            const top5 = sortedTx.slice(0, 5);
+
+            if(top5.length === 0) {
+                recentList.innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada transaksi</li>';
+            } else {
+                top5.forEach(tx => {
+                    const dateObj = new Date(tx.tanggal);
+                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                    recentList.innerHTML += `
+                        <li class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-xs font-bold">
+                                    ${tx.namaLengkap.charAt(0).toUpperCase()}
+                                </div>
+                                <div class="truncate max-w-[120px] sm:max-w-[150px]">
+                                    <p class="font-medium text-gray-800 leading-tight truncate">${tx.namaLengkap}</p>
+                                    <p class="text-[10px] text-gray-500 truncate">${tx.program} • ${tglFormat}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-emerald-600 whitespace-nowrap">${formatter.format(tx.jumlah)}</p>
+                            </div>
+                        </li>
+                    `;
+                });
+            }
         }
 
         function updateDropdownUI(elementId, dataArray, placeholder) {
@@ -974,6 +1088,9 @@
                 document.getElementById('t-tanggal').valueAsDate = new Date();
                 document.getElementById('image-preview').classList.add('hidden');
                 document.getElementById('preview-icon').classList.remove('hidden');
+
+                // Sembunyikan Modal setelah berhasil
+                window.hideInputModal();
 
             } catch (error) {
                 console.error(error);
@@ -1521,6 +1638,16 @@
     <script>
         const views = ['view-transaksi', 'view-data-transaksi', 'view-data-donatur', 'view-pengaturan'];
         const bottomNavIds = ['bottom-nav-transaksi', 'bottom-nav-data-transaksi', 'bottom-nav-data-donatur', 'bottom-nav-pengaturan'];
+
+        // Menampilkan & Menyembunyikan Pop-Up Input Modal Baru
+        window.showInputModal = function() {
+            document.getElementById('modal-input-tx').classList.remove('hidden');
+            document.getElementById('t-tanggal').valueAsDate = new Date();
+        }
+
+        window.hideInputModal = function() {
+            document.getElementById('modal-input-tx').classList.add('hidden');
+        }
 
         function navigate(viewName) {
             views.forEach(v => document.getElementById(v).classList.add('hidden'));
