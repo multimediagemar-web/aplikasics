@@ -25,6 +25,26 @@
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
+    <script>
+        // Init font size instantly to prevent layout shift
+        let currentFont = localStorage.getItem('localFontSize') || 12;
+        document.documentElement.style.fontSize = currentFont + 'px';
+        
+        window.changeFontSize = function(delta) {
+            currentFont = parseInt(currentFont) + delta;
+            if (currentFont < 10) currentFont = 10;
+            if (currentFont > 20) currentFont = 20;
+            document.documentElement.style.fontSize = currentFont + 'px';
+            localStorage.setItem('localFontSize', currentFont);
+            const displayEl = document.getElementById('display-font-size');
+            if (displayEl) displayEl.textContent = currentFont;
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const displayEl = document.getElementById('display-font-size');
+            if (displayEl) displayEl.textContent = currentFont;
+        });
+    </script>
 </head>
 <body class="h-[100dvh] flex items-center justify-center sm:py-6 overflow-hidden">
 
@@ -42,6 +62,12 @@
             </button>
         </div>
 
+        <!-- Global Loading Overlay -->
+        <div id="global-loader" class="absolute inset-0 bg-white/80 z-[100] flex flex-col items-center justify-center hidden backdrop-blur-sm transition-all duration-300">
+            <div class="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mb-3 shadow-md"></div>
+            <p class="text-sm font-bold text-emerald-700 animate-pulse">Mensinkronisasi Data...</p>
+        </div>
+
         <!-- Login Screen -->
         <div id="login-screen" class="absolute inset-0 bg-emerald-600 z-50 flex flex-col justify-center px-6 fade-in overflow-y-auto">
             <!-- Decorative shape -->
@@ -54,7 +80,7 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi CS Donatur</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 3.1.1</div>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 2.5.0</div>
                     <p class="text-gray-500 text-[11px] mt-1">Sistem pendataan transaksi donasi</p>
                 </div>
                 
@@ -67,7 +93,6 @@
                                 <option value="pusat">CS 1-5</option>
                                 <option value="cabang_a">CS 6-10</option>
                                 <option value="cabang_b">CS 11-15</option>
-                                <option value="cabang_c">CS 4</option>
                             </select>
                         </div>
                     </div>
@@ -75,7 +100,7 @@
                         <label class="block text-xs font-medium text-gray-700 mb-1">Email</label>
                         <div class="relative">
                             <i class="fas fa-envelope absolute left-3 top-2.5 text-gray-400"></i>
-                            <input type="email" id="cs-email" required class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm" placeholder="namacs@kodecs.com">
+                            <input type="email" id="cs-email" required class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm" placeholder="email@lembaga.org">
                         </div>
                     </div>
                     <div>
@@ -100,6 +125,16 @@
             </div>
             <div class="mt-8 mb-4 text-center text-xs text-emerald-100 relative z-10">
                 Dibuat oleh <br> <a href="https://masjidashqaf.com" target="_blank" class="text-white font-semibold hover:underline">masjidashqaf.com</a>
+            </div>
+            
+            <!-- Pengaturan Font di Depan -->
+            <div class="mt-2 mb-6 flex justify-center items-center space-x-3 relative z-10">
+                <span class="text-[10px] text-emerald-100 font-medium uppercase tracking-wider">Ukuran Teks:</span>
+                <div class="flex items-center bg-white/10 rounded-full p-1 backdrop-blur-sm border border-white/20">
+                    <button type="button" onclick="changeFontSize(-1)" class="w-7 h-7 rounded-full hover:bg-white/20 text-white flex items-center justify-center font-bold transition">-</button>
+                    <span id="display-font-size" class="w-6 text-center text-sm font-bold text-white">12</span>
+                    <button type="button" onclick="changeFontSize(1)" class="w-7 h-7 rounded-full hover:bg-white/20 text-white flex items-center justify-center font-bold transition">+</button>
+                </div>
             </div>
         </div>
 
@@ -383,15 +418,6 @@
                             </div>
                             <ul id="list-sapaan-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
                         </div>
-                    </div>
-
-                    <!-- Tampilan -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                        <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-font text-emerald-600 mr-2"></i>Tampilan</h2>
-                        <form id="form-tampilan" class="flex gap-2">
-                            <input type="number" id="set-font-size" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" min="10" max="18" value="12">
-                            <button type="submit" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-xs font-medium">Simpan</button>
-                        </form>
                     </div>
 
                     <!-- Kategori Donatur -->
@@ -813,15 +839,7 @@
                 storageBucket: "aplikasicsnew2.firebasestorage.app",
                 messagingSenderId: "254951448688",
                 appId: "1:254951448688:web:9b93538a042366c4a494b5"
-            },
-            'cabang_c': {
-                apiKey: "AIzaSyCRPn5PyAkxBEq6kp9ELBXXLbN2KVEY6Xc",
-                authDomain: "gsmapp-17fbc.firebaseapp.com",
-                projectId: "gsmapp-17fbc",
-                storageBucket: "gsmapp-17fbc.firebasestorage.app",
-                messagingSenderId: "558451142995",
-                appId: "1:558451142995:web:15e9577a0e1c693241b1a6"
-            },
+            }
         };
 
         // Global Variables
@@ -838,6 +856,14 @@
         let unsubSettings = null;
         let unsubDonors = null;
         let unsubTransactions = null;
+        
+        // Data Loading State
+        let dataLoadStatus = { settings: false, donors: false, tx: false };
+        function checkLoader() {
+            if(dataLoadStatus.settings && dataLoadStatus.donors && dataLoadStatus.tx) {
+                document.getElementById('global-loader').classList.add('hidden');
+            }
+        }
         
         // State Pagination & Filter
         let donaturPage = 1;
@@ -1013,6 +1039,10 @@
         // Setup Listener
         function setupDataListeners() {
             if (!user) return;
+            
+            // Tampilkan loader saat mulai ambil data dari Firebase
+            document.getElementById('global-loader').classList.remove('hidden');
+            dataLoadStatus = { settings: false, donors: false, tx: false };
 
             // Set default date range to TODAY
             if(!document.getElementById('dash-start-date').value) {
@@ -1035,11 +1065,6 @@
                     if(data.program) arrProgram = data.program;
                     if(data.sapaan) arrSapaan = data.sapaan;
                     if(data.batasHariJenuh) batasHariJenuh = data.batasHariJenuh;
-                    
-                    if(data.fontSize) {
-                        document.documentElement.style.fontSize = data.fontSize + 'px';
-                        document.getElementById('set-font-size').value = data.fontSize;
-                    }
                 }
                 
                 // Update UI Settings & Dashboard
@@ -1057,9 +1082,13 @@
                 updateSettingsListUI('list-sapaan-ui', arrSapaan, 'sapaan');
                 updateSettingsListUI('list-rekening-ui', arrRekening, 'rekening');
                 updateSettingsListUI('list-program-ui', arrProgram, 'program');
+                
+                dataLoadStatus.settings = true;
+                checkLoader();
             }, (error) => {
                 console.error("Firestore Permission Error (Settings):", error);
                 showToast("Akses Ditolak: Periksa Aturan Keamanan Firestore Anda", "error");
+                dataLoadStatus.settings = true; checkLoader(); // Tetap hilangkan loader jika error
             });
 
             // 2. Data Donatur 
@@ -1081,8 +1110,12 @@
                 });
                 window.renderDonaturTable();
                 window.updateDashboardStats();
+                
+                dataLoadStatus.donors = true;
+                checkLoader();
             }, (error) => {
                 console.error("Firestore Permission Error (Donors):", error);
+                dataLoadStatus.donors = true; checkLoader();
             });
 
             // 3. Data Transaksi
@@ -1096,8 +1129,12 @@
                 });
                 window.renderTransaksiTable();
                 window.updateDashboardStats();
+                
+                dataLoadStatus.tx = true;
+                checkLoader();
             }, (error) => {
                 console.error("Firestore Permission Error (Transactions):", error);
+                dataLoadStatus.tx = true; checkLoader();
             });
         }
 
@@ -1419,20 +1456,6 @@
                 });
             }
         }
-
-        document.getElementById('form-tampilan').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
-            try {
-                const size = document.getElementById('set-font-size').value;
-                await setDoc(doc(db, 'users', userId, 'settings', 'general'), { fontSize: parseInt(size) }, { merge: true });
-                document.documentElement.style.fontSize = size + 'px';
-                showToast("Ukuran disimpan", "success");
-            } catch(e) { showToast("Gagal menyimpan", "error"); } finally {
-                btn.innerHTML = 'Simpan'; btn.disabled = false;
-            }
-        });
 
         document.getElementById('form-kategori').addEventListener('submit', async (e) => {
             e.preventDefault();
