@@ -320,8 +320,7 @@
                                     <tr>
                                         <th class="py-2 px-3 border-b">ID & Nama</th>
                                         <th class="py-2 px-3 border-b">Total Donasi</th>
-                                        <th class="py-2 px-3 border-b">Donasi Pertama</th>
-                                        <th class="py-2 px-3 border-b">Donasi Terakhir</th>
+                                        <th class="py-2 px-3 border-b">Waktu Donasi</th>
                                         <th class="py-2 px-3 border-b text-center">Kategori</th>
                                         <th class="py-2 px-3 border-b text-center">Aksi</th>
                                     </tr>
@@ -680,19 +679,33 @@
         <!-- Modal Filter Donatur -->
         <div id="modal-filter-dn" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
-                <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-filter text-emerald-600 mr-2"></i>Urutkan Donatur</h3>
-                <div>
-                    <label class="block text-xs text-gray-700 mb-1">Berdasarkan</label>
-                    <select id="filter-dn-sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-white">
-                        <option value="id_asc">ID (A-Z)</option>
-                        <option value="id_desc">ID (Z-A)</option>
-                        <option value="tx_desc">Transaksi Terbanyak</option>
-                        <option value="tx_asc">Transaksi Terdikit</option>
-                        <option value="last_tx_desc">Donasi Terakhir (Terbaru)</option>
-                        <option value="last_tx_asc">Donasi Terakhir (Terlama)</option>
-                        <option value="first_tx_desc">Donasi Pertama (Terbaru)</option>
-                        <option value="first_tx_asc">Donasi Pertama (Terlama)</option>
-                    </select>
+                <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter Donatur</h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs text-gray-700 mb-1">Urutkan Berdasarkan</label>
+                        <select id="filter-dn-sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-white">
+                            <option value="id_asc">ID (A-Z)</option>
+                            <option value="id_desc">ID (Z-A)</option>
+                            <option value="tx_desc">Transaksi Terbanyak</option>
+                            <option value="tx_asc">Transaksi Terdikit</option>
+                            <option value="amount_desc">Total Donasi Tertinggi</option>
+                            <option value="amount_asc">Total Donasi Terendah</option>
+                            <option value="last_tx_desc">Donasi Terakhir (Terbaru)</option>
+                            <option value="last_tx_asc">Donasi Terakhir (Terlama)</option>
+                            <option value="first_tx_desc">Donasi Pertama (Terbaru)</option>
+                            <option value="first_tx_asc">Donasi Pertama (Terlama)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-700 mb-1">Kategori</label>
+                        <select id="filter-dn-kategori" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-white">
+                            <option value="all">Semua Kategori</option>
+                            <option value="Baru">Baru</option>
+                            <option value="Istiqomah">Istiqomah</option>
+                            <option value="Jenuh">Jenuh</option>
+                            <option value="Belum Donasi">Belum Donasi</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="flex justify-end space-x-2 mt-5">
                     <button onclick="hideFilterModal('donatur')" class="px-4 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
@@ -882,6 +895,7 @@
         let donaturPage = 1;
         let donaturRows = 10;
         let dnSortBy = 'id_asc';
+        let dnKategoriFilter = 'all';
 
         let transaksiPage = 1;
         let transaksiRows = 10;
@@ -1645,6 +1659,7 @@
                 document.getElementById('modal-filter-tx').classList.remove('hidden');
             } else {
                 document.getElementById('filter-dn-sort').value = dnSortBy;
+                document.getElementById('filter-dn-kategori').value = dnKategoriFilter;
                 document.getElementById('modal-filter-dn').classList.remove('hidden');
             }
         }
@@ -1663,6 +1678,7 @@
 
         window.applyFilterDonatur = function() {
             dnSortBy = document.getElementById('filter-dn-sort').value;
+            dnKategoriFilter = document.getElementById('filter-dn-kategori').value;
             window.hideFilterModal('donatur');
             window.filterDonatur();
         }
@@ -1738,11 +1754,17 @@
                 );
             }
 
+            if (dnKategoriFilter !== 'all') {
+                filtered = filtered.filter(d => d.kategori === dnKategoriFilter);
+            }
+
             filtered.sort((a, b) => {
                 if (dnSortBy === 'id_asc') return a.id.localeCompare(b.id);
                 if (dnSortBy === 'id_desc') return b.id.localeCompare(a.id);
                 if (dnSortBy === 'tx_desc') return b.txCount - a.txCount;
                 if (dnSortBy === 'tx_asc') return a.txCount - b.txCount;
+                if (dnSortBy === 'amount_desc') return b.txAmount - a.txAmount;
+                if (dnSortBy === 'amount_asc') return a.txAmount - b.txAmount;
                 if (dnSortBy === 'last_tx_desc') return b.rawLastTxDate - a.rawLastTxDate;
                 if (dnSortBy === 'last_tx_asc') return a.rawLastTxDate - b.rawLastTxDate;
                 if (dnSortBy === 'first_tx_desc') return b.rawFirstTxDate - a.rawFirstTxDate;
@@ -1776,8 +1798,10 @@
                             <span class="text-emerald-600 font-semibold block group-hover:text-emerald-800">${formatter.format(d.txAmount)}</span>
                             <span class="text-gray-500 text-[10px] group-hover:text-emerald-600"><i class="fas fa-search-plus mr-1"></i>${d.txCount} x donasi</span>
                         </td>
-                        <td class="py-2 px-3 border-b text-[10px] text-gray-500 whitespace-nowrap">${d.tglPertama}</td>
-                        <td class="py-2 px-3 border-b text-[10px] text-gray-500 whitespace-nowrap">${d.tglTerakhir}</td>
+                        <td class="py-2 px-3 border-b whitespace-nowrap">
+                            <span class="text-[9px] text-gray-400 block mb-0.5">Awal: ${d.tglPertama}</span>
+                            <span class="text-[10px] text-gray-700 font-medium block">Akhir: ${d.tglTerakhir}</span>
+                        </td>
                         <td class="py-2 px-3 border-b text-center align-middle">
                             <span class="${d.katColor} px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${d.kategori}</span>
                         </td>
