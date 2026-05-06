@@ -54,7 +54,7 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi CS Donatur</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 3.1.0</div>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 3.1.1</div>
                     <p class="text-gray-500 text-[11px] mt-1">Sistem pendataan transaksi donasi</p>
                 </div>
                 
@@ -74,7 +74,7 @@
                         <label class="block text-xs font-medium text-gray-700 mb-1">Email</label>
                         <div class="relative">
                             <i class="fas fa-envelope absolute left-3 top-2.5 text-gray-400"></i>
-                            <input type="email" id="cs-email" required class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm" placeholder="email@lembaga.org">
+                            <input type="email" id="cs-email" required class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm" placeholder="namacs@kodecs.com">
                         </div>
                     </div>
                     <div>
@@ -403,6 +403,13 @@
                             </div>
                             <button type="submit" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-xs font-medium h-[34px]">Simpan</button>
                         </form>
+                    </div>
+
+                    <!-- Instal Aplikasi (PWA) -->
+                    <div class="bg-emerald-50 rounded-xl shadow-sm border border-emerald-100 p-4 hidden" id="pwa-install-section">
+                        <h2 class="text-sm font-semibold text-emerald-800 mb-1"><i class="fas fa-mobile-alt mr-2"></i> Instal Aplikasi</h2>
+                        <p class="text-[10px] text-emerald-600 mb-3">Pasang di layar utama HP Anda agar lebih cepat diakses layaknya aplikasi biasa.</p>
+                        <button onclick="installPWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-medium shadow-sm transition"><i class="fas fa-download mr-2"></i> Download Aplikasi</button>
                     </div>
 
                     <!-- CSV -->
@@ -2262,6 +2269,39 @@
             toast.classList.add('-translate-y-[150%]', 'opacity-0');
             toast.classList.remove('translate-y-0', 'opacity-100');
         }
+
+        // --- Logika Instalasi PWA (Tombol Download) ---
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Mencegah browser memunculkan mini-infobar secara otomatis
+            e.preventDefault();
+            // Simpan event agar bisa dipicu dari tombol kita
+            deferredPrompt = e;
+            // Tampilkan bagian tombol install di pengaturan
+            const installSection = document.getElementById('pwa-install-section');
+            if (installSection) installSection.classList.remove('hidden');
+        });
+
+        window.installPWA = async function() {
+            if (!deferredPrompt) return;
+            // Tampilkan prompt instalasi bawaan OS/Browser
+            deferredPrompt.prompt();
+            // Tunggu respon pengguna (apakah mengklik 'Install' atau 'Cancel')
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            // Kosongkan prompt karena hanya bisa dipakai sekali
+            deferredPrompt = null;
+            // Sembunyikan tombol
+            const installSection = document.getElementById('pwa-install-section');
+            if (installSection) installSection.classList.add('hidden');
+        }
+
+        window.addEventListener('appinstalled', () => {
+            showToast("Aplikasi berhasil dipasang di layar HP!", "success");
+            const installSection = document.getElementById('pwa-install-section');
+            if (installSection) installSection.classList.add('hidden');
+        });
 
         // Tambahan Registrasi Service Worker untuk PWA dengan Auto-Update
         if ('serviceWorker' in navigator) {
