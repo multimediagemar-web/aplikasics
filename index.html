@@ -688,6 +688,10 @@
                         <option value="id_desc">ID (Z-A)</option>
                         <option value="tx_desc">Transaksi Terbanyak</option>
                         <option value="tx_asc">Transaksi Terdikit</option>
+                        <option value="last_tx_desc">Donasi Terakhir (Terbaru)</option>
+                        <option value="last_tx_asc">Donasi Terakhir (Terlama)</option>
+                        <option value="first_tx_desc">Donasi Pertama (Terbaru)</option>
+                        <option value="first_tx_asc">Donasi Pertama (Terlama)</option>
                     </select>
                 </div>
                 <div class="flex justify-end space-x-2 mt-5">
@@ -1677,6 +1681,8 @@
                 let katColor = 'bg-gray-100 text-gray-600';
                 let tglPertama = '-';
                 let tglTerakhir = '-';
+                let rawFirstTxDate = 0;
+                let rawLastTxDate = 0;
                 
                 if (txs.length > 0) {
                     const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
@@ -1686,6 +1692,9 @@
                     
                     tglTerakhir = lastTxDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' });
                     tglPertama = firstTxDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' });
+                    
+                    rawLastTxDate = lastTxDate.getTime();
+                    rawFirstTxDate = firstTxDate.getTime();
                     
                     lastTxDate.setHours(0, 0, 0, 0);
                     
@@ -1714,7 +1723,9 @@
                     kategori: kategori, 
                     katColor: katColor,
                     tglPertama: tglPertama,
-                    tglTerakhir: tglTerakhir
+                    tglTerakhir: tglTerakhir,
+                    rawFirstTxDate: rawFirstTxDate,
+                    rawLastTxDate: rawLastTxDate
                 };
             });
 
@@ -1732,6 +1743,10 @@
                 if (dnSortBy === 'id_desc') return b.id.localeCompare(a.id);
                 if (dnSortBy === 'tx_desc') return b.txCount - a.txCount;
                 if (dnSortBy === 'tx_asc') return a.txCount - b.txCount;
+                if (dnSortBy === 'last_tx_desc') return b.rawLastTxDate - a.rawLastTxDate;
+                if (dnSortBy === 'last_tx_asc') return a.rawLastTxDate - b.rawLastTxDate;
+                if (dnSortBy === 'first_tx_desc') return b.rawFirstTxDate - a.rawFirstTxDate;
+                if (dnSortBy === 'first_tx_asc') return a.rawFirstTxDate - b.rawFirstTxDate;
             });
 
             const totalItems = filtered.length;
