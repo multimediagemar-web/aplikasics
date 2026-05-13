@@ -969,10 +969,10 @@
             initializeSelectedFirebase(savedCabang);
         }
 
-        // Jika user iseng ganti pilihan cabang di dropdown padahal firebase sudah aktif, reload browser agar bersih
+        // Jika user ganti pilihan cabang di dropdown padahal firebase sudah aktif, reload browser agar bersih
         document.getElementById('cs-lembaga').addEventListener('change', (e) => {
+            localStorage.setItem('activeCabang', e.target.value);
             if (app) {
-                localStorage.setItem('activeCabang', e.target.value);
                 window.location.reload();
             }
         });
@@ -1001,14 +1001,24 @@
                 localStorage.setItem('activeCabang', cabangId); // Simpan sesi cabang
                 
             } catch (error) {
-                let errorMsg = "Terjadi kesalahan.";
+                let errorMsg = `Gagal: ${error.message || error.code}`;
+                
+                // Terjemahan pesan error yang umum terjadi
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                     errorMsg = "Email atau Password salah!";
                 } else if (error.code === 'auth/user-not-found') {
                     errorMsg = "Akun tidak ditemukan. Hubungi Admin.";
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    errorMsg = "Fitur Login Email belum diaktifkan di Firebase CS 4!";
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMsg = "Koneksi internet terputus atau diblokir.";
+                } else if (error.code === 'auth/api-key-not-valid') {
+                    errorMsg = "API Key Firebase tidak valid / salah ketik.";
                 }
-                authStatus.textContent = errorMsg;
-                authStatus.className = "mt-3 text-center text-xs font-medium text-red-200 block";
+                
+                authStatus.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> ${errorMsg}`;
+                authStatus.className = "mt-3 text-center text-xs font-medium text-red-600 block bg-red-50 p-2.5 rounded-lg border border-red-200";
+                console.error("Login Error Details:", error);
             } finally {
                 btn.disabled = false;
                 spinner.classList.add('hidden');
@@ -1063,8 +1073,7 @@
             document.getElementById('dash-nama-cs').textContent = 'CS';
             document.getElementById('cs-email-display-mobile').textContent = 'CS';
             
-            // Reset Form & Input Pencarian
-            document.getElementById('login-form').reset();
+            // HAPUS perintah reset form agar pilihan dropdown kelompok CS tidak melompat (error)
             document.getElementById('search-donatur').value = '';
             document.getElementById('search-transaksi').value = '';
             
