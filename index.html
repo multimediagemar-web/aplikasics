@@ -80,8 +80,8 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi Divisi CS</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 3.1.6</div>
-                    <p class="text-gray-500 text-[11px] mt-1">Update doa donatur</p>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 3.1.7</div>
+                    <p class="text-gray-500 text-[11px] mt-1">Update UI responsif</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
@@ -274,13 +274,13 @@
                             </div>
                         </div>
                         <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
-                            <table class="w-full min-w-[500px] text-left border-collapse">
-                                <thead class="bg-gray-50 text-gray-600 text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
+                            <table class="w-full text-left border-collapse table-fixed">
+                                <thead class="bg-gray-50 text-gray-600 text-[9px] sm:text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
                                     <tr>
-                                        <th class="py-2 px-3 border-b">Tanggal</th>
-                                        <th class="py-2 px-3 border-b">Donatur</th>
-                                        <th class="py-2 px-3 border-b text-right">Program & Jumlah</th>
-                                        <th class="py-2 px-3 border-b text-center">Aksi</th>
+                                        <th class="py-2 px-1.5 border-b w-[20%]">Tanggal</th>
+                                        <th class="py-2 px-1.5 border-b w-[35%]">Donatur</th>
+                                        <th class="py-2 px-1.5 border-b text-right w-[28%]">Nominal</th>
+                                        <th class="py-2 px-1.5 border-b text-center w-[17%]">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-transaksi-body" class="text-xs divide-y divide-gray-100"></tbody>
@@ -321,14 +321,13 @@
                             </div>
                         </div>
                         <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
-                            <table class="w-full min-w-[700px] text-left border-collapse">
-                                <thead class="bg-gray-50 text-gray-600 text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
+                            <table class="w-full text-left border-collapse table-fixed">
+                                <thead class="bg-gray-50 text-gray-600 text-[9px] sm:text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
                                     <tr>
-                                        <th class="py-2 px-3 border-b">ID & Nama</th>
-                                        <th class="py-2 px-3 border-b">Total Donasi</th>
-                                        <th class="py-2 px-3 border-b">Waktu Donasi</th>
-                                        <th class="py-2 px-3 border-b text-center">Kategori</th>
-                                        <th class="py-2 px-3 border-b text-center">Aksi</th>
+                                        <th class="py-2 px-1.5 border-b w-[32%]">Donatur</th>
+                                        <th class="py-2 px-1.5 border-b w-[28%]">Donasi</th>
+                                        <th class="py-2 px-1.5 border-b w-[23%]">Status</th>
+                                        <th class="py-2 px-1.5 border-b text-center w-[17%]">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-donatur-body" class="text-xs divide-y divide-gray-100"></tbody>
@@ -795,9 +794,43 @@
                         <label class="block text-[10px] text-gray-700 mb-1">WhatsApp</label>
                         <input type="tel" id="edit-dn-wa" required class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
                     </div>
-                    <div class="flex justify-end space-x-2 mt-4">
-                        <button type="button" onclick="hideEditDnModal()" class="px-3 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
-                        <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">Simpan</button>
+                    
+                    <div class="mt-3 border-t border-gray-100 pt-3">
+                        <label class="block text-[10px] text-gray-700 font-bold mb-1"><i class="fas fa-bullhorn text-orange-500 mr-1"></i> Jadwal Blasting</label>
+                        <select id="edit-dn-blasting-type" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs bg-white mb-2" onchange="toggleBlastingInputs()">
+                            <option value="">Belum Diatur</option>
+                            <option value="Harian">Setiap Hari</option>
+                            <option value="Mingguan">Setiap Minggu</option>
+                            <option value="Bulanan">Setiap Bulan</option>
+                            <option value="Tidak Blasting">Tidak Blasting</option>
+                            <option value="Blokir">Blokir</option>
+                        </select>
+                        
+                        <div id="blasting-mingguan-inputs" class="hidden space-y-1 mb-2">
+                            <p class="text-[9px] text-gray-500">Pilih Hari:</p>
+                            <div class="grid grid-cols-3 gap-1 text-[10px]">
+                                <label><input type="checkbox" value="Senin" class="blasting-day"> Senin</label>
+                                <label><input type="checkbox" value="Selasa" class="blasting-day"> Selasa</label>
+                                <label><input type="checkbox" value="Rabu" class="blasting-day"> Rabu</label>
+                                <label><input type="checkbox" value="Kamis" class="blasting-day"> Kamis</label>
+                                <label><input type="checkbox" value="Jumat" class="blasting-day"> Jumat</label>
+                                <label><input type="checkbox" value="Sabtu" class="blasting-day"> Sabtu</label>
+                                <label><input type="checkbox" value="Minggu" class="blasting-day"> Minggu</label>
+                            </div>
+                        </div>
+                        
+                        <div id="blasting-bulanan-inputs" class="hidden mb-2">
+                            <p class="text-[9px] text-gray-500 mb-1">Tanggal (1-31):</p>
+                            <input type="number" id="edit-dn-blasting-date" min="1" max="31" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="Misal: 25">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-4 pt-2 border-t border-gray-100">
+                        <button type="button" onclick="triggerDeleteFromEdit('donatur')" class="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1.5 bg-red-50 rounded-lg transition"><i class="fas fa-trash-alt mr-1"></i> Hapus</button>
+                        <div class="flex space-x-2">
+                            <button type="button" onclick="hideEditDnModal()" class="px-3 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
+                            <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">Simpan</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -845,9 +878,12 @@
                             <select id="edit-tx-program" required class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs bg-white"></select>
                         </div>
                     </div>
-                    <div class="flex justify-end space-x-2 mt-4 pt-2 border-t border-gray-100">
-                        <button type="button" onclick="hideEditTxModal()" class="px-3 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
-                        <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">Simpan</button>
+                    <div class="flex justify-between items-center mt-4 pt-2 border-t border-gray-100">
+                        <button type="button" onclick="triggerDeleteFromEdit('transaksi')" class="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1.5 bg-red-50 rounded-lg transition"><i class="fas fa-trash-alt mr-1"></i> Hapus</button>
+                        <div class="flex space-x-2">
+                            <button type="button" onclick="hideEditTxModal()" class="px-3 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
+                            <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">Simpan</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -959,7 +995,7 @@
         // State Pagination & Filter
         let donaturPage = 1;
         let donaturRows = 10;
-        let dnSortBy = 'id_asc';
+        let dnSortBy = 'id_desc';
         let dnKategoriFilter = 'all';
 
         let transaksiPage = 1;
@@ -1929,25 +1965,31 @@
                     const tr = document.createElement('tr');
                     // Tambahkan pengaman escape string untuk data kutip
                     const safeName = (d.namaLengkap || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                    
+                    let blastingBadge = '-';
+                    if (d.blastingType === 'Harian') blastingBadge = '<span class="bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 text-[8px] block w-fit">Harian</span>';
+                    else if (d.blastingType === 'Mingguan') blastingBadge = `<span class="bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 text-[8px] block w-fit truncate max-w-[60px] sm:max-w-full" title="${d.blastingValue}">Mg: ${d.blastingValue}</span>`;
+                    else if (d.blastingType === 'Bulanan') blastingBadge = `<span class="bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded border border-orange-200 text-[8px] block w-fit">Bln: ${d.blastingValue}</span>`;
+                    else if (d.blastingType === 'Tidak Blasting') blastingBadge = '<span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 text-[8px] block w-fit">Tidak Blasting</span>';
+                    else if (d.blastingType === 'Blokir') blastingBadge = '<span class="bg-red-50 text-red-600 px-1.5 py-0.5 rounded border border-red-200 text-[8px] block w-fit">Blokir</span>';
+
                     tr.innerHTML = `
-                        <td class="py-2 px-3 border-b">
-                            <span class="font-semibold text-emerald-700 block">${d.id || '-'}</span>
-                            <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" onclick="showWaModal('${d.whatsapp || ''}', '${safeName}')">${d.namaLengkap || '-'}</span>
+                        <td class="py-2 px-1.5 border-b align-top w-[32%]">
+                            <span class="font-semibold text-emerald-700 block text-[10px] sm:text-xs">${d.id || '-'}</span>
+                            <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer block text-xs leading-tight" onclick="showWaModal('${d.whatsapp || ''}', '${safeName}')">${d.namaLengkap || '-'}</span>
+                            <span class="text-[9px] text-gray-400 block mt-0.5">Awal: ${d.tglPertama}</span>
                         </td>
-                        <td class="py-2 px-3 border-b cursor-pointer hover:bg-emerald-50 rounded transition-colors group" onclick="showHistoryModal('${d.id}', '${safeName}')">
-                            <span class="text-emerald-600 font-semibold block group-hover:text-emerald-800">${formatter.format(d.txAmount)}</span>
-                            <span class="text-gray-500 text-[10px] group-hover:text-emerald-600"><i class="fas fa-search-plus mr-1"></i>${d.txCount} x donasi</span>
+                        <td class="py-2 px-1.5 border-b align-top cursor-pointer hover:bg-emerald-50 rounded transition-colors group w-[28%]" onclick="showHistoryModal('${d.id}', '${safeName}')">
+                            <span class="text-emerald-600 font-semibold block group-hover:text-emerald-800 text-xs">${formatter.format(d.txAmount)}</span>
+                            <span class="text-gray-500 text-[9px] group-hover:text-emerald-600 block"><i class="fas fa-search-plus mr-0.5"></i>${d.txCount}x</span>
+                            <span class="text-[9px] text-gray-400 block mt-0.5">Akhir: ${d.tglTerakhir}</span>
                         </td>
-                        <td class="py-2 px-3 border-b whitespace-nowrap">
-                            <span class="text-[9px] text-gray-400 block mb-0.5">Awal: ${d.tglPertama}</span>
-                            <span class="text-[10px] text-gray-700 font-medium block">Akhir: ${d.tglTerakhir}</span>
+                        <td class="py-2 px-1.5 border-b align-top w-[23%]">
+                            <span class="${d.katColor} px-1.5 py-0.5 rounded text-[9px] block mb-1 text-center w-fit">${d.kategori}</span>
+                            ${blastingBadge}
                         </td>
-                        <td class="py-2 px-3 border-b text-center align-middle">
-                            <span class="${d.katColor} px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${d.kategori}</span>
-                        </td>
-                        <td class="py-2 px-3 border-b text-center align-middle whitespace-nowrap">
-                            <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded mr-1"><i class="fas fa-edit"></i></button>
-                            <button onclick="showDeleteModal('donatur', '${d.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded"><i class="fas fa-trash"></i></button>
+                        <td class="py-2 px-1.5 border-b text-center align-top w-[17%]">
+                            <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-1 w-full text-[10px] font-medium transition shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2019,17 +2061,17 @@
                     const tglFormat = !isNaN(dateObj) ? dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' }) : '-';
                     const safeName = (t.namaLengkap || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
                     tr.innerHTML = `
-                        <td class="py-2 px-3 border-b text-gray-500 whitespace-nowrap">${tglFormat}</td>
-                        <td class="py-2 px-3 border-b">
-                            <span class="font-semibold block">${t.donorId || '-'}</span>
-                            <span class="text-[10px] text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" onclick="showWaModal('${t.whatsapp || ''}', '${safeName}')">${t.namaLengkap || '-'}</span>
+                        <td class="py-2 px-1.5 border-b text-gray-500 whitespace-nowrap text-[10px] sm:text-xs align-top w-[20%]">${tglFormat}</td>
+                        <td class="py-2 px-1.5 border-b align-top w-[35%]">
+                            <span class="font-semibold block text-[10px] sm:text-xs">${t.donorId || '-'}</span>
+                            <span class="text-[10px] text-blue-600 hover:text-blue-800 hover:underline cursor-pointer block leading-tight" onclick="showWaModal('${t.whatsapp || ''}', '${safeName}')">${t.namaLengkap || '-'}</span>
                         </td>
-                        <td class="py-2 px-3 border-b text-right">
-                            <span class="font-semibold text-emerald-600 block">${formatter.format(t.jumlah || 0)}</span>
-                            <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap inline-block mt-1">${t.program || '-'}</span>
-                        <td class="py-2 px-3 border-b text-center align-middle whitespace-nowrap">
-                            <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-1.5 rounded mr-1"><i class="fas fa-edit"></i></button>
-                            <button onclick="showDeleteModal('transaksi', '${t.docId}')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded"><i class="fas fa-trash"></i></button>
+                        <td class="py-2 px-1.5 border-b text-right align-top w-[28%]">
+                            <span class="font-semibold text-emerald-600 block text-xs">${formatter.format(t.jumlah || 0)}</span>
+                            <span class="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded text-[9px] inline-block mt-0.5 leading-tight text-right">${t.program || '-'}</span>
+                        </td>
+                        <td class="py-2 px-1.5 border-b text-center align-top w-[17%]">
+                            <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-1 w-full text-[10px] font-medium transition shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2073,7 +2115,7 @@
             let csvContent = "";
             let filename = "";
             if (type === 'donatur') {
-                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori\n";
+                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori,jadwalBlasting\n";
                 allDonors.forEach(d => {
                     const txs = allTransactions.filter(t => t.donorId === d.id);
                     const txCount = txs.length;
@@ -2104,9 +2146,16 @@
                             kategori = 'Baru';
                         }
                     }
+                    
+                    let txtBlasting = "Belum Diatur";
+                    if (d.blastingType === 'Harian') txtBlasting = "Setiap Hari";
+                    else if (d.blastingType === 'Mingguan') txtBlasting = `Mingguan (${d.blastingValue})`;
+                    else if (d.blastingType === 'Bulanan') txtBlasting = `Bulanan (Tgl ${d.blastingValue})`;
+                    else if (d.blastingType === 'Tidak Blasting') txtBlasting = "Tidak Blasting";
+                    else if (d.blastingType === 'Blokir') txtBlasting = "Blokir";
 
                     const nm = d.namaLengkap.replace(/"/g, '""');
-                    csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori}\n`;
+                    csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori},"${txtBlasting}"\n`;
                 });
                 filename = "data_donatur.csv";
             } else if (type === 'transaksi') {
@@ -2249,6 +2298,20 @@
             targetDelete = { type: null, id: null };
         }
 
+        window.triggerDeleteFromEdit = function(type) {
+            let id = '';
+            if (type === 'donatur') {
+                id = document.getElementById('edit-dn-id').value;
+                window.hideEditDnModal();
+            } else {
+                id = document.getElementById('edit-tx-id').value;
+                window.hideEditTxModal();
+            }
+            if (id) {
+                window.showDeleteModal(type, id);
+            }
+        }
+
         window.executeDeleteItem = async function() {
             if(!user || !targetDelete.id) return;
             const btn = document.getElementById('btn-execute-delete');
@@ -2273,21 +2336,56 @@
             document.getElementById('edit-dn-panggilan').value = dn.namaPanggilan || '';
             document.getElementById('edit-dn-lengkap').value = dn.namaLengkap || '';
             document.getElementById('edit-dn-wa').value = dn.whatsapp || '';
+            
+            document.getElementById('edit-dn-blasting-type').value = dn.blastingType || '';
+            toggleBlastingInputs();
+            if (dn.blastingType === 'Mingguan' && dn.blastingValue) {
+                const days = dn.blastingValue.split(', ');
+                document.querySelectorAll('.blasting-day').forEach(cb => {
+                    cb.checked = days.includes(cb.value);
+                });
+            } else if (dn.blastingType === 'Bulanan') {
+                document.getElementById('edit-dn-blasting-date').value = dn.blastingValue || '';
+            } else {
+                document.querySelectorAll('.blasting-day').forEach(cb => cb.checked = false);
+                document.getElementById('edit-dn-blasting-date').value = '';
+            }
+            
             document.getElementById('modal-edit-dn').classList.remove('hidden');
         }
         window.hideEditDnModal = function() { document.getElementById('modal-edit-dn').classList.add('hidden'); }
+        
+        window.toggleBlastingInputs = function() {
+            const type = document.getElementById('edit-dn-blasting-type').value;
+            document.getElementById('blasting-mingguan-inputs').classList.add('hidden');
+            document.getElementById('blasting-bulanan-inputs').classList.add('hidden');
+            if (type === 'Mingguan') document.getElementById('blasting-mingguan-inputs').classList.remove('hidden');
+            if (type === 'Bulanan') document.getElementById('blasting-bulanan-inputs').classList.remove('hidden');
+        }
         
         document.getElementById('form-edit-dn').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('edit-dn-id').value;
             const btn = e.target.querySelector('button[type="submit"]');
             btn.innerHTML = '...'; btn.disabled = true;
+            
+            const bType = document.getElementById('edit-dn-blasting-type').value;
+            let bValue = '';
+            if (bType === 'Mingguan') {
+                const checkedDays = Array.from(document.querySelectorAll('.blasting-day:checked')).map(cb => cb.value);
+                bValue = checkedDays.join(', ');
+            } else if (bType === 'Bulanan') {
+                bValue = document.getElementById('edit-dn-blasting-date').value;
+            }
+            
             try {
                 await updateDoc(doc(db, 'users', userId, 'donors', id), {
                     sapaan: document.getElementById('edit-dn-sapaan').value,
                     namaPanggilan: document.getElementById('edit-dn-panggilan').value,
                     namaLengkap: document.getElementById('edit-dn-lengkap').value,
                     whatsapp: document.getElementById('edit-dn-wa').value,
+                    blastingType: bType,
+                    blastingValue: bValue,
                     lastUpdated: serverTimestamp()
                 });
                 showToast("Data diubah", "success");
