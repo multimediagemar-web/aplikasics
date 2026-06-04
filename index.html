@@ -615,7 +615,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Screenshot Chat <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Screenshot Chat (Opsional)</label>
                         <div class="mt-1 flex justify-center px-4 pt-4 pb-4 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 relative">
                             <div class="space-y-1 text-center">
                                 <i class="fas fa-image text-2xl text-gray-400 mb-1" id="doa-preview-icon"></i>
@@ -623,7 +623,7 @@
                                 <div class="flex text-xs text-gray-600 justify-center">
                                     <label for="doa-foto" class="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 px-2 py-1 border border-purple-200">
                                         <span>Pilih File SS</span>
-                                        <input id="doa-foto" name="doa-foto" type="file" class="sr-only" accept="image/*" required onchange="previewDoaImage(event)">
+                                        <input id="doa-foto" name="doa-foto" type="file" class="sr-only" accept="image/*" onchange="previewDoaImage(event)">
                                     </label>
                                 </div>
                             </div>
@@ -1794,14 +1794,31 @@
                                 `💬 *Doa:*\n_${teks}_\n\n` +
                                 `👩‍💻 *CS Input:* ${infoCS}`;
 
-                const tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendPhoto`;
-                const formData = new FormData();
-                formData.append('chat_id', tgSettings.chatId);
-                formData.append('photo', fotoFile);
-                formData.append('caption', caption);
-                formData.append('parse_mode', 'Markdown');
+                let tgUrl, options;
 
-                const tgResponse = await fetch(tgUrl, { method: 'POST', body: formData });
+                // Jika ada foto, kirim sebagai SendPhoto. Jika tidak, kirim sebagai teks biasa (SendMessage)
+                if (fotoFile) {
+                    tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendPhoto`;
+                    const formData = new FormData();
+                    formData.append('chat_id', tgSettings.chatId);
+                    formData.append('photo', fotoFile);
+                    formData.append('caption', caption);
+                    formData.append('parse_mode', 'Markdown');
+                    options = { method: 'POST', body: formData };
+                } else {
+                    tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendMessage`;
+                    options = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: tgSettings.chatId,
+                            text: caption,
+                            parse_mode: 'Markdown'
+                        })
+                    };
+                }
+
+                const tgResponse = await fetch(tgUrl, options);
                 const tgResult = await tgResponse.json();
                 
                 if (!tgResult.ok) throw new Error(`Telegram Error: ${tgResult.description}`);
