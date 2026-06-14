@@ -46,10 +46,10 @@
         });
     </script>
 </head>
-<body class="h-[100dvh] flex items-center justify-center sm:py-6 overflow-hidden">
+<body class="h-[100dvh] flex items-center justify-center bg-gray-200 sm:p-4 md:p-6 overflow-hidden">
 
     <!-- Mobile Wrapper -->
-    <div id="app-wrapper" class="w-full h-full sm:max-w-[400px] sm:h-[95vh] bg-gray-50 relative flex flex-col sm:rounded-[2rem] sm:shadow-2xl sm:border-[6px] sm:border-gray-800 overflow-hidden">
+    <div id="app-wrapper" class="w-full h-full md:max-w-4xl lg:max-w-5xl xl:max-w-6xl md:h-[96vh] bg-gray-50 relative flex flex-col md:rounded-2xl md:shadow-2xl overflow-hidden border-gray-300 md:border">
 
         <!-- Toast Notification -->
         <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 -translate-y-[150%] opacity-0 transition-all duration-300 z-[60] flex items-center p-3 w-[90%] text-white rounded-xl shadow-lg" role="alert">
@@ -74,7 +74,7 @@
             <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-50 rounded-full opacity-10"></div>
             <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-emerald-800 rounded-full opacity-20"></div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-xl w-full relative z-10 mt-10">
+            <div class="bg-white p-6 rounded-2xl shadow-xl w-full sm:max-w-md mx-auto relative z-10 mt-10">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
@@ -172,7 +172,7 @@
                     </div>
 
                     <!-- Summary Cards -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-3 md:gap-5">
                         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center relative overflow-hidden">
                             <div class="absolute -right-4 -bottom-4 opacity-5 text-emerald-600">
                                 <i class="fas fa-wallet text-6xl"></i>
@@ -218,16 +218,14 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="space-y-2">
-                        <div class="flex space-x-2">
-                            <button onclick="showInputModal()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md shadow-emerald-600/20 transition duration-200 flex items-center justify-center text-xs">
-                                <i class="fas fa-plus-circle text-base mr-2"></i> <span>Transaksi Baru</span>
-                            </button>
-                            <button onclick="showReportModal()" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md shadow-blue-600/20 transition duration-200 flex items-center justify-center text-xs">
-                                <i class="fas fa-paper-plane text-base mr-2"></i> <span>Laporan TG</span>
-                            </button>
-                        </div>
-                        <button onclick="showDoaModal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md shadow-purple-600/20 transition duration-200 flex items-center justify-center text-xs">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <button onclick="showInputModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md shadow-emerald-600/20 transition duration-200 flex items-center justify-center text-xs">
+                            <i class="fas fa-plus-circle text-base mr-2"></i> <span>Transaksi Baru</span>
+                        </button>
+                        <button onclick="showReportModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md shadow-blue-600/20 transition duration-200 flex items-center justify-center text-xs">
+                            <i class="fas fa-paper-plane text-base mr-2"></i> <span>Laporan TG</span>
+                        </button>
+                        <button onclick="showDoaModal()" class="col-span-2 md:col-span-1 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md shadow-purple-600/20 transition duration-200 flex items-center justify-center text-xs">
                             <i class="fas fa-praying-hands text-base mr-2"></i> <span>Kirim Titipan Doa</span>
                         </button>
                     </div>
@@ -353,7 +351,7 @@
                 </div>
 
                 <!-- VIEW: PENGATURAN -->
-                <div id="view-pengaturan" class="fade-in hidden space-y-4 pb-4">
+                <div id="view-pengaturan" class="fade-in hidden space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start pb-4">
                     
                     <!-- Profil CS -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -478,29 +476,31 @@
             </div>
 
             <!-- Bottom Navigation -->
-            <nav class="bg-white border-t border-gray-200 z-40 flex justify-around px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-                <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-emerald-600">
-                    <i class="fas fa-home text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Dashboard</span>
-                </button>
-                <button onclick="navigate('data-transaksi')" id="bottom-nav-data-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                    <i class="fas fa-list-alt text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Transaksi</span>
-                </button>
-                <button onclick="navigate('data-donatur')" id="bottom-nav-data-donatur" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                    <i class="fas fa-users text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Donatur</span>
-                </button>
-                <button onclick="navigate('pengaturan')" id="bottom-nav-pengaturan" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                    <i class="fas fa-cog text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Pengaturan</span>
-                </button>
-            </nav>
+            <div class="bg-white border-t border-gray-200 z-40 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                <nav class="flex justify-around max-w-md mx-auto px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+                    <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-emerald-600">
+                        <i class="fas fa-home text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Dashboard</span>
+                    </button>
+                    <button onclick="navigate('data-transaksi')" id="bottom-nav-data-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+                        <i class="fas fa-list-alt text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Transaksi</span>
+                    </button>
+                    <button onclick="navigate('data-donatur')" id="bottom-nav-data-donatur" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+                        <i class="fas fa-users text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Donatur</span>
+                    </button>
+                    <button onclick="navigate('pengaturan')" id="bottom-nav-pengaturan" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+                        <i class="fas fa-cog text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Pengaturan</span>
+                    </button>
+                </nav>
+            </div>
         </main>
 
         <!-- MODAL: INPUT TRANSAKSI BARU -->
         <div id="modal-input-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] overflow-y-auto relative">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto relative">
                 <div class="flex justify-between items-center mb-4 sticky top-0 bg-white z-10 pb-2 border-b border-gray-100">
                     <h3 class="text-sm font-bold text-gray-800"><i class="fas fa-plus-circle text-emerald-600 mr-2"></i>Input Transaksi Baru</h3>
                     <button onclick="hideInputModal()" class="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center"><i class="fas fa-times"></i></button>
@@ -597,7 +597,7 @@
 
         <!-- MODAL: INPUT DOA -->
         <div id="modal-input-doa" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] overflow-y-auto relative">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-md max-h-[90vh] overflow-y-auto relative">
                 <div class="flex justify-between items-center mb-4 sticky top-0 bg-white z-10 pb-2 border-b border-gray-100">
                     <h3 class="text-sm font-bold text-gray-800"><i class="fas fa-praying-hands text-purple-600 mr-2"></i>Titipan Doa Donatur</h3>
                     <button onclick="hideDoaModal()" class="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center"><i class="fas fa-times"></i></button>
@@ -643,7 +643,7 @@
 
         <!-- MODAL: PREVIEW LAPORAN TELEGRAM -->
         <div id="modal-report-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] flex flex-col">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-md max-h-[90vh] flex flex-col">
                 <h3 class="text-sm font-bold text-gray-800 mb-3 shrink-0"><i class="fas fa-file-alt text-blue-600 mr-2"></i>Pratinjau Laporan</h3>
                 
                 <div class="grid grid-cols-3 gap-2 mb-3 shrink-0">
@@ -675,7 +675,7 @@
 
         <!-- Modal WhatsApp -->
         <div id="modal-wa" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fab fa-whatsapp text-green-500 mr-2"></i>Kirim Pesan WA</h3>
                 <p class="text-[10px] text-gray-500 mb-2">Ke: <span id="wa-target-name" class="font-bold text-gray-700"></span></p>
                 <input type="hidden" id="wa-target-phone">
@@ -689,7 +689,7 @@
 
         <!-- Modal Riwayat Donasi -->
         <div id="modal-history" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[80vh] flex flex-col">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg max-h-[80vh] flex flex-col">
                 <div class="flex justify-between items-center mb-3 shrink-0 border-b border-gray-100 pb-2">
                     <h3 class="text-sm font-bold text-gray-800"><i class="fas fa-history text-emerald-600 mr-2"></i>Riwayat Donasi</h3>
                     <button onclick="hideHistoryModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
@@ -706,7 +706,7 @@
 
         <!-- Modal Filter Transaksi -->
         <div id="modal-filter-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter Transaksi</h3>
                 <div class="space-y-3">
                     <div>
@@ -734,7 +734,7 @@
 
         <!-- Modal Filter Donatur -->
         <div id="modal-filter-dn" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter Donatur</h3>
                 <div class="space-y-3">
                     <div>
@@ -772,7 +772,7 @@
 
         <!-- Modal Edit Donatur -->
         <div id="modal-edit-dn" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Donatur</h3>
                 <form id="form-edit-dn" class="space-y-3">
                     <input type="hidden" id="edit-dn-id">
@@ -838,7 +838,7 @@
 
         <!-- Modal Edit Transaksi -->
         <div id="modal-edit-tx" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Transaksi</h3>
                 <form id="form-edit-tx" class="space-y-3">
                     <input type="hidden" id="edit-tx-id">
@@ -891,7 +891,7 @@
 
         <!-- Modal Delete -->
         <div id="modal-delete-item" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full text-center">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm text-center">
                 <i class="fas fa-exclamation-circle text-4xl text-red-500 mb-3"></i>
                 <h3 class="text-sm font-bold text-gray-800 mb-1">Hapus Data</h3>
                 <p class="text-xs text-gray-600 mb-5">Data yang dihapus tidak bisa dikembalikan.</p>
@@ -904,7 +904,7 @@
 
         <!-- Reset Modal -->
         <div id="reset-modal" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm">
                 <h3 class="text-sm font-bold text-red-600 mb-2"><i class="fas fa-exclamation-triangle mr-1"></i> Reset Total</h3>
                 <p class="text-xs text-gray-600 mb-4">Ketik <b>RESET</b> untuk menghapus SEMUA data secara permanen.</p>
                 <input type="text" id="reset-confirm-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs uppercase text-center mb-4" placeholder="RESET">
