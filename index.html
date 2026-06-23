@@ -48,11 +48,11 @@
 </head>
 <body class="h-[100dvh] flex items-center justify-center bg-gray-200 sm:p-4 md:p-6 overflow-hidden">
 
-    <!-- Mobile Wrapper -->
+    <!-- Mobile & Desktop Wrapper -->
     <div id="app-wrapper" class="w-full h-full md:max-w-4xl lg:max-w-5xl xl:max-w-6xl md:h-[96vh] bg-gray-50 relative flex flex-col md:rounded-2xl md:shadow-2xl overflow-hidden border-gray-300 md:border">
 
         <!-- Toast Notification -->
-        <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 -translate-y-[150%] opacity-0 transition-all duration-300 z-[60] flex items-center p-3 w-[90%] text-white rounded-xl shadow-lg" role="alert">
+        <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 -translate-y-[150%] opacity-0 transition-all duration-300 z-[60] flex items-center p-3 w-[90%] sm:w-auto sm:min-w-[300px] text-white rounded-xl shadow-lg" role="alert">
             <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white bg-opacity-20">
                 <i id="toast-icon" class="fas fa-check"></i>
             </div>
@@ -80,8 +80,8 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi Divisi CS</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 3.1.7</div>
-                    <p class="text-gray-500 text-[11px] mt-1">Update UI responsif</p>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 4.0.0</div>
+                    <p class="text-gray-500 text-[11px] mt-1">Lead Storage Per Hari</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
@@ -129,7 +129,6 @@
                 Dibuat oleh <br> <a href="https://masjidashqaf.com" target="_blank" class="text-white font-semibold hover:underline">masjidashqaf.com</a>
             </div>
             
-            <!-- Pengaturan Font di Depan -->
             <div class="mt-2 mb-6 flex justify-center items-center space-x-3 relative z-10">
                 <span class="text-[10px] text-emerald-100 font-medium uppercase tracking-wider">Ukuran Teks:</span>
                 <div class="flex items-center bg-white/10 rounded-full p-1 backdrop-blur-sm border border-white/20">
@@ -143,7 +142,6 @@
         <!-- Main Content -->
         <main class="flex-1 flex flex-col h-full relative hidden" id="main-app">
             
-            <!-- Mobile Header -->
             <header class="bg-white shadow-sm px-4 py-3 flex justify-between items-center z-10 shrink-0">
                 <div class="flex items-center space-x-2 text-emerald-700">
                     <i class="fas fa-hand-holding-heart text-lg"></i>
@@ -152,13 +150,10 @@
                 <div class="text-[10px] text-gray-500 font-medium px-3 py-1 bg-gray-100 rounded-full truncate max-w-[120px]" id="cs-email-display-mobile">CS</div>
             </header>
 
-            <!-- Scrollable Views Area -->
             <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
                 
                 <!-- VIEW: DASHBOARD -->
                 <div id="view-transaksi" class="fade-in space-y-4 pb-4">
-                    
-                    <!-- Dashboard Header & Time Filter -->
                     <div class="flex justify-between items-end">
                         <div>
                             <h2 class="text-lg font-bold text-gray-800">Halo, <span id="dash-nama-cs" class="text-emerald-600">CS</span>! 👋</h2>
@@ -171,9 +166,10 @@
                         </div>
                     </div>
 
-                    <!-- Summary Cards -->
+                    <!-- Layout Kartu Dashboard -->
                     <div class="grid grid-cols-2 gap-3 md:gap-5">
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center relative overflow-hidden">
+                        
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center relative overflow-hidden col-span-2 md:col-span-1">
                             <div class="absolute -right-4 -bottom-4 opacity-5 text-emerald-600">
                                 <i class="fas fa-wallet text-6xl"></i>
                             </div>
@@ -198,26 +194,52 @@
                             </div>
                         </div>
                         
-                        <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-                            <p class="text-[10px] text-gray-500 font-medium mb-2 border-b border-gray-100 pb-1.5 text-center">Status Donatur (Total)</p>
-                            <div class="grid grid-cols-3 gap-1 text-center">
-                                <div>
-                                    <span class="block text-sm font-bold text-emerald-600" id="dash-kat-istiqomah">0</span>
-                                    <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Istiqomah</span>
+                        <div class="col-span-2 md:col-span-1 grid grid-cols-2 md:grid-cols-1 gap-3">
+                            <!-- Status Donatur -->
+                            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                                <p class="text-[10px] text-gray-500 font-medium mb-2 border-b border-gray-100 pb-1.5 text-center">Status Donatur (Total)</p>
+                                <div class="grid grid-cols-3 gap-1 text-center">
+                                    <div>
+                                        <span class="block text-sm font-bold text-emerald-600" id="dash-kat-istiqomah">0</span>
+                                        <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Istiqomah</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-bold text-blue-600" id="dash-kat-baru">0</span>
+                                        <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Baru</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-bold text-red-500" id="dash-kat-jenuh">0</span>
+                                        <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Jenuh</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span class="block text-sm font-bold text-blue-600" id="dash-kat-baru">0</span>
-                                    <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Baru</span>
-                                </div>
-                                <div>
-                                    <span class="block text-sm font-bold text-red-500" id="dash-kat-jenuh">0</span>
-                                    <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Jenuh</span>
+                            </div>
+
+                            <!-- Kinerja Lead -->
+                            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center relative">
+                                <!-- Tombol Edit Lead -->
+                                <button onclick="showLeadModal()" class="absolute top-2 right-2 text-gray-300 hover:text-orange-500 transition-colors p-1" title="Update Data Lead">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </button>
+                                <p class="text-[10px] text-gray-500 font-medium mb-2 border-b border-gray-100 pb-1.5 text-center pr-4">Kinerja Lead</p>
+                                <div class="grid grid-cols-3 gap-1 text-center">
+                                    <div>
+                                        <span class="block text-sm font-bold text-gray-800" id="dash-lead-total">0</span>
+                                        <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Total</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-bold text-emerald-600" id="dash-lead-aktif">0</span>
+                                        <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Aktif</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-sm font-bold text-red-500" id="dash-lead-lost">0</span>
+                                        <span class="text-[9px] text-gray-500 font-medium leading-tight block mt-0.5">Lost/Dbl</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                         <button onclick="showInputModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md shadow-emerald-600/20 transition duration-200 flex items-center justify-center text-xs">
                             <i class="fas fa-plus-circle text-base mr-2"></i> <span>Transaksi Baru</span>
@@ -230,28 +252,28 @@
                         </button>
                     </div>
 
-                    <!-- Laporan Per Program -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
-                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                            <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-box text-emerald-600 mr-2"></i>Donasi per Program</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                                <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-box text-emerald-600 mr-2"></i>Donasi per Program</h2>
+                            </div>
+                            <div class="p-4">
+                                <ul id="dash-program-list" class="space-y-3.5 text-xs">
+                                    <li class="text-center text-gray-400 py-2">Belum ada data</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="p-4">
-                            <ul id="dash-program-list" class="space-y-3.5 text-xs">
-                                <li class="text-center text-gray-400 py-2">Belum ada data</li>
-                            </ul>
-                        </div>
-                    </div>
 
-                    <!-- Ranking Donatur -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
-                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                            <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-trophy text-yellow-500 mr-2"></i>Ranking Donatur</h2>
-                            <span class="text-[10px] text-gray-500 font-medium bg-gray-200 px-2 py-0.5 rounded-full shadow-inner">Top 5</span>
-                        </div>
-                        <div class="p-0">
-                            <ul id="dash-ranking-list" class="divide-y divide-gray-100 text-xs">
-                                <li class="p-4 text-center text-gray-400">Belum ada data</li>
-                            </ul>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                <h2 class="text-xs font-semibold text-gray-800"><i class="fas fa-trophy text-yellow-500 mr-2"></i>Ranking Donatur</h2>
+                                <span class="text-[10px] text-gray-500 font-medium bg-gray-200 px-2 py-0.5 rounded-full shadow-inner">Top 5</span>
+                            </div>
+                            <div class="p-0">
+                                <ul id="dash-ranking-list" class="divide-y divide-gray-100 text-xs">
+                                    <li class="p-4 text-center text-gray-400">Belum ada data</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -446,9 +468,10 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                         <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-database text-emerald-600 mr-2"></i>Data CSV</h2>
                         <div class="grid grid-cols-2 gap-2 mb-4">
-                            <button onclick="exportCSV('donatur')" class="border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-download"></i> Donatur</button>
-                            <button onclick="exportCSV('transaksi')" class="border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-download"></i> Transaksi</button>
+                            <button onclick="exportCSV('donatur')" class="border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-download"></i> Semua Donatur</button>
+                            <button onclick="exportCSV('blasting')" class="bg-orange-50 border border-orange-500 text-orange-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-bullhorn"></i> Blasting Aktif</button>
                         </div>
+                        <button onclick="exportCSV('transaksi')" class="w-full border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium mb-4"><i class="fas fa-download"></i> Transaksi</button>
                         <div class="border-t border-gray-100 pt-3">
                             <p class="text-[10px] text-gray-500 mb-2 font-medium">Impor Data Transaksi (CSV)</p>
                             <input type="file" id="csv-file" accept=".csv" class="w-full text-[10px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 border border-gray-300 rounded-md">
@@ -595,6 +618,40 @@
             </div>
         </div>
 
+        <!-- MODAL: INPUT DATA LEAD (Kinerja Lead) PER TANGGAL -->
+        <div id="modal-lead" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-xs relative">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                    <h3 class="text-sm font-bold text-gray-800"><i class="fas fa-users-cog text-orange-600 mr-2"></i>Data Lead Harian</h3>
+                    <button onclick="hideLeadModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                </div>
+                <form id="form-lead" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Pilih Tanggal</label>
+                        <input type="date" id="input-lead-tanggal" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-orange-500 bg-white" onchange="loadLeadDataForDate()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Total Lead</label>
+                        <input type="number" id="input-lead-total" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Lead Aktif</label>
+                        <input type="number" id="input-lead-aktif" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Lead Tidak Aktif/Double</label>
+                        <input type="number" id="input-lead-lost" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-orange-500">
+                    </div>
+                    <div class="pt-3 flex justify-end space-x-2">
+                        <button type="button" onclick="hideLeadModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-medium transition">Batal</button>
+                        <button type="submit" id="btn-submit-lead" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-bold transition flex items-center shadow-md">
+                            Simpan <i id="lead-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- MODAL: INPUT DOA -->
         <div id="modal-input-doa" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-md max-h-[90vh] overflow-y-auto relative">
@@ -615,7 +672,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Screenshot Chat (Opsional)</label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Screenshot Chat <span class="text-gray-400 font-normal ml-1">(Opsional)</span></label>
                         <div class="mt-1 flex justify-center px-4 pt-4 pb-4 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 relative">
                             <div class="space-y-1 text-center">
                                 <i class="fas fa-image text-2xl text-gray-400 mb-1" id="doa-preview-icon"></i>
@@ -646,24 +703,10 @@
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-md max-h-[90vh] flex flex-col">
                 <h3 class="text-sm font-bold text-gray-800 mb-3 shrink-0"><i class="fas fa-file-alt text-blue-600 mr-2"></i>Pratinjau Laporan</h3>
                 
-                <div class="grid grid-cols-3 gap-2 mb-3 shrink-0">
-                    <div>
-                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Total Lead</label>
-                        <input type="number" id="input-lead-total" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs outline-none focus:border-blue-500" value="0" min="0" oninput="updateReportPreview()">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Lead Aktif</label>
-                        <input type="number" id="input-lead-aktif" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs outline-none focus:border-blue-500" value="0" min="0" oninput="updateReportPreview()">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Lead Lost</label>
-                        <input type="number" id="input-lead-lost" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-xs outline-none focus:border-blue-500" value="0" min="0" oninput="updateReportPreview()">
-                    </div>
-                </div>
-
                 <div class="flex-1 overflow-y-auto mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs font-mono whitespace-pre-wrap text-gray-700" id="report-preview-text">
-                    <!-- Preview akan diisi oleh JS -->
+                    <!-- Preview Laporan -->
                 </div>
+                
                 <div class="flex justify-end space-x-2 shrink-0">
                     <button onclick="hideReportModal()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium transition">Batal</button>
                     <button onclick="sendReportTelegram()" id="btn-send-report" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center transition shadow-md shadow-blue-600/20">
@@ -740,8 +783,8 @@
                     <div>
                         <label class="block text-xs text-gray-700 mb-1">Urutkan Berdasarkan</label>
                         <select id="filter-dn-sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-white">
-                            <option value="id_asc">ID (A-Z)</option>
                             <option value="id_desc">ID (Z-A)</option>
+                            <option value="id_asc">ID (A-Z)</option>
                             <option value="tx_desc">Transaksi Terbanyak</option>
                             <option value="tx_asc">Transaksi Terdikit</option>
                             <option value="amount_desc">Total Donasi Tertinggi</option>
@@ -979,15 +1022,17 @@
         let csEmail = '';
         let allDonors = [];
         let allTransactions = [];
+        let allLeads = []; // Array baru untuk menyimpan data lead per hari
         
         let unsubSettings = null;
         let unsubDonors = null;
         let unsubTransactions = null;
+        let unsubLeads = null;
         
         // Data Loading State
-        let dataLoadStatus = { settings: false, donors: false, tx: false };
+        let dataLoadStatus = { settings: false, donors: false, tx: false, leads: false };
         function checkLoader() {
-            if(dataLoadStatus.settings && dataLoadStatus.donors && dataLoadStatus.tx) {
+            if(dataLoadStatus.settings && dataLoadStatus.donors && dataLoadStatus.tx && dataLoadStatus.leads) {
                 document.getElementById('global-loader').classList.add('hidden');
             }
         }
@@ -1130,10 +1175,12 @@
             if (unsubSettings) { unsubSettings(); unsubSettings = null; }
             if (unsubDonors) { unsubDonors(); unsubDonors = null; }
             if (unsubTransactions) { unsubTransactions(); unsubTransactions = null; }
+            if (unsubLeads) { unsubLeads(); unsubLeads = null; }
 
             // Reset Variabel State
             allDonors = [];
             allTransactions = [];
+            allLeads = [];
             donaturPage = 1;
             transaksiPage = 1;
             tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
@@ -1144,10 +1191,17 @@
             batasHariJenuh = 30;
 
             // Bersihkan Tabel & List UI
-            document.getElementById('table-transaksi-body').innerHTML = '';
-            document.getElementById('table-donatur-body').innerHTML = '';
-            document.getElementById('dash-program-list').innerHTML = '<li class="text-center text-gray-400 py-2">Belum ada data</li>';
-            document.getElementById('dash-ranking-list').innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada data</li>';
+            const tblTx = document.getElementById('table-transaksi-body');
+            if (tblTx) tblTx.innerHTML = '';
+            
+            const tblDn = document.getElementById('table-donatur-body');
+            if (tblDn) tblDn.innerHTML = '';
+            
+            const dashProgList = document.getElementById('dash-program-list');
+            if (dashProgList) dashProgList.innerHTML = '<li class="text-center text-gray-400 py-2">Belum ada data</li>';
+            
+            const dashRankList = document.getElementById('dash-ranking-list');
+            if (dashRankList) dashRankList.innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada data</li>';
             
             const dList = document.getElementById('donor-list');
             if (dList) dList.innerHTML = '';
@@ -1164,10 +1218,10 @@
             document.getElementById('dash-kat-jenuh').textContent = '0';
             document.getElementById('dash-nama-cs').textContent = 'CS';
             document.getElementById('cs-email-display-mobile').textContent = 'CS';
-            
-            // HAPUS perintah reset form agar pilihan dropdown kelompok CS tidak melompat (error)
-            document.getElementById('search-donatur').value = '';
-            document.getElementById('search-transaksi').value = '';
+
+            document.getElementById('dash-lead-total').textContent = '0';
+            document.getElementById('dash-lead-aktif').textContent = '0';
+            document.getElementById('dash-lead-lost').textContent = '0';
             
             // Diam-diam kembali ke menu awal (Dashboard) untuk login selanjutnya
             if (typeof navigate === 'function') navigate('transaksi');
@@ -1179,7 +1233,7 @@
             
             // Tampilkan loader saat mulai ambil data dari Firebase
             document.getElementById('global-loader').classList.remove('hidden');
-            dataLoadStatus = { settings: false, donors: false, tx: false };
+            dataLoadStatus = { settings: false, donors: false, tx: false, leads: false };
 
             // Set default date range to TODAY
             if(!document.getElementById('dash-start-date').value) {
@@ -1281,6 +1335,26 @@
             }, (error) => {
                 console.error("Firestore Permission Error (Transactions):", error);
                 dataLoadStatus.tx = true; checkLoader();
+            });
+
+            // 4. Data Lead Harian
+            const leadsRef = collection(db, 'users', userId, 'leads');
+            unsubLeads = onSnapshot(leadsRef, (snapshot) => {
+                allLeads = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    data.id = doc.id; // ID adalah YYYY-MM-DD
+                    allLeads.push(data);
+                });
+                dataLoadStatus.leads = true;
+                checkLoader();
+
+                try {
+                    window.updateDashboardStats();
+                } catch(e) { console.error("Render error (Leads):", e); }
+            }, (error) => {
+                console.error("Firestore Permission Error (Leads):", error);
+                dataLoadStatus.leads = true; checkLoader();
             });
         }
 
@@ -1443,19 +1517,98 @@
             document.getElementById('dash-kat-istiqomah').textContent = katIstiqomah;
             document.getElementById('dash-kat-baru').textContent = katBaru;
             document.getElementById('dash-kat-jenuh').textContent = katJenuh;
+
+            // 7. Hitung Data Lead sesuai Filter Tanggal
+            let sumLeadTotal = 0;
+            let sumLeadAktif = 0;
+            let sumLeadLost = 0;
+
+            let filteredLeads = allLeads.filter(l => {
+                const lDate = new Date(l.tanggal);
+                lDate.setHours(0,0,0,0);
+                return lDate >= startDate && lDate <= endDate;
+            });
+
+            filteredLeads.forEach(l => {
+                sumLeadTotal += (l.total || 0);
+                sumLeadAktif += (l.aktif || 0);
+                sumLeadLost += (l.lost || 0);
+            });
+
+            document.getElementById('dash-lead-total').textContent = sumLeadTotal;
+            document.getElementById('dash-lead-aktif').textContent = sumLeadAktif;
+            document.getElementById('dash-lead-lost').textContent = sumLeadLost;
         }
+
+        // ==========================
+        // FITUR UPDATE LEAD MANUAL (PER TANGGAL)
+        // ==========================
+        window.showLeadModal = function() {
+            if(!user) return;
+            const dashStart = document.getElementById('dash-start-date').value;
+            const todayStr = dashStart || new Date().toISOString().split('T')[0];
+            document.getElementById('input-lead-tanggal').value = todayStr;
+            
+            window.loadLeadDataForDate();
+            document.getElementById('modal-lead').classList.remove('hidden');
+        }
+
+        window.hideLeadModal = function() {
+            document.getElementById('modal-lead').classList.add('hidden');
+        }
+
+        window.loadLeadDataForDate = function() {
+            const dateStr = document.getElementById('input-lead-tanggal').value;
+            const existing = allLeads.find(l => l.id === dateStr);
+            if (existing) {
+                document.getElementById('input-lead-total').value = existing.total || 0;
+                document.getElementById('input-lead-aktif').value = existing.aktif || 0;
+                document.getElementById('input-lead-lost').value = existing.lost || 0;
+            } else {
+                document.getElementById('input-lead-total').value = '';
+                document.getElementById('input-lead-aktif').value = '';
+                document.getElementById('input-lead-lost').value = '';
+            }
+        }
+
+        document.getElementById('form-lead').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!user) return;
+
+            const btn = document.getElementById('btn-submit-lead');
+            const spinner = document.getElementById('lead-spinner');
+            btn.disabled = true; spinner.classList.remove('hidden');
+
+            const tanggal = document.getElementById('input-lead-tanggal').value;
+            const total = parseInt(document.getElementById('input-lead-total').value) || 0;
+            const aktif = parseInt(document.getElementById('input-lead-aktif').value) || 0;
+            const lost = parseInt(document.getElementById('input-lead-lost').value) || 0;
+
+            try {
+                // Simpan data lead dalam collection 'leads' dengan ID menggunakan tanggal YYYY-MM-DD
+                await setDoc(doc(db, 'users', userId, 'leads', tanggal), {
+                    tanggal: tanggal,
+                    total: total,
+                    aktif: aktif,
+                    lost: lost,
+                    timestamp: serverTimestamp()
+                }, { merge: true });
+                
+                showToast(`Data Lead tanggal ${tanggal} disimpan!`, "success");
+                hideLeadModal();
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menyimpan data lead", "error");
+            } finally {
+                btn.disabled = false; spinner.classList.add('hidden');
+            }
+        });
 
         // ==========================
         // FITUR LAPORAN KE TELEGRAM
         // ==========================
         window.showReportModal = function() {
             if(!user) return;
-            
-            // Reset input manual setiap kali modal dibuka
-            document.getElementById('input-lead-total').value = 0;
-            document.getElementById('input-lead-aktif').value = 0;
-            document.getElementById('input-lead-lost').value = 0;
-
             updateReportPreview();
             document.getElementById('modal-report-tx').classList.remove('hidden');
         }
@@ -1516,17 +1669,22 @@
 
             const infoCS = csProfile.nama ? `${csProfile.nama} (${csProfile.kode})` : csEmail;
 
-            // Ambil data lead dari input manual
-            const leadTotal = document.getElementById('input-lead-total').value || 0;
-            const leadAktif = document.getElementById('input-lead-aktif').value || 0;
-            const leadLost = document.getElementById('input-lead-lost').value || 0;
+            // Ambil data lead dari hasil agregasi (filter tanggal)
+            let filteredLeads = allLeads.filter(l => {
+                const lDate = new Date(l.tanggal);
+                lDate.setHours(0,0,0,0);
+                return lDate >= startDate && lDate <= endDate;
+            });
+            const leadTotal = filteredLeads.reduce((sum, l) => sum + (l.total||0), 0);
+            const leadAktif = filteredLeads.reduce((sum, l) => sum + (l.aktif||0), 0);
+            const leadLost = filteredLeads.reduce((sum, l) => sum + (l.lost||0), 0);
 
             // Template Teks Laporan
             const reportStr = `📊 *LAPORAN DONASI*\n\n` +
                               `🗓 *Periode:* ${startStr} s/d ${endStr}\n` +
                               `💰 *Total Donasi:* ${formatter.format(totalDonasi)}\n` +
                               `📈 *Total Transaksi:* ${txCount} tx\n\n` +
-                              `👥 *Kinerja Lead (Manual):*\n` +
+                              `👥 *Kinerja Lead:*\n` +
                               `▫️ Total Lead: ${leadTotal}\n` +
                               `▫️ Lead Aktif: ${leadAktif}\n` +
                               `▫️ Lead Lost: ${leadLost}\n\n` +
@@ -1794,20 +1952,20 @@
                                 `💬 *Doa:*\n_${teks}_\n\n` +
                                 `👩‍💻 *CS Input:* ${infoCS}`;
 
-                let tgUrl, options;
-
-                // Jika ada foto, kirim sebagai SendPhoto. Jika tidak, kirim sebagai teks biasa (SendMessage)
                 if (fotoFile) {
-                    tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendPhoto`;
+                    const tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendPhoto`;
                     const formData = new FormData();
                     formData.append('chat_id', tgSettings.chatId);
                     formData.append('photo', fotoFile);
                     formData.append('caption', caption);
                     formData.append('parse_mode', 'Markdown');
-                    options = { method: 'POST', body: formData };
+
+                    const tgResponse = await fetch(tgUrl, { method: 'POST', body: formData });
+                    const tgResult = await tgResponse.json();
+                    if (!tgResult.ok) throw new Error(`Telegram Error: ${tgResult.description}`);
                 } else {
-                    tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendMessage`;
-                    options = {
+                    const tgUrl = `https://api.telegram.org/bot${tgSettings.token}/sendMessage`;
+                    const response = await fetch(tgUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1815,13 +1973,10 @@
                             text: caption,
                             parse_mode: 'Markdown'
                         })
-                    };
+                    });
+                    const result = await response.json();
+                    if (!result.ok) throw new Error(`Telegram Error: ${result.description}`);
                 }
-
-                const tgResponse = await fetch(tgUrl, options);
-                const tgResult = await tgResponse.json();
-                
-                if (!tgResult.ok) throw new Error(`Telegram Error: ${tgResult.description}`);
 
                 showToast("Titipan Doa berhasil dikirim ke Telegram!", "success");
                 
@@ -1999,14 +2154,16 @@
                         <td class="py-2 px-1.5 border-b align-top cursor-pointer hover:bg-emerald-50 rounded transition-colors group w-[28%]" onclick="showHistoryModal('${d.id}', '${safeName}')">
                             <span class="text-emerald-600 font-semibold block group-hover:text-emerald-800 text-xs">${formatter.format(d.txAmount)}</span>
                             <span class="text-gray-500 text-[9px] group-hover:text-emerald-600 block"><i class="fas fa-search-plus mr-0.5"></i>${d.txCount}x</span>
-                            <span class="text-[9px] text-gray-400 block mt-0.5">Akhir: ${d.tglTerakhir}</span>
+                            <span class="text-[9px] text-gray-400 block mt-0.5" title="Awal: ${d.tglPertama}">Akhir: ${d.tglTerakhir}</span>
                         </td>
                         <td class="py-2 px-1.5 border-b align-top w-[23%]">
                             <span class="${d.katColor} px-1.5 py-0.5 rounded text-[9px] block mb-1 text-center w-fit">${d.kategori}</span>
                             ${blastingBadge}
                         </td>
                         <td class="py-2 px-1.5 border-b text-center align-top w-[17%]">
-                            <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-1 w-full text-[10px] font-medium transition shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
+                            <div class="flex justify-center items-center gap-1 border border-gray-200 rounded p-0.5 bg-gray-50">
+                                <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 p-1 flex-1"><i class="fas fa-edit"></i></button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2088,7 +2245,9 @@
                             <span class="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded text-[9px] inline-block mt-0.5 leading-tight text-right">${t.program || '-'}</span>
                         </td>
                         <td class="py-2 px-1.5 border-b text-center align-top w-[17%]">
-                            <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-1 w-full text-[10px] font-medium transition shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
+                            <div class="flex justify-center items-center gap-1 border border-gray-200 rounded p-0.5 bg-gray-50">
+                                <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 p-1 flex-1"><i class="fas fa-edit"></i></button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2131,9 +2290,24 @@
             if(!user) return;
             let csvContent = "";
             let filename = "";
-            if (type === 'donatur') {
+            if (type === 'donatur' || type === 'blasting') {
                 csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori,jadwalBlasting\n";
-                allDonors.forEach(d => {
+                
+                let targetDonors = allDonors;
+                // Jika tipe ekspor adalah blasting, filter hanya yang memiliki jadwal blasting
+                if (type === 'blasting') {
+                    targetDonors = allDonors.filter(d => 
+                        d.blastingType && 
+                        d.blastingType !== 'Belum Diatur' && 
+                        d.blastingType !== 'Tidak Blasting' && 
+                        d.blastingType !== 'Blokir'
+                    );
+                    filename = "data_blasting_aktif.csv";
+                } else {
+                    filename = "data_semua_donatur.csv";
+                }
+
+                targetDonors.forEach(d => {
                     const txs = allTransactions.filter(t => t.donorId === d.id);
                     const txCount = txs.length;
                     const txAmount = txs.reduce((sum, t) => sum + t.jumlah, 0);
@@ -2174,7 +2348,11 @@
                     const nm = d.namaLengkap.replace(/"/g, '""');
                     csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori},"${txtBlasting}"\n`;
                 });
-                filename = "data_donatur.csv";
+                
+                if (targetDonors.length === 0) {
+                    showToast("Tidak ada data untuk diekspor", "error");
+                    return;
+                }
             } else if (type === 'transaksi') {
                 csvContent += "docId,tanggal,donorId,sapaan,namaPanggilan,namaLengkap,whatsapp,jumlah,rekening,program,csEmail\n";
                 allTransactions.forEach(t => {
@@ -2284,6 +2462,7 @@
 
             try {
                 const BATCH_SIZE = 400;
+                
                 const txSnapshot = await getDocs(collection(db, 'users', userId, 'transactions'));
                 for (let i = 0; i < txSnapshot.docs.length; i += BATCH_SIZE) {
                     const batch = writeBatch(db);
@@ -2295,6 +2474,13 @@
                 for (let i = 0; i < donorSnapshot.docs.length; i += BATCH_SIZE) {
                     const batch = writeBatch(db);
                     donorSnapshot.docs.slice(i, i + BATCH_SIZE).forEach((doc) => batch.delete(doc.ref));
+                    await batch.commit();
+                }
+
+                const leadsSnapshot = await getDocs(collection(db, 'users', userId, 'leads'));
+                for (let i = 0; i < leadsSnapshot.docs.length; i += BATCH_SIZE) {
+                    const batch = writeBatch(db);
+                    leadsSnapshot.docs.slice(i, i + BATCH_SIZE).forEach((doc) => batch.delete(doc.ref));
                     await batch.commit();
                 }
 
@@ -2611,7 +2797,7 @@
             const iconEl = document.getElementById('toast-icon');
 
             msgEl.textContent = message;
-            toast.className = `absolute top-4 left-1/2 transform -translate-x-1/2 transition-all duration-300 z-[60] flex items-center p-3 w-[90%] text-white rounded-xl shadow-lg ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`;
+            toast.className = `absolute top-4 left-1/2 transform -translate-x-1/2 transition-all duration-300 z-[60] flex items-center p-3 w-[90%] sm:w-auto sm:min-w-[300px] text-white rounded-xl shadow-lg ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`;
             
             if(type === 'success') {
                 iconEl.className = "fas fa-check text-emerald-600";
