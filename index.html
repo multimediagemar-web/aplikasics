@@ -26,7 +26,6 @@
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
     <script>
-        // Init font size instantly to prevent layout shift
         let currentFont = localStorage.getItem('localFontSize') || 12;
         document.documentElement.style.fontSize = currentFont + 'px';
         
@@ -48,7 +47,7 @@
 </head>
 <body class="h-[100dvh] flex items-center justify-center bg-gray-200 sm:p-4 md:p-6 overflow-hidden">
 
-    <!-- Mobile & Desktop Wrapper -->
+    <!-- Mobile & Desktop Responsive Wrapper -->
     <div id="app-wrapper" class="w-full h-full md:max-w-4xl lg:max-w-5xl xl:max-w-6xl md:h-[96vh] bg-gray-50 relative flex flex-col md:rounded-2xl md:shadow-2xl overflow-hidden border-gray-300 md:border">
 
         <!-- Toast Notification -->
@@ -70,7 +69,6 @@
 
         <!-- Login Screen -->
         <div id="login-screen" class="absolute inset-0 bg-emerald-600 z-50 flex flex-col justify-center px-6 fade-in overflow-y-auto">
-            <!-- Decorative shape -->
             <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-50 rounded-full opacity-10"></div>
             <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-emerald-800 rounded-full opacity-20"></div>
             
@@ -80,8 +78,8 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi Divisi CS</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 4.0.0</div>
-                    <p class="text-gray-500 text-[11px] mt-1">Lead Storage Per Hari</p>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 6.0.0</div>
+                    <p class="text-gray-500 text-[11px] mt-1">Fitur Tambah Blasting Manual</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
@@ -216,7 +214,6 @@
 
                             <!-- Kinerja Lead -->
                             <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center relative">
-                                <!-- Tombol Edit Lead -->
                                 <button onclick="showLeadModal()" class="absolute top-2 right-2 text-gray-300 hover:text-orange-500 transition-colors p-1" title="Update Data Lead">
                                     <i class="fas fa-edit text-xs"></i>
                                 </button>
@@ -294,7 +291,7 @@
                             </div>
                         </div>
                         <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
-                            <table class="w-full text-left border-collapse table-fixed">
+                            <table class="w-full text-left border-collapse table-fixed min-w-[500px]">
                                 <thead class="bg-gray-50 text-gray-600 text-[9px] sm:text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
                                     <tr>
                                         <th class="py-2 px-1.5 border-b w-[20%]">Tanggal</th>
@@ -341,7 +338,7 @@
                             </div>
                         </div>
                         <div class="p-0 flex-1 overflow-x-auto overflow-y-auto">
-                            <table class="w-full text-left border-collapse table-fixed">
+                            <table class="w-full text-left border-collapse table-fixed min-w-[500px]">
                                 <thead class="bg-gray-50 text-gray-600 text-[9px] sm:text-[10px] sticky top-0 shadow-sm z-10 uppercase tracking-wider">
                                     <tr>
                                         <th class="py-2 px-1.5 border-b w-[32%]">Donatur</th>
@@ -372,6 +369,92 @@
                     </div>
                 </div>
 
+                <!-- VIEW: BLASTING WA -->
+                <div id="view-blasting" class="fade-in hidden flex flex-col h-full">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50 space-y-3">
+                            <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-bullhorn text-orange-600 mr-2"></i>Kirim Pesan Massal</h2>
+                            <p class="text-[10px] text-gray-500">Pilih filter otomatis atau tambah target spesifik secara manual.</p>
+                        </div>
+                        <div class="p-4 flex flex-col space-y-4 overflow-y-auto flex-1">
+                            
+                            <!-- Filter & Tambah Manual -->
+                            <div class="bg-orange-50 border border-orange-100 p-3 rounded-lg">
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label class="block text-[10px] font-medium text-orange-800 mb-1">Filter Jadwal</label>
+                                        <div class="relative">
+                                            <i class="fas fa-calendar-alt absolute left-2.5 top-2 text-gray-400 text-[10px]"></i>
+                                            <select id="blasting-filter" class="w-full pl-6 pr-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white" onchange="onChangeBlastingFilter()">
+                                                <option value="Semua Aktif">Semua Jadwal Aktif</option>
+                                                <option value="Harian">Harian</option>
+                                                <option value="Mingguan">Mingguan (Semua)</option>
+                                                <option value="Senin">Mingguan - Senin</option>
+                                                <option value="Selasa">Mingguan - Selasa</option>
+                                                <option value="Rabu">Mingguan - Rabu</option>
+                                                <option value="Kamis">Mingguan - Kamis</option>
+                                                <option value="Jumat">Mingguan - Jumat</option>
+                                                <option value="Sabtu">Mingguan - Sabtu</option>
+                                                <option value="Minggu">Mingguan - Minggu</option>
+                                                <option value="Bulanan">Bulanan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-medium text-orange-800 mb-1">Filter Kategori</label>
+                                        <div class="relative">
+                                            <i class="fas fa-tags absolute left-2.5 top-2 text-gray-400 text-[10px]"></i>
+                                            <select id="blasting-kategori-filter" class="w-full pl-6 pr-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white" onchange="onChangeBlastingFilter()">
+                                                <option value="all">Semua Kategori</option>
+                                                <option value="Baru">Baru</option>
+                                                <option value="Istiqomah">Istiqomah</option>
+                                                <option value="Jenuh">Jenuh</option>
+                                                <option value="Belum Donasi">Belum Donasi</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-orange-200/50 pt-2">
+                                    <label class="block text-[10px] font-medium text-orange-800 mb-1">Cari & Tambah Manual <span class="font-normal text-orange-600">(Tanpa ikut filter)</span></label>
+                                    <div class="flex gap-2">
+                                        <div class="relative flex-1">
+                                            <i class="fas fa-user-plus absolute left-2.5 top-2 text-gray-400 text-[10px]"></i>
+                                            <input type="text" id="blasting-manual-input" list="donor-list" class="w-full pl-6 pr-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white uppercase" placeholder="Ketik ID / Nama Donatur...">
+                                        </div>
+                                        <button onclick="addManualBlasting()" class="bg-orange-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap shadow-sm hover:bg-orange-700 transition active:scale-95">
+                                            Tambah
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Template Teks -->
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="block text-xs font-medium text-gray-700">Teks Pesan (Copywriting)</label>
+                                    <div class="flex space-x-1">
+                                        <button type="button" onclick="insertBlastingVar('{sapaan}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{sapaan}</button>
+                                        <button type="button" onclick="insertBlastingVar('{nama}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{nama}</button>
+                                    </div>
+                                </div>
+                                <textarea id="blasting-template" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 resize-none leading-relaxed" placeholder="Assalamu'alaikum {sapaan} {nama}..."></textarea>
+                                <p class="text-[9px] text-gray-500 mt-1">Sistem otomatis mengganti <b>{sapaan}</b> & <b>{nama}</b> dengan data setiap kontak saat tombol kirim ditekan.</p>
+                            </div>
+
+                            <!-- List Penerima -->
+                            <div class="border-t border-gray-100 pt-3 flex-1 flex flex-col">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h3 class="text-xs font-bold text-gray-800">Daftar Eksekusi</h3>
+                                    <span class="bg-gray-800 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm"><span id="blasting-count">0</span> Orang</span>
+                                </div>
+                                <ul id="blasting-list" class="space-y-2 flex-1 overflow-y-auto pr-1 pb-1">
+                                    <li class="text-center text-gray-400 py-4 text-xs">Pilih target penerima di atas.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- VIEW: PENGATURAN -->
                 <div id="view-pengaturan" class="fade-in hidden w-full pb-4">
                     <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start">
@@ -379,120 +462,121 @@
                         <!-- Profil CS -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                             <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                                <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-id-badge text-emerald-600 mr-2"></i>Profil CS</h2>
+                            </div>
+                            <div class="p-4">
+                                <form id="form-profil-cs" class="space-y-3">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[10px] font-medium text-gray-700 mb-1">Nama</label>
+                                            <input type="text" id="set-nama-cs" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-medium text-gray-700 mb-1">Kode</label>
+                                            <input type="text" id="set-kode-cs" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-medium">Simpan Profil</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="p-4">
-                            <form id="form-profil-cs" class="space-y-3">
-                                <div class="grid grid-cols-2 gap-3">
+
+                        <!-- Telegram -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                                <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-paper-plane text-emerald-600 mr-2"></i>Bot Telegram</h2>
+                            </div>
+                            <div class="p-4">
+                                <form id="form-telegram" class="space-y-3">
                                     <div>
-                                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Nama</label>
-                                        <input type="text" id="set-nama-cs" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none">
+                                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Bot Token</label>
+                                        <input type="text" id="tg-token" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg font-mono text-[10px] outline-none" value="8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Kode</label>
-                                        <input type="text" id="set-kode-cs" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none">
+                                        <label class="block text-[10px] font-medium text-gray-700 mb-1">Chat ID Grup</label>
+                                        <input type="text" id="tg-chatid" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg font-mono text-[10px] outline-none" value="-5029904911">
                                     </div>
+                                    <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-medium">Simpan Telegram</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Rekening, Program, Sapaan -->
+                        <div class="space-y-4">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-money-check text-emerald-600 mr-2"></i>Rekening</h2>
+                                <div class="flex gap-2 mb-3">
+                                    <input type="text" id="input-new-rekening" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" placeholder="Tambah Baru">
+                                    <button onclick="tambahItem('rekening')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
                                 </div>
-                                <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-medium">Simpan Profil</button>
+                                <ul id="list-rekening-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-box text-emerald-600 mr-2"></i>Program Donasi</h2>
+                                <div class="flex gap-2 mb-3">
+                                    <input type="text" id="input-new-program" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" placeholder="Tambah Baru">
+                                    <button onclick="tambahItem('program')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <ul id="list-program-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-user-tag text-emerald-600 mr-2"></i>Sapaan</h2>
+                                <div class="flex gap-2 mb-3">
+                                    <input type="text" id="input-new-sapaan" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" placeholder="Tambah Baru">
+                                    <button onclick="tambahItem('sapaan')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <ul id="list-sapaan-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Kategori Donatur -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                            <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-tags text-emerald-600 mr-2"></i>Kategori Donatur</h2>
+                            <form id="form-kategori" class="flex gap-2 items-end">
+                                <div class="flex-1">
+                                    <label class="block text-[10px] font-medium text-gray-700 mb-1">Batas Waktu Jenuh (Hari)</label>
+                                    <input type="number" id="set-hari-jenuh" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" min="1" value="30">
+                                </div>
+                                <button type="submit" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-xs font-medium h-[34px]">Simpan</button>
                             </form>
                         </div>
-                    </div>
 
-                    <!-- Telegram -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                            <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-paper-plane text-emerald-600 mr-2"></i>Bot Telegram</h2>
+                        <!-- Instal Aplikasi (PWA) -->
+                        <div class="bg-emerald-50 rounded-xl shadow-sm border border-emerald-100 p-4 hidden" id="pwa-install-section">
+                            <h2 class="text-sm font-semibold text-emerald-800 mb-1"><i class="fas fa-mobile-alt mr-2"></i> Instal Aplikasi</h2>
+                            <p class="text-[10px] text-emerald-600 mb-3">Pasang di layar utama HP Anda agar lebih cepat diakses layaknya aplikasi biasa.</p>
+                            <button onclick="installPWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-medium shadow-sm transition"><i class="fas fa-download mr-2"></i> Download Aplikasi</button>
                         </div>
-                        <div class="p-4">
-                            <form id="form-telegram" class="space-y-3">
-                                <div>
-                                    <label class="block text-[10px] font-medium text-gray-700 mb-1">Bot Token</label>
-                                    <input type="text" id="tg-token" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg font-mono text-[10px] outline-none" value="8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-medium text-gray-700 mb-1">Chat ID Grup</label>
-                                    <input type="text" id="tg-chatid" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg font-mono text-[10px] outline-none" value="-5029904911">
-                                </div>
-                                <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-medium">Simpan Telegram</button>
-                            </form>
-                        </div>
-                    </div>
 
-                    <!-- Rekening, Program, Sapaan -->
-                    <div class="space-y-4">
+                        <!-- CSV -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                            <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-money-check text-emerald-600 mr-2"></i>Rekening</h2>
-                            <div class="flex gap-2 mb-3">
-                                <input type="text" id="input-new-rekening" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" placeholder="Tambah Baru">
-                                <button onclick="tambahItem('rekening')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+                            <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-database text-emerald-600 mr-2"></i>Data CSV</h2>
+                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                <button onclick="exportCSV('donatur')" class="border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-download"></i> Semua Donatur</button>
+                                <button onclick="exportCSV('blasting')" class="bg-orange-50 border border-orange-500 text-orange-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-bullhorn"></i> Blasting Aktif</button>
                             </div>
-                            <ul id="list-rekening-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
-                        </div>
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                            <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-box text-emerald-600 mr-2"></i>Program Donasi</h2>
-                            <div class="flex gap-2 mb-3">
-                                <input type="text" id="input-new-program" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" placeholder="Tambah Baru">
-                                <button onclick="tambahItem('program')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+                            <button onclick="exportCSV('transaksi')" class="w-full border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium mb-4"><i class="fas fa-download"></i> Transaksi</button>
+                            <div class="border-t border-gray-100 pt-3">
+                                <p class="text-[10px] text-gray-500 mb-2 font-medium">Impor Data Transaksi (CSV)</p>
+                                <input type="file" id="csv-file" accept=".csv" class="w-full text-[10px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 border border-gray-300 rounded-md">
+                                <button onclick="importCSV()" id="btn-import" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs font-medium">
+                                    Mulai Impor <i id="import-spinner" class="fas fa-spinner fa-spin hidden ml-1"></i>
+                                </button>
                             </div>
-                            <ul id="list-program-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
                         </div>
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                            <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-user-tag text-emerald-600 mr-2"></i>Sapaan</h2>
-                            <div class="flex gap-2 mb-3">
-                                <input type="text" id="input-new-sapaan" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" placeholder="Tambah Baru">
-                                <button onclick="tambahItem('sapaan')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+
+                        <!-- Danger Zone -->
+                        <div class="space-y-4">
+                            <div class="bg-red-50 rounded-xl border border-red-200 p-4">
+                                <h2 class="text-sm font-semibold text-red-800 mb-1"><i class="fas fa-exclamation-triangle mr-2"></i>Reset Data</h2>
+                                <p class="text-[10px] text-red-600 mb-3">Hapus semua data secara permanen.</p>
+                                <button onclick="showResetModal()" class="w-full bg-red-600 text-white py-2 rounded-lg text-xs font-medium"><i class="fas fa-trash-alt mr-2"></i> Reset Data</button>
                             </div>
-                            <ul id="list-sapaan-ui" class="space-y-2 max-h-32 overflow-y-auto pr-1"></ul>
-                        </div>
-                    </div>
-
-                    <!-- Kategori Donatur -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                        <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-tags text-emerald-600 mr-2"></i>Kategori Donatur</h2>
-                        <form id="form-kategori" class="flex gap-2 items-end">
-                            <div class="flex-1">
-                                <label class="block text-[10px] font-medium text-gray-700 mb-1">Batas Waktu Jenuh (Hari)</label>
-                                <input type="number" id="set-hari-jenuh" class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none" min="1" value="30">
+                            
+                            <div class="bg-gray-800 rounded-xl p-4 text-center">
+                                <button onclick="logout()" class="w-full bg-gray-700 text-white py-2.5 rounded-lg text-sm font-medium"><i class="fas fa-sign-out-alt mr-2"></i> Keluar Akun</button>
                             </div>
-                            <button type="submit" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-xs font-medium h-[34px]">Simpan</button>
-                        </form>
-                    </div>
-
-                    <!-- Instal Aplikasi (PWA) -->
-                    <div class="bg-emerald-50 rounded-xl shadow-sm border border-emerald-100 p-4 hidden" id="pwa-install-section">
-                        <h2 class="text-sm font-semibold text-emerald-800 mb-1"><i class="fas fa-mobile-alt mr-2"></i> Instal Aplikasi</h2>
-                        <p class="text-[10px] text-emerald-600 mb-3">Pasang di layar utama HP Anda agar lebih cepat diakses layaknya aplikasi biasa.</p>
-                        <button onclick="installPWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-medium shadow-sm transition"><i class="fas fa-download mr-2"></i> Download Aplikasi</button>
-                    </div>
-
-                    <!-- CSV -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                        <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-database text-emerald-600 mr-2"></i>Data CSV</h2>
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <button onclick="exportCSV('donatur')" class="border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-download"></i> Semua Donatur</button>
-                            <button onclick="exportCSV('blasting')" class="bg-orange-50 border border-orange-500 text-orange-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-bullhorn"></i> Blasting Aktif</button>
                         </div>
-                        <button onclick="exportCSV('transaksi')" class="w-full border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium mb-4"><i class="fas fa-download"></i> Transaksi</button>
-                        <div class="border-t border-gray-100 pt-3">
-                            <p class="text-[10px] text-gray-500 mb-2 font-medium">Impor Data Transaksi (CSV)</p>
-                            <input type="file" id="csv-file" accept=".csv" class="w-full text-[10px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 border border-gray-300 rounded-md">
-                            <button onclick="importCSV()" id="btn-import" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs font-medium">
-                                Mulai Impor <i id="import-spinner" class="fas fa-spinner fa-spin hidden ml-1"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Danger Zone -->
-                    <div class="space-y-4">
-                        <div class="bg-red-50 rounded-xl border border-red-200 p-4">
-                            <h2 class="text-sm font-semibold text-red-800 mb-1"><i class="fas fa-exclamation-triangle mr-2"></i>Reset Data</h2>
-                            <p class="text-[10px] text-red-600 mb-3">Hapus semua data secara permanen.</p>
-                            <button onclick="showResetModal()" class="w-full bg-red-600 text-white py-2 rounded-lg text-xs font-medium"><i class="fas fa-trash-alt mr-2"></i> Reset Data</button>
-                        </div>
-                        
-                        <div class="bg-gray-800 rounded-xl p-4 text-center">
-                            <button onclick="logout()" class="w-full bg-gray-700 text-white py-2.5 rounded-lg text-sm font-medium"><i class="fas fa-sign-out-alt mr-2"></i> Keluar Akun</button>
-                        </div>
-                    </div>
 
                     </div>
                 </div>
@@ -501,22 +585,26 @@
 
             <!-- Bottom Navigation -->
             <div class="bg-white border-t border-gray-200 z-40 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-                <nav class="flex justify-around max-w-md mx-auto px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+                <nav class="flex justify-around max-w-lg mx-auto px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
                     <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-emerald-600">
-                        <i class="fas fa-home text-xl mb-1"></i>
-                        <span class="text-[10px] font-medium">Dashboard</span>
+                        <i class="fas fa-home text-lg mb-1"></i>
+                        <span class="text-[9px] font-medium">Dashboard</span>
                     </button>
                     <button onclick="navigate('data-transaksi')" id="bottom-nav-data-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-list-alt text-xl mb-1"></i>
-                        <span class="text-[10px] font-medium">Transaksi</span>
+                        <i class="fas fa-list-alt text-lg mb-1"></i>
+                        <span class="text-[9px] font-medium">Transaksi</span>
                     </button>
                     <button onclick="navigate('data-donatur')" id="bottom-nav-data-donatur" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-users text-xl mb-1"></i>
-                        <span class="text-[10px] font-medium">Donatur</span>
+                        <i class="fas fa-users text-lg mb-1"></i>
+                        <span class="text-[9px] font-medium">Donatur</span>
+                    </button>
+                    <button onclick="navigate('blasting')" id="bottom-nav-blasting" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+                        <i class="fas fa-bullhorn text-lg mb-1"></i>
+                        <span class="text-[9px] font-medium">Pesan</span>
                     </button>
                     <button onclick="navigate('pengaturan')" id="bottom-nav-pengaturan" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-cog text-xl mb-1"></i>
-                        <span class="text-[10px] font-medium">Pengaturan</span>
+                        <i class="fas fa-cog text-lg mb-1"></i>
+                        <span class="text-[9px] font-medium">Pengaturan</span>
                     </button>
                 </nav>
             </div>
@@ -1023,7 +1111,7 @@
         let csEmail = '';
         let allDonors = [];
         let allTransactions = [];
-        let allLeads = []; // Array baru untuk menyimpan data lead per hari
+        let allLeads = []; 
         
         let unsubSettings = null;
         let unsubDonors = null;
@@ -1048,6 +1136,11 @@
         let transaksiRows = 10;
         let txSortBy = 'tanggal_desc';
         let txProgramFilter = 'all';
+
+        // Blasting State
+        let currentBlastingTargets = [];
+        let manualBlastingIds = new Set();
+        let excludedBlastingIds = new Set();
         
         // Settings State
         let batasHariJenuh = 30;
@@ -1065,7 +1158,6 @@
 
         // Fungsi untuk menginisialisasi Firebase berdasarkan cabang yang dipilih
         function initializeSelectedFirebase(cabangId) {
-            // Cek jika firebase belum pernah di-init
             if (!getApps().length) {
                 app = initializeApp(firebaseConfigs[cabangId]);
             } else {
@@ -1074,7 +1166,6 @@
             auth = getAuth(app);
             db = getFirestore(app);
 
-            // Listener Autentikasi berjalan setelah Firebase berhasil di-init
             onAuthStateChanged(auth, (currentUser) => {
                 if (currentUser) {
                     user = currentUser;
@@ -1100,14 +1191,12 @@
             });
         }
 
-        // Cek apakah sebelumnya user sudah memilih cabang dan refresh halaman
         const savedCabang = localStorage.getItem('activeCabang');
         if (savedCabang && firebaseConfigs[savedCabang]) {
             document.getElementById('cs-lembaga').value = savedCabang;
             initializeSelectedFirebase(savedCabang);
         }
 
-        // Jika user ganti pilihan cabang di dropdown padahal firebase sudah aktif, reload browser agar bersih
         document.getElementById('cs-lembaga').addEventListener('change', (e) => {
             localStorage.setItem('activeCabang', e.target.value);
             if (app) {
@@ -1130,18 +1219,13 @@
             authStatus.className = "mt-3 text-center text-xs font-medium text-emerald-100 block";
 
             try {
-                // Inisialisasi database jika tombol login baru pertama kali diklik
                 if (!app) {
                     initializeSelectedFirebase(cabangId);
                 }
-                
                 await signInWithEmailAndPassword(auth, email, password);
-                localStorage.setItem('activeCabang', cabangId); // Simpan sesi cabang
-                
+                localStorage.setItem('activeCabang', cabangId); 
             } catch (error) {
                 let errorMsg = `Gagal: ${error.message || error.code}`;
-                
-                // Terjemahan pesan error yang umum terjadi
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                     errorMsg = "Email atau Password salah!";
                 } else if (error.code === 'auth/user-not-found') {
@@ -1153,10 +1237,8 @@
                 } else if (error.code === 'auth/api-key-not-valid') {
                     errorMsg = "API Key Firebase tidak valid / salah ketik.";
                 }
-                
                 authStatus.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> ${errorMsg}`;
                 authStatus.className = "mt-3 text-center text-xs font-medium text-red-600 block bg-red-50 p-2.5 rounded-lg border border-red-200";
-                console.error("Login Error Details:", error);
             } finally {
                 btn.disabled = false;
                 spinner.classList.add('hidden');
@@ -1167,23 +1249,25 @@
             try { 
                 if (auth) await signOut(auth); 
                 localStorage.removeItem('activeCabang');
-                window.location.reload(); // Wajib reload untuk menghapus sesi firebase sepenuhnya
+                window.location.reload(); 
             } catch (error) { console.error(error); }
         }
 
         window.clearAppData = function() {
-            // Hentikan listener sinkronisasi Firebase agar tidak bocor
             if (unsubSettings) { unsubSettings(); unsubSettings = null; }
             if (unsubDonors) { unsubDonors(); unsubDonors = null; }
             if (unsubTransactions) { unsubTransactions(); unsubTransactions = null; }
             if (unsubLeads) { unsubLeads(); unsubLeads = null; }
 
-            // Reset Variabel State
             allDonors = [];
             allTransactions = [];
             allLeads = [];
             donaturPage = 1;
             transaksiPage = 1;
+            currentBlastingTargets = [];
+            manualBlastingIds.clear();
+            excludedBlastingIds.clear();
+
             tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
             csProfile = { nama: '', kode: '' };
             arrRekening = ['Tunai / Kasir']; 
@@ -1191,7 +1275,6 @@
             arrSapaan = ['Bapak', 'Ibu', 'Sdr', 'Sdri', 'Hamba Allah'];
             batasHariJenuh = 30;
 
-            // Bersihkan Tabel & List UI
             const tblTx = document.getElementById('table-transaksi-body');
             if (tblTx) tblTx.innerHTML = '';
             
@@ -1207,7 +1290,6 @@
             const dList = document.getElementById('donor-list');
             if (dList) dList.innerHTML = '';
             
-            // Bersihkan Statistik Dashboard
             document.getElementById('dash-total-donasi').textContent = 'Rp 0';
             document.getElementById('dash-tx-count').textContent = '0';
             document.getElementById('dash-donasi-iklan').textContent = 'Rp 0';
@@ -1224,19 +1306,18 @@
             document.getElementById('dash-lead-aktif').textContent = '0';
             document.getElementById('dash-lead-lost').textContent = '0';
             
-            // Diam-diam kembali ke menu awal (Dashboard) untuk login selanjutnya
+            document.getElementById('search-donatur').value = '';
+            document.getElementById('search-transaksi').value = '';
+            
             if (typeof navigate === 'function') navigate('transaksi');
         }
 
-        // Setup Listener
         function setupDataListeners() {
             if (!user) return;
             
-            // Tampilkan loader saat mulai ambil data dari Firebase
             document.getElementById('global-loader').classList.remove('hidden');
             dataLoadStatus = { settings: false, donors: false, tx: false, leads: false };
 
-            // Set default date range to TODAY
             if(!document.getElementById('dash-start-date').value) {
                 const today = new Date();
                 document.getElementById('dash-start-date').valueAsDate = today;
@@ -1247,11 +1328,10 @@
             const settingsRef = doc(db, 'users', userId, 'settings', 'general');
             unsubSettings = onSnapshot(settingsRef, (docSnap) => {
                 dataLoadStatus.settings = true;
-                checkLoader(); // Pastikan loading ditutup lebih awal
+                checkLoader(); 
                 
                 if(docSnap.exists()) {
                     const data = docSnap.data();
-                    
                     if(data.tgToken) tgSettings.token = data.tgToken;
                     if(data.tgChatId) tgSettings.chatId = data.tgChatId;
                     if(data.namaCS) csProfile.nama = data.namaCS;
@@ -1262,7 +1342,6 @@
                     if(data.batasHariJenuh) batasHariJenuh = data.batasHariJenuh;
                 }
                 
-                // Update UI Settings & Dashboard
                 document.getElementById('tg-token').value = tgSettings.token;
                 document.getElementById('tg-chatid').value = tgSettings.chatId;
                 document.getElementById('set-nama-cs').value = csProfile.nama;
@@ -1281,7 +1360,7 @@
             }, (error) => {
                 console.error("Firestore Permission Error (Settings):", error);
                 showToast("Akses Ditolak: Periksa Aturan Keamanan Firestore Anda", "error");
-                dataLoadStatus.settings = true; checkLoader(); // Tetap hilangkan loader jika error
+                dataLoadStatus.settings = true; checkLoader();
             });
 
             // 2. Data Donatur 
@@ -1303,11 +1382,12 @@
                 });
                 
                 dataLoadStatus.donors = true;
-                checkLoader(); // Tutup loading sebelum merender UI
+                checkLoader(); 
                 
                 try {
                     window.renderDonaturTable();
                     window.updateDashboardStats();
+                    window.renderBlastingList();
                 } catch(e) { console.error("Render error (Donors):", e); }
                 
             }, (error) => {
@@ -1326,11 +1406,12 @@
                 });
                 
                 dataLoadStatus.tx = true;
-                checkLoader(); // Tutup loading sebelum merender UI
+                checkLoader(); 
                 
                 try {
                     window.renderTransaksiTable();
                     window.updateDashboardStats();
+                    window.renderBlastingList();
                 } catch(e) { console.error("Render error (TX):", e); }
                 
             }, (error) => {
@@ -1344,7 +1425,7 @@
                 allLeads = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    data.id = doc.id; // ID adalah YYYY-MM-DD
+                    data.id = doc.id;
                     allLeads.push(data);
                 });
                 dataLoadStatus.leads = true;
@@ -1374,28 +1455,19 @@
             const endDate = endDateInput ? new Date(endDateInput) : new Date();
             endDate.setHours(23, 59, 59, 999);
 
-            // 1. Labels UI Update
             const startStr = startDateInput ? new Date(startDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short'}) : 'Awal';
             const endStr = endDateInput ? new Date(endDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short'}) : 'Akhir';
             document.getElementById('lbl-dash-time').textContent = `${startStr} - ${endStr}`;
 
-            // 2. Filter Transaksi Berdasarkan Rentang Waktu
             let filteredTx = allTransactions.filter(tx => {
                 const txDate = new Date(tx.tanggal);
                 return txDate >= startDate && txDate <= endDate;
             });
 
-            // 3. Hitung Total Donasi & Transaksi pada rentang waktu tersebut
-            let totalDonasi = 0;
-            let donasiIklan = 0;
-            let donasiCRM = 0;
-            let countIklan = 0;
-            let countCRM = 0;
+            let totalDonasi = 0, donasiIklan = 0, donasiCRM = 0, countIklan = 0, countCRM = 0;
 
             filteredTx.forEach(tx => {
                 totalDonasi += tx.jumlah;
-                
-                // Cek apakah nama program diawali dengan kata "lead" (case-insensitive)
                 if (tx.program && tx.program.toLowerCase().startsWith("lead")) {
                     donasiIklan += tx.jumlah;
                     countIklan++;
@@ -1406,8 +1478,8 @@
             });
 
             const txCount = filteredTx.length;
-            
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+            
             document.getElementById('dash-total-donasi').textContent = formatter.format(totalDonasi);
             document.getElementById('dash-tx-count').textContent = txCount;
             document.getElementById('dash-donasi-iklan').textContent = formatter.format(donasiIklan);
@@ -1415,7 +1487,6 @@
             document.getElementById('dash-donasi-crm').textContent = formatter.format(donasiCRM);
             document.getElementById('dash-tx-crm').textContent = `(${countCRM} tx)`;
 
-            // 4. Hitung & Tampilkan Donasi per Program
             const programSummary = {};
             filteredTx.forEach(tx => {
                 if(!programSummary[tx.program]) programSummary[tx.program] = { jumlah: 0, count: 0 };
@@ -1452,7 +1523,6 @@
                 });
             }
 
-            // 5. Hitung & Tampilkan Ranking Donatur
             const donorSummary = {};
             filteredTx.forEach(tx => {
                 if(!donorSummary[tx.donorId]) {
@@ -1492,7 +1562,6 @@
                 });
             }
 
-            // 6. Hitung Status Kategori Donatur (Dihitung secara total keseluruhan waktu untuk keakuratan bisnis)
             let katIstiqomah = 0, katBaru = 0, katJenuh = 0;
             
             allDonors.forEach(d => {
@@ -1519,31 +1588,22 @@
             document.getElementById('dash-kat-baru').textContent = katBaru;
             document.getElementById('dash-kat-jenuh').textContent = katJenuh;
 
-            // 7. Hitung Data Lead sesuai Filter Tanggal
-            let sumLeadTotal = 0;
-            let sumLeadAktif = 0;
-            let sumLeadLost = 0;
-
+            let sumLeadTotal = 0, sumLeadAktif = 0, sumLeadLost = 0;
             let filteredLeads = allLeads.filter(l => {
                 const lDate = new Date(l.tanggal);
                 lDate.setHours(0,0,0,0);
                 return lDate >= startDate && lDate <= endDate;
             });
-
             filteredLeads.forEach(l => {
                 sumLeadTotal += (l.total || 0);
                 sumLeadAktif += (l.aktif || 0);
                 sumLeadLost += (l.lost || 0);
             });
-
             document.getElementById('dash-lead-total').textContent = sumLeadTotal;
             document.getElementById('dash-lead-aktif').textContent = sumLeadAktif;
             document.getElementById('dash-lead-lost').textContent = sumLeadLost;
         }
 
-        // ==========================
-        // FITUR UPDATE LEAD MANUAL (PER TANGGAL)
-        // ==========================
         window.showLeadModal = function() {
             if(!user) return;
             const dashStart = document.getElementById('dash-start-date').value;
@@ -1575,7 +1635,6 @@
         document.getElementById('form-lead').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!user) return;
-
             const btn = document.getElementById('btn-submit-lead');
             const spinner = document.getElementById('lead-spinner');
             btn.disabled = true; spinner.classList.remove('hidden');
@@ -1586,7 +1645,6 @@
             const lost = parseInt(document.getElementById('input-lead-lost').value) || 0;
 
             try {
-                // Simpan data lead dalam collection 'leads' dengan ID menggunakan tanggal YYYY-MM-DD
                 await setDoc(doc(db, 'users', userId, 'leads', tanggal), {
                     tanggal: tanggal,
                     total: total,
@@ -1594,7 +1652,6 @@
                     lost: lost,
                     timestamp: serverTimestamp()
                 }, { merge: true });
-                
                 showToast(`Data Lead tanggal ${tanggal} disimpan!`, "success");
                 hideLeadModal();
             } catch (err) {
@@ -1605,9 +1662,6 @@
             }
         });
 
-        // ==========================
-        // FITUR LAPORAN KE TELEGRAM
-        // ==========================
         window.showReportModal = function() {
             if(!user) return;
             updateReportPreview();
@@ -1616,7 +1670,6 @@
 
         window.updateReportPreview = function() {
             const previewEl = document.getElementById('report-preview-text');
-            
             const startDateInput = document.getElementById('dash-start-date').value;
             const endDateInput = document.getElementById('dash-end-date').value;
             const startStr = startDateInput ? new Date(startDateInput).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}) : '-';
@@ -1638,11 +1691,7 @@
             const txCount = filteredTx.length;
             const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
-            // Breakdown Iklan vs CRM
-            let donasiIklan = 0;
-            let donasiCRM = 0;
-            let countIklan = 0;
-            let countCRM = 0;
+            let donasiIklan = 0, donasiCRM = 0, countIklan = 0, countCRM = 0;
             
             filteredTx.forEach(tx => {
                 if (tx.program && tx.program.toLowerCase().startsWith("lead")) {
@@ -1654,7 +1703,6 @@
                 }
             });
 
-            // Program breakdown
             const programSummary = {};
             filteredTx.forEach(tx => {
                 if(!programSummary[tx.program]) programSummary[tx.program] = { jumlah: 0, count: 0 };
@@ -1670,7 +1718,6 @@
 
             const infoCS = csProfile.nama ? `${csProfile.nama} (${csProfile.kode})` : csEmail;
 
-            // Ambil data lead dari hasil agregasi (filter tanggal)
             let filteredLeads = allLeads.filter(l => {
                 const lDate = new Date(l.tanggal);
                 lDate.setHours(0,0,0,0);
@@ -1680,7 +1727,6 @@
             const leadAktif = filteredLeads.reduce((sum, l) => sum + (l.aktif||0), 0);
             const leadLost = filteredLeads.reduce((sum, l) => sum + (l.lost||0), 0);
 
-            // Template Teks Laporan
             const reportStr = `📊 *LAPORAN DONASI*\n\n` +
                               `🗓 *Periode:* ${startStr} s/d ${endStr}\n` +
                               `💰 *Total Donasi:* ${formatter.format(totalDonasi)}\n` +
@@ -1736,6 +1782,191 @@
             }
         }
 
+        // Logic Blasting Filter & Manual Tambah
+        window.onChangeBlastingFilter = function() {
+            manualBlastingIds.clear();
+            excludedBlastingIds.clear();
+            window.renderBlastingList();
+        }
+
+        window.renderBlastingList = function() {
+            const jadwalFilter = document.getElementById('blasting-filter').value;
+            const kategoriFilter = document.getElementById('blasting-kategori-filter').value;
+            
+            let targets = allDonors.filter(d => d.blastingType && d.blastingType !== 'Belum Diatur' && d.blastingType !== 'Tidak Blasting' && d.blastingType !== 'Blokir');
+
+            if (jadwalFilter === 'Harian') {
+                targets = targets.filter(d => d.blastingType === 'Harian');
+            } else if (jadwalFilter === 'Mingguan') {
+                targets = targets.filter(d => d.blastingType === 'Mingguan');
+            } else if (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].includes(jadwalFilter)) {
+                targets = targets.filter(d => d.blastingType === 'Mingguan' && d.blastingValue && d.blastingValue.includes(jadwalFilter));
+            } else if (jadwalFilter === 'Bulanan') {
+                targets = targets.filter(d => d.blastingType === 'Bulanan');
+            }
+
+            let finalTargets = [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const getKategori = (d) => {
+                const txs = allTransactions.filter(t => t.donorId === d.id);
+                let kategori = 'Belum Donasi';
+                let katColor = 'bg-gray-100 text-gray-600 border-gray-200';
+                
+                if (txs.length > 0) {
+                    const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                    const lastTxDate = new Date(sortedTxs[0].tanggal);
+                    lastTxDate.setHours(0, 0, 0, 0);
+                    
+                    const diffDays = Math.floor((today - lastTxDate) / (1000 * 60 * 60 * 24));
+                    const uniqueDays = new Set(txs.map(t => t.tanggal)).size;
+
+                    if (diffDays > batasHariJenuh) {
+                        kategori = 'Jenuh';
+                        katColor = 'bg-red-50 text-red-600 border-red-200';
+                    } else if (uniqueDays > 1) {
+                        kategori = 'Istiqomah';
+                        katColor = 'bg-emerald-50 text-emerald-600 border-emerald-200';
+                    } else {
+                        kategori = 'Baru';
+                        katColor = 'bg-blue-50 text-blue-600 border-blue-200';
+                    }
+                }
+                return { kategori, katColor };
+            };
+
+            // Tambahkan dari Filter Otomatis
+            targets.forEach(d => {
+                if(excludedBlastingIds.has(d.id)) return; // Skip yang dibuang manual
+                
+                const {kategori, katColor} = getKategori(d);
+
+                if (kategoriFilter === 'all' || kategori === kategoriFilter) {
+                    finalTargets.push({ ...d, kategori, katColor, isManual: false });
+                }
+            });
+
+            // Tambahkan dari Input Manual
+            manualBlastingIds.forEach(id => {
+                if(excludedBlastingIds.has(id)) return; // Skip yang dibuang manual
+                
+                // Pastikan tidak masuk dua kali
+                if(!finalTargets.some(t => t.id === id)) {
+                    const manualDonor = allDonors.find(d => d.id === id);
+                    if(manualDonor) {
+                        const {kategori, katColor} = getKategori(manualDonor);
+                        finalTargets.push({ ...manualDonor, kategori, katColor, isManual: true });
+                    }
+                }
+            });
+
+            currentBlastingTargets = finalTargets;
+            window.renderBlastingUI();
+        }
+
+        window.renderBlastingUI = function() {
+            const listEl = document.getElementById('blasting-list');
+            const countEl = document.getElementById('blasting-count');
+            listEl.innerHTML = '';
+            countEl.textContent = currentBlastingTargets.length;
+
+            if (currentBlastingTargets.length === 0) {
+                listEl.innerHTML = '<li class="text-center text-gray-400 text-xs py-4">Tidak ada target donatur.</li>';
+                return;
+            }
+
+            currentBlastingTargets.forEach(d => {
+                const sapaanSafe = (d.sapaan || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const namaSafe = (d.namaPanggilan || d.namaLengkap || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const phoneSafe = (d.whatsapp || '').replace(/\D/g, '');
+                
+                const manualBadge = d.isManual ? `<span class="bg-purple-100 text-purple-600 border border-purple-200 px-1.5 py-0.5 rounded text-[8px] whitespace-nowrap ml-1 font-bold"><i class="fas fa-hand-pointer mr-0.5"></i>Manual</span>` : '';
+
+                listEl.innerHTML += `
+                    <li class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-300 group">
+                        <button onclick="removeBlastingTarget('${d.id}')" class="text-gray-300 hover:text-red-500 mr-2 p-1 transition-colors" title="Hapus dari daftar hari ini">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                        <div class="flex-1 truncate pr-2">
+                            <div class="flex items-center flex-wrap gap-1 mb-0.5">
+                                <span class="block text-xs font-bold text-gray-800 truncate">${d.namaLengkap || '-'}</span>
+                                <span class="${d.katColor} border px-1.5 py-0.5 rounded text-[8px] whitespace-nowrap">${d.kategori}</span>
+                                ${manualBadge}
+                            </div>
+                            <span class="block text-[10px] text-gray-500"><i class="fas fa-phone-alt text-[9px] mr-1"></i>${d.whatsapp || '-'}</span>
+                        </div>
+                        <button onclick="sendBlastingWA('${phoneSafe}', '${sapaanSafe}', '${namaSafe}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0">
+                            <i class="fab fa-whatsapp mr-1 text-sm"></i> Kirim
+                        </button>
+                    </li>
+                `;
+            });
+        }
+
+        window.addManualBlasting = function() {
+            const val = document.getElementById('blasting-manual-input').value.toUpperCase().trim();
+            if(!val) return;
+            
+            const donor = allDonors.find(d => d.id === val);
+            if(!donor) {
+                showToast("Donatur tidak ditemukan di sistem!", "error");
+                return;
+            }
+            
+            if(currentBlastingTargets.some(d => d.id === donor.id)) {
+                showToast("Donatur sudah ada di dalam daftar eksekusi!", "error");
+                return;
+            }
+
+            // Jika sebelumnya dibuang manual, kita kembalikan
+            excludedBlastingIds.delete(donor.id);
+            manualBlastingIds.add(donor.id);
+            
+            window.renderBlastingList();
+            document.getElementById('blasting-manual-input').value = '';
+            showToast(`Donatur ${donor.id} ditambahkan!`, "success");
+        }
+
+        window.removeBlastingTarget = function(id) {
+            excludedBlastingIds.add(id);
+            manualBlastingIds.delete(id);
+            window.renderBlastingList();
+        }
+
+        window.insertBlastingVar = function(variable) {
+            const textarea = document.getElementById('blasting-template');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const text = textarea.value;
+            
+            textarea.value = text.substring(0, startPos) + variable + text.substring(endPos, text.length);
+            textarea.focus();
+            textarea.selectionStart = startPos + variable.length;
+            textarea.selectionEnd = startPos + variable.length;
+        }
+
+        window.sendBlastingWA = function(phone, sapaan, nama) {
+            let template = document.getElementById('blasting-template').value;
+            if (!template) {
+                showToast("Isi teks pesan terlebih dahulu!", "error");
+                return;
+            }
+            if (!phone) {
+                showToast("Nomor HP tidak valid!", "error");
+                return;
+            }
+
+            let msg = template.replace(/{sapaan}/gi, sapaan).replace(/{nama}/gi, nama);
+
+            let formattedPhone = phone;
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '62' + formattedPhone.substring(1);
+            }
+
+            const encodedMsg = encodeURIComponent(msg);
+            window.open(`https://wa.me/${formattedPhone}?text=${encodedMsg}`, '_blank');
+        }
 
         function updateDropdownUI(elementId, dataArray, placeholder) {
             const el = document.getElementById(elementId);
@@ -1921,7 +2152,6 @@
                 document.getElementById('image-preview').classList.add('hidden');
                 document.getElementById('preview-icon').classList.remove('hidden');
 
-                // Sembunyikan Modal setelah berhasil
                 window.hideInputModal();
 
             } catch (error) {
@@ -2136,7 +2366,6 @@
                 const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
                 paginatedItems.forEach(d => {
                     const tr = document.createElement('tr');
-                    // Tambahkan pengaman escape string untuk data kutip
                     const safeName = (d.namaLengkap || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
                     
                     let blastingBadge = '-';
@@ -2162,9 +2391,7 @@
                             ${blastingBadge}
                         </td>
                         <td class="py-2 px-1.5 border-b text-center align-top w-[17%]">
-                            <div class="flex justify-center items-center gap-1 border border-gray-200 rounded p-0.5 bg-gray-50">
-                                <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 p-1 flex-1"><i class="fas fa-edit"></i></button>
-                            </div>
+                            <button onclick="editDonatur('${d.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-1 w-full text-[10px] font-medium transition shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2246,9 +2473,7 @@
                             <span class="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded text-[9px] inline-block mt-0.5 leading-tight text-right">${t.program || '-'}</span>
                         </td>
                         <td class="py-2 px-1.5 border-b text-center align-top w-[17%]">
-                            <div class="flex justify-center items-center gap-1 border border-gray-200 rounded p-0.5 bg-gray-50">
-                                <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 p-1 flex-1"><i class="fas fa-edit"></i></button>
-                            </div>
+                            <button onclick="editTransaksi('${t.docId}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-1 w-full text-[10px] font-medium transition shadow-sm"><i class="fas fa-edit mr-1"></i> Edit</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2286,7 +2511,6 @@
             }
         });
 
-        // CSV Export
         window.exportCSV = function(type) {
             if(!user) return;
             let csvContent = "";
@@ -2295,7 +2519,6 @@
                 csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori,jadwalBlasting\n";
                 
                 let targetDonors = allDonors;
-                // Jika tipe ekspor adalah blasting, filter hanya yang memiliki jadwal blasting
                 if (type === 'blasting') {
                     targetDonors = allDonors.filter(d => 
                         d.blastingType && 
@@ -2372,7 +2595,6 @@
             document.body.removeChild(link);
         }
 
-        // CSV Import
         window.importCSV = async function() {
             if(!user) return;
             const fileInput = document.getElementById('csv-file');
@@ -2441,7 +2663,6 @@
             }
         }
 
-        // Fitur Reset Data
         const resetModal = document.getElementById('reset-modal');
         const resetInput = document.getElementById('reset-confirm-input');
         const btnExecuteReset = document.getElementById('btn-execute-reset');
@@ -2491,7 +2712,6 @@
             finally { spinner.classList.add('hidden'); }
         }
 
-        // Fitur Edit & Delete
         window.showDeleteModal = function(type, id) {
             targetDelete = { type, id };
             document.getElementById('modal-delete-item').classList.remove('hidden');
@@ -2530,7 +2750,6 @@
             finally { btn.disabled = false; btn.innerHTML = 'Hapus'; }
         }
 
-        // Edit Donatur
         window.editDonatur = function(id) {
             const dn = allDonors.find(d => d.id === id);
             if(!dn) return;
@@ -2557,6 +2776,7 @@
             
             document.getElementById('modal-edit-dn').classList.remove('hidden');
         }
+        
         window.hideEditDnModal = function() { document.getElementById('modal-edit-dn').classList.add('hidden'); }
         
         window.toggleBlastingInputs = function() {
@@ -2598,7 +2818,6 @@
             finally { btn.innerHTML = 'Simpan'; btn.disabled = false; }
         });
 
-        // Edit Transaksi
         window.editTransaksi = function(docId) {
             const tx = allTransactions.find(t => t.docId === docId);
             if(!tx) return;
@@ -2619,6 +2838,7 @@
             
             document.getElementById('modal-edit-tx').classList.remove('hidden');
         }
+
         window.hideEditTxModal = function() { document.getElementById('modal-edit-tx').classList.add('hidden'); }
         
         document.getElementById('form-edit-tx').addEventListener('submit', async (e) => {
@@ -2643,13 +2863,9 @@
             finally { btn.innerHTML = 'Simpan'; btn.disabled = false; }
         });
 
-        // ==========================
-        // FITUR WA & RIWAYAT
-        // ==========================
         window.showWaModal = function(phone, name) {
             document.getElementById('wa-target-name').textContent = name;
             
-            // Format nomor telepon untuk awalan 62
             let formattedPhone = phone.replace(/\D/g, '');
             if (formattedPhone.startsWith('0')) {
                 formattedPhone = '62' + formattedPhone.substring(1);
@@ -2713,10 +2929,9 @@
 
     <!-- Navigation & UI Core -->
     <script>
-        const views = ['view-transaksi', 'view-data-transaksi', 'view-data-donatur', 'view-pengaturan'];
-        const bottomNavIds = ['bottom-nav-transaksi', 'bottom-nav-data-transaksi', 'bottom-nav-data-donatur', 'bottom-nav-pengaturan'];
+        const views = ['view-transaksi', 'view-data-transaksi', 'view-data-donatur', 'view-blasting', 'view-pengaturan'];
+        const bottomNavIds = ['bottom-nav-transaksi', 'bottom-nav-data-transaksi', 'bottom-nav-data-donatur', 'bottom-nav-blasting', 'bottom-nav-pengaturan'];
 
-        // Menampilkan & Menyembunyikan Pop-Up Input Modal Baru
         window.showInputModal = function() {
             document.getElementById('modal-input-tx').classList.remove('hidden');
             document.getElementById('t-tanggal').valueAsDate = new Date();
@@ -2751,6 +2966,7 @@
 
             if(viewName === 'data-transaksi' && window.renderTransaksiTable) window.renderTransaksiTable();
             if(viewName === 'data-donatur' && window.renderDonaturTable) window.renderDonaturTable();
+            if(viewName === 'blasting' && window.renderBlastingList) window.renderBlastingList();
         }
 
         function previewImage(event) {
@@ -2819,29 +3035,20 @@
             toast.classList.remove('translate-y-0', 'opacity-100');
         }
 
-        // --- Logika Instalasi PWA (Tombol Download) ---
         let deferredPrompt;
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Mencegah browser memunculkan mini-infobar secara otomatis
             e.preventDefault();
-            // Simpan event agar bisa dipicu dari tombol kita
             deferredPrompt = e;
-            // Tampilkan bagian tombol install di pengaturan
             const installSection = document.getElementById('pwa-install-section');
             if (installSection) installSection.classList.remove('hidden');
         });
 
         window.installPWA = async function() {
             if (!deferredPrompt) return;
-            // Tampilkan prompt instalasi bawaan OS/Browser
             deferredPrompt.prompt();
-            // Tunggu respon pengguna (apakah mengklik 'Install' atau 'Cancel')
             const { outcome } = await deferredPrompt.userChoice;
-            
-            // Kosongkan prompt karena hanya bisa dipakai sekali
             deferredPrompt = null;
-            // Sembunyikan tombol
             const installSection = document.getElementById('pwa-install-section');
             if (installSection) installSection.classList.add('hidden');
         }
@@ -2852,19 +3059,14 @@
             if (installSection) installSection.classList.add('hidden');
         });
 
-        // Tambahan Registrasi Service Worker untuk PWA dengan Auto-Update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(registration => {
-                        console.log('ServiceWorker terdaftar dengan sukses: ', registration.scope);
-                        
-                        // Deteksi update file dari GitHub
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // Beritahu Service Worker baru untuk langsung mengambil alih
                                     newWorker.postMessage({ type: 'SKIP_WAITING' });
                                 }
                             });
@@ -2873,7 +3075,6 @@
                     .catch(error => console.log('Pendaftaran ServiceWorker gagal: ', error));
             });
 
-            // Otomatis reload halaman jika Service Worker baru aktif
             let refreshing;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (refreshing) return;
