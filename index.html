@@ -941,7 +941,7 @@
 
         <!-- Modal Edit Donatur -->
         <div id="modal-edit-dn" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Donatur</h3>
                 <form id="form-edit-dn" class="space-y-3">
                     <input type="hidden" id="edit-dn-id">
@@ -962,6 +962,37 @@
                     <div>
                         <label class="block text-[10px] text-gray-700 mb-1">WhatsApp</label>
                         <input type="tel" id="edit-dn-wa" required class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mt-2 border-t border-gray-100 pt-3">
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Nama Ayah</label>
+                            <input type="text" id="edit-dn-ayah" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="Opsional">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Nama Ibu</label>
+                            <input type="text" id="edit-dn-ibu" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="Opsional">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-700 mb-1">Tanggal Lahir</label>
+                        <input type="date" id="edit-dn-tgl-lahir" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Tgl Terakhir Blasting</label>
+                            <input type="date" id="edit-dn-last-blast" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Tgl Terakhir Pesan Dibalas</label>
+                            <input type="date" id="edit-dn-last-reply" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[10px] text-gray-700 mb-1">Catatan Tambahan</label>
+                        <textarea id="edit-dn-catatan" rows="2" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs resize-none" placeholder="Tulis catatan tentang donatur ini..."></textarea>
                     </div>
                     
                     <div class="mt-3 border-t border-gray-100 pt-3">
@@ -2893,6 +2924,13 @@
             document.getElementById('edit-dn-lengkap').value = dn.namaLengkap || '';
             document.getElementById('edit-dn-wa').value = dn.whatsapp || '';
             
+            document.getElementById('edit-dn-ayah').value = dn.namaAyah || '';
+            document.getElementById('edit-dn-ibu').value = dn.namaIbu || '';
+            document.getElementById('edit-dn-tgl-lahir').value = dn.tglLahir || '';
+            document.getElementById('edit-dn-last-blast').value = dn.lastBlasting || '';
+            document.getElementById('edit-dn-last-reply').value = dn.lastReply || '';
+            document.getElementById('edit-dn-catatan').value = dn.catatan || '';
+            
             document.getElementById('edit-dn-blasting-type').value = dn.blastingType || '';
             toggleBlastingInputs();
             if (dn.blastingType === 'Mingguan' && dn.blastingValue) {
@@ -2941,6 +2979,12 @@
                     namaPanggilan: document.getElementById('edit-dn-panggilan').value,
                     namaLengkap: document.getElementById('edit-dn-lengkap').value,
                     whatsapp: document.getElementById('edit-dn-wa').value,
+                    namaAyah: document.getElementById('edit-dn-ayah').value,
+                    namaIbu: document.getElementById('edit-dn-ibu').value,
+                    tglLahir: document.getElementById('edit-dn-tgl-lahir').value,
+                    lastBlasting: document.getElementById('edit-dn-last-blast').value,
+                    lastReply: document.getElementById('edit-dn-last-reply').value,
+                    catatan: document.getElementById('edit-dn-catatan').value,
                     blastingType: bType,
                     blastingValue: bValue,
                     lastUpdated: serverTimestamp()
