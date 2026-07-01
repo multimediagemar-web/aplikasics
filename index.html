@@ -380,7 +380,7 @@
                             
                             <!-- Filter & Tambah Manual -->
                             <div class="bg-orange-50 border border-orange-100 p-3 rounded-lg shrink-0">
-                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div class="grid grid-cols-2 gap-3 mb-2">
                                     <div>
                                         <label class="block text-[10px] font-medium text-orange-800 mb-1">Filter Jadwal</label>
                                         <div class="relative">
@@ -413,6 +413,34 @@
                                                 <option value="Belum Donasi">Belum Donasi</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-medium text-orange-800 mb-1">Urutkan</label>
+                                        <div class="relative">
+                                            <i class="fas fa-sort-amount-down absolute left-2.5 top-2 text-gray-400 text-[10px]"></i>
+                                            <select id="blasting-sort" class="w-full pl-6 pr-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white" onchange="onChangeBlastingFilter()">
+                                                <option value="default">Default</option>
+                                                <option value="donasi_desc">Donasi Tertinggi</option>
+                                                <option value="tx_desc">Transaksi Terbanyak</option>
+                                                <option value="last_tx_desc">Donasi Terakhir (Terbaru)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-medium text-orange-800 mb-1">Total Transaksi</label>
+                                        <div class="flex items-center space-x-1">
+                                            <input type="number" id="blast-min-tx" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white text-center" placeholder="Min" min="0" onchange="onChangeBlastingFilter()">
+                                            <span class="text-xs text-orange-800">-</span>
+                                            <input type="number" id="blast-max-tx" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white text-center" placeholder="Max" min="0" onchange="onChangeBlastingFilter()">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-[10px] font-medium text-orange-800 mb-1">Total Donasi (Rp)</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="number" id="blast-min-donasi" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white" placeholder="Minimal Rp..." min="0" onchange="onChangeBlastingFilter()">
+                                        <span class="text-xs text-orange-800">-</span>
+                                        <input type="number" id="blast-max-donasi" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white" placeholder="Maksimal Rp..." min="0" onchange="onChangeBlastingFilter()">
                                     </div>
                                 </div>
                                 <div class="border-t border-orange-200/50 pt-2">
@@ -1822,6 +1850,15 @@
         window.renderBlastingList = function() {
             const jadwalFilter = document.getElementById('blasting-filter').value;
             const kategoriFilter = document.getElementById('blasting-kategori-filter').value;
+            const sortType = document.getElementById('blasting-sort').value;
+            
+            const minTx = parseInt(document.getElementById('blast-min-tx').value) || 0;
+            const maxTxVal = document.getElementById('blast-max-tx').value;
+            const maxTx = maxTxVal ? parseInt(maxTxVal) : Infinity;
+
+            const minDonasi = parseInt(document.getElementById('blast-min-donasi').value) || 0;
+            const maxDonasiVal = document.getElementById('blast-max-donasi').value;
+            const maxDonasi = maxDonasiVal ? parseInt(maxDonasiVal) : Infinity;
             
             let validDonors = allDonors.filter(d => d.blastingType !== 'Tidak Blasting' && d.blastingType !== 'Blokir');
             let targets = [];
@@ -1844,14 +1881,19 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            const getKategori = (d) => {
+            const getStats = (d) => {
                 const txs = allTransactions.filter(t => t.donorId === d.id);
                 let kategori = 'Belum Donasi';
                 let katColor = 'bg-gray-100 text-gray-600 border-gray-200';
+                let txCount = txs.length;
+                let txAmount = txs.reduce((sum, t) => sum + t.jumlah, 0);
+                let rawLastTxDate = 0;
                 
                 if (txs.length > 0) {
                     const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
                     const lastTxDate = new Date(sortedTxs[0].tanggal);
+                    rawLastTxDate = lastTxDate.getTime();
+                    
                     lastTxDate.setHours(0, 0, 0, 0);
                     
                     const diffDays = Math.floor((today - lastTxDate) / (1000 * 60 * 60 * 24));
@@ -1868,17 +1910,21 @@
                         katColor = 'bg-blue-50 text-blue-600 border-blue-200';
                     }
                 }
-                return { kategori, katColor };
+                return { kategori, katColor, txCount, txAmount, rawLastTxDate };
             };
 
             // Tambahkan dari Filter Otomatis
             targets.forEach(d => {
                 if(excludedBlastingIds.has(d.id)) return; // Skip yang dibuang manual
                 
-                const {kategori, katColor} = getKategori(d);
+                const stats = getStats(d);
 
-                if (kategoriFilter === 'all' || kategori === kategoriFilter) {
-                    finalTargets.push({ ...d, kategori, katColor, isManual: false });
+                const passKategori = (kategoriFilter === 'all' || stats.kategori === kategoriFilter);
+                const passTx = (stats.txCount >= minTx && stats.txCount <= maxTx);
+                const passAmount = (stats.txAmount >= minDonasi && stats.txAmount <= maxDonasi);
+
+                if (passKategori && passTx && passAmount) {
+                    finalTargets.push({ ...d, ...stats, isManual: false });
                 }
             });
 
@@ -1890,11 +1936,20 @@
                 if(!finalTargets.some(t => t.id === id)) {
                     const manualDonor = allDonors.find(d => d.id === id);
                     if(manualDonor) {
-                        const {kategori, katColor} = getKategori(manualDonor);
-                        finalTargets.push({ ...manualDonor, kategori, katColor, isManual: true });
+                        const stats = getStats(manualDonor);
+                        finalTargets.push({ ...manualDonor, ...stats, isManual: true });
                     }
                 }
             });
+
+            // Sorting
+            if (sortType === 'donasi_desc') {
+                finalTargets.sort((a, b) => b.txAmount - a.txAmount);
+            } else if (sortType === 'tx_desc') {
+                finalTargets.sort((a, b) => b.txCount - a.txCount);
+            } else if (sortType === 'last_tx_desc') {
+                finalTargets.sort((a, b) => b.rawLastTxDate - a.rawLastTxDate);
+            }
 
             currentBlastingTargets = finalTargets;
             window.renderBlastingUI();
@@ -1940,6 +1995,9 @@
                 const btnIcon = isSent ? "fas fa-check-double" : "fab fa-whatsapp";
                 const btnText = isSent ? "Terkirim" : "Kirim";
 
+                const fmtAmount = new Intl.NumberFormat('id-ID').format(d.txAmount || 0);
+                const lastTxStr = d.rawLastTxDate ? new Date(d.rawLastTxDate).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'2-digit'}) : '-';
+
                 listEl.innerHTML += `
                     <li class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-300 group">
                         <button onclick="removeBlastingTarget('${d.id}')" class="text-gray-300 hover:text-red-500 mr-2 p-1 transition-colors" title="Hapus dari daftar hari ini">
@@ -1952,6 +2010,7 @@
                                 ${manualBadge}
                             </div>
                             <span class="block text-[10px] text-gray-500"><i class="fas fa-phone-alt text-[9px] mr-1"></i>${d.whatsapp || '-'}</span>
+                            <span class="block text-[9px] text-gray-400 mt-0.5"><i class="fas fa-receipt mr-0.5"></i> ${d.txCount}x | Rp ${fmtAmount} | <i class="far fa-calendar-alt ml-1 mr-0.5"></i> ${lastTxStr}</span>
                         </div>
                         <button id="btn-blast-${d.id}" onclick="sendBlastingWA('${d.id}', '${phoneSafe}', '${sapaanSafe}', '${namaSafe}')" class="${btnClass}">
                             <i class="${btnIcon} mr-1 text-sm"></i> ${btnText}
