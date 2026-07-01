@@ -372,14 +372,14 @@
                 <!-- VIEW: BLASTING WA -->
                 <div id="view-blasting" class="fade-in hidden flex flex-col h-full">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden">
-                        <div class="p-4 border-b border-gray-100 bg-gray-50 space-y-3">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50 space-y-3 shrink-0">
                             <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-bullhorn text-orange-600 mr-2"></i>Kirim Pesan Massal</h2>
                             <p class="text-[10px] text-gray-500">Pilih filter otomatis atau tambah target spesifik secara manual.</p>
                         </div>
                         <div class="p-4 flex flex-col space-y-4 overflow-y-auto flex-1">
                             
                             <!-- Filter & Tambah Manual -->
-                            <div class="bg-orange-50 border border-orange-100 p-3 rounded-lg">
+                            <div class="bg-orange-50 border border-orange-100 p-3 rounded-lg shrink-0">
                                 <div class="grid grid-cols-2 gap-3 mb-3">
                                     <div>
                                         <label class="block text-[10px] font-medium text-orange-800 mb-1">Filter Jadwal</label>
@@ -430,7 +430,7 @@
                             </div>
 
                             <!-- Template Teks -->
-                            <div>
+                            <div class="shrink-0">
                                 <div class="flex justify-between items-end mb-1">
                                     <label class="block text-xs font-medium text-gray-700">Teks Pesan (Copywriting)</label>
                                     <div class="flex space-x-1">
@@ -438,19 +438,27 @@
                                         <button type="button" onclick="insertBlastingVar('{nama}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{nama}</button>
                                     </div>
                                 </div>
-                                <textarea id="blasting-template" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 resize-none leading-relaxed" placeholder="Assalamu'alaikum {sapaan} {nama}..."></textarea>
+                                <textarea id="blasting-template" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 resize-none leading-relaxed" placeholder="Assalamu'alaikum {sapaan} {nama}..."></textarea>
                                 <p class="text-[9px] text-gray-500 mt-1">Sistem otomatis mengganti <b>{sapaan}</b> & <b>{nama}</b> dengan data setiap kontak saat tombol kirim ditekan.</p>
                             </div>
 
                             <!-- List Penerima -->
-                            <div class="border-t border-gray-100 pt-3 flex-1 flex flex-col">
-                                <div class="flex justify-between items-center mb-2">
+                            <div class="border-t border-gray-100 pt-3 flex-1 flex flex-col min-h-[150px]">
+                                <div class="flex justify-between items-center mb-2 shrink-0">
                                     <h3 class="text-xs font-bold text-gray-800">Daftar Eksekusi</h3>
                                     <span class="bg-gray-800 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm"><span id="blasting-count">0</span> Orang</span>
                                 </div>
                                 <ul id="blasting-list" class="space-y-2 flex-1 overflow-y-auto pr-1 pb-1">
                                     <li class="text-center text-gray-400 py-4 text-xs">Pilih target penerima di atas.</li>
                                 </ul>
+                                <!-- Pagination Blasting -->
+                                <div class="pt-2 mt-2 border-t border-gray-100 flex justify-between items-center text-[10px] shrink-0">
+                                    <span id="blasting-info" class="text-gray-500">0-0 dr 0</span>
+                                    <div class="flex space-x-1">
+                                        <button onclick="changeBlastingPage(-1)" id="btn-prev-blasting" class="px-2 py-1 border border-gray-300 rounded bg-white disabled:opacity-50"><i class="fas fa-chevron-left"></i></button>
+                                        <button onclick="changeBlastingPage(1)" id="btn-next-blasting" class="px-2 py-1 border border-gray-300 rounded bg-white disabled:opacity-50"><i class="fas fa-chevron-right"></i></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -586,26 +594,26 @@
 
             <!-- Bottom Navigation -->
             <div class="bg-white border-t border-gray-200 z-40 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-                <nav class="flex justify-around max-w-lg mx-auto px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+                <nav class="flex justify-around max-w-md mx-auto px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
                     <button onclick="navigate('transaksi')" id="bottom-nav-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-emerald-600">
-                        <i class="fas fa-home text-lg mb-1"></i>
-                        <span class="text-[9px] font-medium">Dashboard</span>
+                        <i class="fas fa-home text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Dashboard</span>
                     </button>
                     <button onclick="navigate('data-transaksi')" id="bottom-nav-data-transaksi" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-list-alt text-lg mb-1"></i>
-                        <span class="text-[9px] font-medium">Transaksi</span>
+                        <i class="fas fa-list-alt text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Transaksi</span>
                     </button>
                     <button onclick="navigate('data-donatur')" id="bottom-nav-data-donatur" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-users text-lg mb-1"></i>
-                        <span class="text-[9px] font-medium">Donatur</span>
+                        <i class="fas fa-users text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Donatur</span>
                     </button>
                     <button onclick="navigate('blasting')" id="bottom-nav-blasting" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-bullhorn text-lg mb-1"></i>
-                        <span class="text-[9px] font-medium">Pesan</span>
+                        <i class="fas fa-bullhorn text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Pesan</span>
                     </button>
                     <button onclick="navigate('pengaturan')" id="bottom-nav-pengaturan" class="flex-1 flex flex-col items-center justify-center p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                        <i class="fas fa-cog text-lg mb-1"></i>
-                        <span class="text-[9px] font-medium">Pengaturan</span>
+                        <i class="fas fa-cog text-xl mb-1"></i>
+                        <span class="text-[10px] font-medium">Pengaturan</span>
                     </button>
                 </nav>
             </div>
@@ -1139,6 +1147,7 @@
         let txProgramFilter = 'all';
 
         // Blasting State
+        let blastingPage = 1;
         let currentBlastingTargets = [];
         let manualBlastingIds = new Set();
         let excludedBlastingIds = new Set();
@@ -1265,6 +1274,7 @@
             allLeads = [];
             donaturPage = 1;
             transaksiPage = 1;
+            blastingPage = 1;
             currentBlastingTargets = [];
             manualBlastingIds.clear();
             excludedBlastingIds.clear();
@@ -1494,34 +1504,37 @@
                 programSummary[tx.program].jumlah += tx.jumlah;
                 programSummary[tx.program].count += 1;
             });
-            const programArr = Object.keys(programSummary).map(p => ({ 
-                program: p, 
-                jumlah: programSummary[p].jumlah,
-                count: programSummary[p].count
-            })).sort((a,b) => b.jumlah - a.jumlah);
             
-            const progList = document.getElementById('dash-program-list');
-            progList.innerHTML = '';
-            if(programArr.length === 0) {
-                progList.innerHTML = '<li class="text-center text-gray-400 py-2">Belum ada data pada periode ini</li>';
-            } else {
-                programArr.forEach(p => {
-                    const percent = totalDonasi > 0 ? (p.jumlah / totalDonasi) * 100 : 0;
-                    progList.innerHTML += `
-                        <li>
-                            <div class="flex justify-between items-end mb-1">
-                                <div>
-                                    <span class="font-medium text-gray-700">${p.program}</span>
-                                    <span class="text-[9px] text-gray-500 ml-1">(${p.count} tx)</span>
+            const dashProgList = document.getElementById('dash-program-list');
+            if (dashProgList) {
+                dashProgList.innerHTML = '';
+                
+                if(Object.keys(programSummary).length === 0) {
+                    dashProgList.innerHTML = '<li class="text-center text-gray-400 py-2">Belum ada data</li>';
+                } else {
+                    let maxProgram = 0;
+                    Object.values(programSummary).forEach(p => { if(p.jumlah > maxProgram) maxProgram = p.jumlah; });
+                    
+                    Object.keys(programSummary).sort((a,b) => programSummary[b].jumlah - programSummary[a].jumlah).forEach(prog => {
+                        const p = programSummary[prog];
+                        const percent = maxProgram > 0 ? (p.jumlah / maxProgram) * 100 : 0;
+                        
+                        dashProgList.innerHTML += `
+                            <li class="bg-white">
+                                <div class="flex justify-between items-end mb-1">
+                                    <div>
+                                        <span class="font-semibold text-gray-700 block">${prog}</span>
+                                        <span class="text-[9px] text-gray-500">${p.count} Transaksi</span>
+                                    </div>
+                                    <span class="font-bold text-emerald-600">${formatter.format(p.jumlah)}</span>
                                 </div>
-                                <span class="font-bold text-emerald-600">${formatter.format(p.jumlah)}</span>
-                            </div>
-                            <div class="w-full bg-emerald-50 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${percent}%"></div>
-                            </div>
-                        </li>
-                    `;
-                });
+                                <div class="w-full bg-emerald-50 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${percent}%"></div>
+                                </div>
+                            </li>
+                        `;
+                    });
+                }
             }
 
             const donorSummary = {};
@@ -1535,32 +1548,34 @@
             
             const rankingArr = Object.values(donorSummary).sort((a,b) => b.total - a.total).slice(0, 5);
             const rankList = document.getElementById('dash-ranking-list');
-            rankList.innerHTML = '';
-            
-            if(rankingArr.length === 0) {
-                rankList.innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada donatur pada periode ini</li>';
-            } else {
-                rankingArr.forEach((d, index) => {
-                    let medal = `<span class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-[10px]">${index + 1}</span>`;
-                    if(index === 0) medal = `<span class="w-7 h-7 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
-                    if(index === 1) medal = `<span class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
-                    if(index === 2) medal = `<span class="w-7 h-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
+            if (rankList) {
+                rankList.innerHTML = '';
+                
+                if(rankingArr.length === 0) {
+                    rankList.innerHTML = '<li class="p-4 text-center text-gray-400">Belum ada donatur pada periode ini</li>';
+                } else {
+                    rankingArr.forEach((d, index) => {
+                        let medal = `<span class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center font-bold text-[10px]">${index + 1}</span>`;
+                        if(index === 0) medal = `<span class="w-7 h-7 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
+                        if(index === 1) medal = `<span class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
+                        if(index === 2) medal = `<span class="w-7 h-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fas fa-medal"></i></span>`;
 
-                    rankList.innerHTML += `
-                        <li class="px-4 py-3 flex justify-between items-center hover:bg-gray-50 border-b border-gray-50 last:border-0">
-                            <div class="flex items-center">
-                                <div class="mr-3">${medal}</div>
-                                <div class="truncate max-w-[120px] sm:max-w-[150px]">
-                                    <p class="font-medium text-gray-800 leading-tight truncate">${d.nama}</p>
-                                    <p class="text-[10px] text-gray-500 mt-0.5"><i class="fas fa-check-circle text-emerald-500"></i> ${d.count} Transaksi</p>
+                        rankList.innerHTML += `
+                            <li class="px-4 py-3 flex justify-between items-center hover:bg-gray-50 border-b border-gray-50 last:border-0">
+                                <div class="flex items-center">
+                                    <div class="mr-3">${medal}</div>
+                                    <div class="truncate max-w-[120px] sm:max-w-[150px]">
+                                        <p class="font-medium text-gray-800 leading-tight truncate">${d.nama}</p>
+                                        <p class="text-[10px] text-gray-500 mt-0.5"><i class="fas fa-check-circle text-emerald-500"></i> ${d.count} Transaksi</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-emerald-600 whitespace-nowrap">${formatter.format(d.total)}</p>
-                            </div>
-                        </li>
-                    `;
-                });
+                                <div class="text-right">
+                                    <p class="font-bold text-emerald-600 whitespace-nowrap">${formatter.format(d.total)}</p>
+                                </div>
+                            </li>
+                        `;
+                    });
+                }
             }
 
             let katIstiqomah = 0, katBaru = 0, katJenuh = 0;
@@ -1585,9 +1600,14 @@
                 }
             });
             
-            document.getElementById('dash-kat-istiqomah').textContent = katIstiqomah;
-            document.getElementById('dash-kat-baru').textContent = katBaru;
-            document.getElementById('dash-kat-jenuh').textContent = katJenuh;
+            const dashIstiqomah = document.getElementById('dash-kat-istiqomah');
+            if (dashIstiqomah) dashIstiqomah.textContent = katIstiqomah;
+            
+            const dashBaru = document.getElementById('dash-kat-baru');
+            if (dashBaru) dashBaru.textContent = katBaru;
+            
+            const dashJenuh = document.getElementById('dash-kat-jenuh');
+            if (dashJenuh) dashJenuh.textContent = katJenuh;
 
             let sumLeadTotal = 0, sumLeadAktif = 0, sumLeadLost = 0;
             let filteredLeads = allLeads.filter(l => {
@@ -1600,9 +1620,15 @@
                 sumLeadAktif += (l.aktif || 0);
                 sumLeadLost += (l.lost || 0);
             });
-            document.getElementById('dash-lead-total').textContent = sumLeadTotal;
-            document.getElementById('dash-lead-aktif').textContent = sumLeadAktif;
-            document.getElementById('dash-lead-lost').textContent = sumLeadLost;
+            
+            const dashLeadTotal = document.getElementById('dash-lead-total');
+            if (dashLeadTotal) dashLeadTotal.textContent = sumLeadTotal;
+            
+            const dashLeadAktif = document.getElementById('dash-lead-aktif');
+            if (dashLeadAktif) dashLeadAktif.textContent = sumLeadAktif;
+            
+            const dashLeadLost = document.getElementById('dash-lead-lost');
+            if (dashLeadLost) dashLeadLost.textContent = sumLeadLost;
         }
 
         window.showLeadModal = function() {
@@ -1787,6 +1813,7 @@
         window.onChangeBlastingFilter = function() {
             manualBlastingIds.clear();
             excludedBlastingIds.clear();
+            blastingPage = 1;
             window.renderBlastingList();
         }
 
@@ -1874,15 +1901,32 @@
         window.renderBlastingUI = function() {
             const listEl = document.getElementById('blasting-list');
             const countEl = document.getElementById('blasting-count');
-            listEl.innerHTML = '';
-            countEl.textContent = currentBlastingTargets.length;
+            const infoEl = document.getElementById('blasting-info');
+            const btnPrev = document.getElementById('btn-prev-blasting');
+            const btnNext = document.getElementById('btn-next-blasting');
 
-            if (currentBlastingTargets.length === 0) {
+            if (!listEl) return;
+            
+            listEl.innerHTML = '';
+            const totalItems = currentBlastingTargets.length;
+            if (countEl) countEl.textContent = totalItems;
+
+            if (totalItems === 0) {
                 listEl.innerHTML = '<li class="text-center text-gray-400 text-xs py-4">Tidak ada target donatur.</li>';
+                if(infoEl) infoEl.textContent = '0 dr 0';
+                if(btnPrev) btnPrev.disabled = true;
+                if(btnNext) btnNext.disabled = true;
                 return;
             }
 
-            currentBlastingTargets.forEach(d => {
+            const totalPages = Math.ceil(totalItems / 50);
+            if (blastingPage > totalPages && totalPages > 0) blastingPage = totalPages;
+
+            const startIndex = (blastingPage - 1) * 50;
+            const endIndex = Math.min(startIndex + 50, totalItems);
+            const paginatedItems = currentBlastingTargets.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(d => {
                 const sapaanSafe = (d.sapaan || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 const namaSafe = (d.namaPanggilan || d.namaLengkap || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 const phoneSafe = (d.whatsapp || '').replace(/\D/g, '');
@@ -1908,6 +1952,15 @@
                     </li>
                 `;
             });
+
+            if(infoEl) infoEl.textContent = `${startIndex + 1}-${endIndex} dr ${totalItems}`;
+            if(btnPrev) btnPrev.disabled = blastingPage === 1;
+            if(btnNext) btnNext.disabled = blastingPage === totalPages;
+        }
+
+        window.changeBlastingPage = function(dir) {
+            blastingPage += dir;
+            window.renderBlastingUI();
         }
 
         window.addManualBlasting = function() {
