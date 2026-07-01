@@ -397,6 +397,7 @@
                                                 <option value="Sabtu">Mingguan - Sabtu</option>
                                                 <option value="Minggu">Mingguan - Minggu</option>
                                                 <option value="Bulanan">Bulanan</option>
+                                                <option value="Belum Diatur">Belum Diatur</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1793,16 +1794,21 @@
             const jadwalFilter = document.getElementById('blasting-filter').value;
             const kategoriFilter = document.getElementById('blasting-kategori-filter').value;
             
-            let targets = allDonors.filter(d => d.blastingType && d.blastingType !== 'Belum Diatur' && d.blastingType !== 'Tidak Blasting' && d.blastingType !== 'Blokir');
+            let validDonors = allDonors.filter(d => d.blastingType !== 'Tidak Blasting' && d.blastingType !== 'Blokir');
+            let targets = [];
 
-            if (jadwalFilter === 'Harian') {
-                targets = targets.filter(d => d.blastingType === 'Harian');
+            if (jadwalFilter === 'Semua Aktif') {
+                targets = validDonors.filter(d => d.blastingType && d.blastingType !== 'Belum Diatur');
+            } else if (jadwalFilter === 'Belum Diatur') {
+                targets = validDonors.filter(d => !d.blastingType || d.blastingType === 'Belum Diatur');
+            } else if (jadwalFilter === 'Harian') {
+                targets = validDonors.filter(d => d.blastingType === 'Harian');
             } else if (jadwalFilter === 'Mingguan') {
-                targets = targets.filter(d => d.blastingType === 'Mingguan');
+                targets = validDonors.filter(d => d.blastingType === 'Mingguan');
             } else if (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].includes(jadwalFilter)) {
-                targets = targets.filter(d => d.blastingType === 'Mingguan' && d.blastingValue && d.blastingValue.includes(jadwalFilter));
+                targets = validDonors.filter(d => d.blastingType === 'Mingguan' && d.blastingValue && d.blastingValue.includes(jadwalFilter));
             } else if (jadwalFilter === 'Bulanan') {
-                targets = targets.filter(d => d.blastingType === 'Bulanan');
+                targets = validDonors.filter(d => d.blastingType === 'Bulanan');
             }
 
             let finalTargets = [];
