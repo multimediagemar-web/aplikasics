@@ -414,6 +414,15 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <label class="block text-[10px] font-medium text-orange-800 mb-1">Pernah Donasi di Program</label>
+                                        <div class="relative">
+                                            <i class="fas fa-box absolute left-2.5 top-2 text-gray-400 text-[10px]"></i>
+                                            <select id="blasting-program-filter" class="w-full pl-6 pr-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 bg-white" onchange="onChangeBlastingFilter()">
+                                                <option value="all">Semua Program</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div>
                                         <label class="block text-[10px] font-medium text-orange-800 mb-1">Urutkan</label>
                                         <div class="relative">
@@ -481,6 +490,12 @@
                                 </ul>
                                 <!-- Pagination Blasting -->
                                 <div class="pt-2 mt-2 border-t border-gray-100 flex justify-between items-center text-[10px] shrink-0">
+                                    <select id="blasting-rows" onchange="changeBlastingRows()" class="border border-gray-300 rounded px-1 py-1 bg-white outline-none">
+                                        <option value="10">10 / hal</option>
+                                        <option value="25">25 / hal</option>
+                                        <option value="50" selected>50 / hal</option>
+                                        <option value="100">100 / hal</option>
+                                    </select>
                                     <span id="blasting-info" class="text-gray-500">0-0 dr 0</span>
                                     <div class="flex space-x-1">
                                         <button onclick="changeBlastingPage(-1)" id="btn-prev-blasting" class="px-2 py-1 border border-gray-300 rounded bg-white disabled:opacity-50"><i class="fas fa-chevron-left"></i></button>
@@ -903,7 +918,7 @@
 
         <!-- Modal Filter Donatur -->
         <div id="modal-filter-dn" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
-            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm">
+            <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-sm max-h-[90vh] overflow-y-auto">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-filter text-emerald-600 mr-2"></i>Filter Donatur</h3>
                 <div class="space-y-3">
                     <div>
@@ -919,20 +934,62 @@
                             <option value="last_tx_asc">Donasi Terakhir (Terlama)</option>
                             <option value="first_tx_desc">Donasi Pertama (Terbaru)</option>
                             <option value="first_tx_asc">Donasi Pertama (Terlama)</option>
+                            <option value="last_blast_desc">Terakhir Blasting (Terbaru)</option>
+                            <option value="last_blast_asc">Terakhir Blasting (Terlama)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs text-gray-700 mb-1">Kategori</label>
-                        <select id="filter-dn-kategori" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-white">
-                            <option value="all">Semua Kategori</option>
-                            <option value="Baru">Baru</option>
-                            <option value="Istiqomah">Istiqomah</option>
-                            <option value="Jenuh">Jenuh</option>
-                            <option value="Belum Donasi">Belum Donasi</option>
+                        <label class="block text-[10px] text-gray-700 mb-1">Pernah Donasi di Program</label>
+                        <select id="filter-dn-program" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs bg-white">
+                            <option value="all">Semua Program</option>
                         </select>
                     </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Kategori</label>
+                            <select id="filter-dn-kategori" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs bg-white">
+                                <option value="all">Semua Kategori</option>
+                                <option value="Baru">Baru</option>
+                                <option value="Istiqomah">Istiqomah</option>
+                                <option value="Jenuh">Jenuh</option>
+                                <option value="Belum Donasi">Belum Donasi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Jadwal Blasting</label>
+                            <select id="filter-dn-jadwal" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs bg-white">
+                                <option value="all">Semua Jadwal</option>
+                                <option value="Harian">Harian</option>
+                                <option value="Mingguan">Mingguan</option>
+                                <option value="Bulanan">Bulanan</option>
+                                <option value="Tidak Blasting">Tidak Blasting</option>
+                                <option value="Blokir">Blokir</option>
+                                <option value="Belum Diatur">Belum Diatur</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 border-t border-gray-100 pt-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Min Transaksi</label>
+                            <input type="number" id="filter-dn-min-tx" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="0" min="0">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Max Transaksi</label>
+                            <input type="number" id="filter-dn-max-tx" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="~" min="0">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Min Donasi (Rp)</label>
+                            <input type="number" id="filter-dn-min-donasi" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="0" min="0">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-700 mb-1">Max Donasi (Rp)</label>
+                            <input type="number" id="filter-dn-max-donasi" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs" placeholder="~" min="0">
+                        </div>
+                    </div>
                 </div>
-                <div class="flex justify-end space-x-2 mt-5">
+                <div class="flex justify-end space-x-2 mt-4 pt-3 border-t border-gray-100">
                     <button onclick="hideFilterModal('donatur')" class="px-4 py-1.5 bg-gray-100 rounded-lg text-xs font-medium">Batal</button>
                     <button onclick="applyFilterDonatur()" class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium">Terapkan</button>
                 </div>
@@ -1199,6 +1256,12 @@
         let donaturRows = 10;
         let dnSortBy = 'id_desc';
         let dnKategoriFilter = 'all';
+        let dnJadwalFilter = 'all';
+        let dnProgramFilter = 'all';
+        let dnMinTx = 0;
+        let dnMaxTx = Infinity;
+        let dnMinDonasi = 0;
+        let dnMaxDonasi = Infinity;
 
         let transaksiPage = 1;
         let transaksiRows = 10;
@@ -1207,6 +1270,7 @@
 
         // Blasting State
         let blastingPage = 1;
+        let blastingRows = 50;
         let currentBlastingTargets = [];
         let manualBlastingIds = new Set();
         let excludedBlastingIds = new Set();
@@ -1335,10 +1399,12 @@
             donaturPage = 1;
             transaksiPage = 1;
             blastingPage = 1;
+            blastingRows = 50;
             currentBlastingTargets = [];
             manualBlastingIds.clear();
             excludedBlastingIds.clear();
             sentBlastingIds.clear();
+            dnProgramFilter = 'all';
 
             tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
             csProfile = { nama: '', kode: '' };
@@ -1421,6 +1487,16 @@
                 document.getElementById('set-hari-jenuh').value = batasHariJenuh;
                 
                 document.getElementById('dash-nama-cs').textContent = csProfile.nama || csEmail.split('@')[0];
+
+                const progBlastSelect = document.getElementById('blasting-program-filter');
+                if (progBlastSelect) {
+                    const currentVal = progBlastSelect.value;
+                    progBlastSelect.innerHTML = '<option value="all">Semua Program</option>';
+                    arrProgram.forEach(p => {
+                        progBlastSelect.innerHTML += `<option value="${p}">${p}</option>`;
+                    });
+                    progBlastSelect.value = currentVal || 'all';
+                }
 
                 updateDropdownUI('t-sapaan', arrSapaan, 'Pilih Sapaan');
                 updateDropdownUI('t-rekening', arrRekening, 'Pilih Rekening');
@@ -1891,6 +1967,8 @@
             const maxDonasiVal = document.getElementById('blast-max-donasi').value;
             const maxDonasi = maxDonasiVal ? parseInt(maxDonasiVal) : Infinity;
             
+            const programFilter = document.getElementById('blasting-program-filter').value;
+
             let validDonors = allDonors.filter(d => d.blastingType !== 'Tidak Blasting' && d.blastingType !== 'Blokir');
             let targets = [];
 
@@ -1953,8 +2031,9 @@
                 const passKategori = (kategoriFilter === 'all' || stats.kategori === kategoriFilter);
                 const passTx = (stats.txCount >= minTx && stats.txCount <= maxTx);
                 const passAmount = (stats.txAmount >= minDonasi && stats.txAmount <= maxDonasi);
+                const passProgram = (programFilter === 'all' || allTransactions.some(t => t.donorId === d.id && t.program === programFilter));
 
-                if (passKategori && passTx && passAmount) {
+                if (passKategori && passTx && passAmount && passProgram) {
                     finalTargets.push({ ...d, ...stats, isManual: false });
                 }
             });
@@ -2007,11 +2086,11 @@
                 return;
             }
 
-            const totalPages = Math.ceil(totalItems / 50);
+            const totalPages = Math.ceil(totalItems / blastingRows);
             if (blastingPage > totalPages && totalPages > 0) blastingPage = totalPages;
 
-            const startIndex = (blastingPage - 1) * 50;
-            const endIndex = Math.min(startIndex + 50, totalItems);
+            const startIndex = (blastingPage - 1) * blastingRows;
+            const endIndex = Math.min(startIndex + blastingRows, totalItems);
             const paginatedItems = currentBlastingTargets.slice(startIndex, endIndex);
 
             paginatedItems.forEach(d => {
@@ -2057,6 +2136,12 @@
 
         window.changeBlastingPage = function(dir) {
             blastingPage += dir;
+            window.renderBlastingUI();
+        }
+
+        window.changeBlastingRows = function() {
+            blastingRows = parseInt(document.getElementById('blasting-rows').value);
+            blastingPage = 1;
             window.renderBlastingUI();
         }
 
@@ -2399,8 +2484,19 @@
                 document.getElementById('filter-tx-sort').value = txSortBy;
                 document.getElementById('modal-filter-tx').classList.remove('hidden');
             } else {
+                const progSelectDn = document.getElementById('filter-dn-program');
+                progSelectDn.innerHTML = '<option value="all">Semua Program</option>';
+                arrProgram.forEach(p => {
+                    progSelectDn.innerHTML += `<option value="${p}" ${dnProgramFilter === p ? 'selected' : ''}>${p}</option>`;
+                });
+                
                 document.getElementById('filter-dn-sort').value = dnSortBy;
                 document.getElementById('filter-dn-kategori').value = dnKategoriFilter;
+                document.getElementById('filter-dn-jadwal').value = dnJadwalFilter;
+                document.getElementById('filter-dn-min-tx').value = dnMinTx === 0 ? '' : dnMinTx;
+                document.getElementById('filter-dn-max-tx').value = dnMaxTx === Infinity ? '' : dnMaxTx;
+                document.getElementById('filter-dn-min-donasi').value = dnMinDonasi === 0 ? '' : dnMinDonasi;
+                document.getElementById('filter-dn-max-donasi').value = dnMaxDonasi === Infinity ? '' : dnMaxDonasi;
                 document.getElementById('modal-filter-dn').classList.remove('hidden');
             }
         }
@@ -2420,6 +2516,21 @@
         window.applyFilterDonatur = function() {
             dnSortBy = document.getElementById('filter-dn-sort').value;
             dnKategoriFilter = document.getElementById('filter-dn-kategori').value;
+            dnJadwalFilter = document.getElementById('filter-dn-jadwal').value;
+            dnProgramFilter = document.getElementById('filter-dn-program').value;
+            
+            const minTx = document.getElementById('filter-dn-min-tx').value;
+            dnMinTx = minTx ? parseInt(minTx) : 0;
+            
+            const maxTx = document.getElementById('filter-dn-max-tx').value;
+            dnMaxTx = maxTx ? parseInt(maxTx) : Infinity;
+            
+            const minDonasi = document.getElementById('filter-dn-min-donasi').value;
+            dnMinDonasi = minDonasi ? parseInt(minDonasi) : 0;
+            
+            const maxDonasi = document.getElementById('filter-dn-max-donasi').value;
+            dnMaxDonasi = maxDonasi ? parseInt(maxDonasi) : Infinity;
+
             window.hideFilterModal('donatur');
             window.filterDonatur();
         }
@@ -2499,6 +2610,23 @@
                 filtered = filtered.filter(d => d.kategori === dnKategoriFilter);
             }
 
+            if (dnJadwalFilter !== 'all') {
+                if (dnJadwalFilter === 'Belum Diatur') {
+                    filtered = filtered.filter(d => !d.blastingType || d.blastingType === 'Belum Diatur');
+                } else {
+                    filtered = filtered.filter(d => d.blastingType === dnJadwalFilter);
+                }
+            }
+
+            if (dnProgramFilter !== 'all') {
+                filtered = filtered.filter(d => allTransactions.some(t => t.donorId === d.id && t.program === dnProgramFilter));
+            }
+
+            filtered = filtered.filter(d => 
+                d.txCount >= dnMinTx && d.txCount <= dnMaxTx &&
+                d.txAmount >= dnMinDonasi && d.txAmount <= dnMaxDonasi
+            );
+
             filtered.sort((a, b) => {
                 if (dnSortBy === 'id_asc') return a.id.localeCompare(b.id);
                 if (dnSortBy === 'id_desc') return b.id.localeCompare(a.id);
@@ -2510,6 +2638,16 @@
                 if (dnSortBy === 'last_tx_asc') return a.rawLastTxDate - b.rawLastTxDate;
                 if (dnSortBy === 'first_tx_desc') return b.rawFirstTxDate - a.rawFirstTxDate;
                 if (dnSortBy === 'first_tx_asc') return a.rawFirstTxDate - b.rawFirstTxDate;
+                if (dnSortBy === 'last_blast_desc') {
+                    const aDate = a.lastBlasting ? new Date(a.lastBlasting).getTime() : 0;
+                    const bDate = b.lastBlasting ? new Date(b.lastBlasting).getTime() : 0;
+                    return bDate - aDate;
+                }
+                if (dnSortBy === 'last_blast_asc') {
+                    const aDate = a.lastBlasting ? new Date(a.lastBlasting).getTime() : Infinity;
+                    const bDate = b.lastBlasting ? new Date(b.lastBlasting).getTime() : Infinity;
+                    return aDate - bDate;
+                }
             });
 
             const totalItems = filtered.length;
