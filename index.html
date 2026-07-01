@@ -1151,6 +1151,7 @@
         let currentBlastingTargets = [];
         let manualBlastingIds = new Set();
         let excludedBlastingIds = new Set();
+        let sentBlastingIds = new Set();
         
         // Settings State
         let batasHariJenuh = 30;
@@ -1278,6 +1279,7 @@
             currentBlastingTargets = [];
             manualBlastingIds.clear();
             excludedBlastingIds.clear();
+            sentBlastingIds.clear();
 
             tgSettings = { token: '8262941795:AAFs4x2C6KruuVdWPg1m4aMlbth1kliNsMo', chatId: '-5029904911' };
             csProfile = { nama: '', kode: '' };
@@ -1933,6 +1935,11 @@
                 
                 const manualBadge = d.isManual ? `<span class="bg-purple-100 text-purple-600 border border-purple-200 px-1.5 py-0.5 rounded text-[8px] whitespace-nowrap ml-1 font-bold"><i class="fas fa-hand-pointer mr-0.5"></i>Manual</span>` : '';
 
+                const isSent = sentBlastingIds.has(d.id);
+                const btnClass = isSent ? "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0" : "bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0";
+                const btnIcon = isSent ? "fas fa-check-double" : "fab fa-whatsapp";
+                const btnText = isSent ? "Terkirim" : "Kirim";
+
                 listEl.innerHTML += `
                     <li class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-300 group">
                         <button onclick="removeBlastingTarget('${d.id}')" class="text-gray-300 hover:text-red-500 mr-2 p-1 transition-colors" title="Hapus dari daftar hari ini">
@@ -1946,8 +1953,8 @@
                             </div>
                             <span class="block text-[10px] text-gray-500"><i class="fas fa-phone-alt text-[9px] mr-1"></i>${d.whatsapp || '-'}</span>
                         </div>
-                        <button onclick="sendBlastingWA('${phoneSafe}', '${sapaanSafe}', '${namaSafe}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0">
-                            <i class="fab fa-whatsapp mr-1 text-sm"></i> Kirim
+                        <button id="btn-blast-${d.id}" onclick="sendBlastingWA('${d.id}', '${phoneSafe}', '${sapaanSafe}', '${namaSafe}')" class="${btnClass}">
+                            <i class="${btnIcon} mr-1 text-sm"></i> ${btnText}
                         </button>
                     </li>
                 `;
@@ -2005,7 +2012,7 @@
             textarea.selectionEnd = startPos + variable.length;
         }
 
-        window.sendBlastingWA = function(phone, sapaan, nama) {
+        window.sendBlastingWA = function(id, phone, sapaan, nama) {
             let template = document.getElementById('blasting-template').value;
             if (!template) {
                 showToast("Isi teks pesan terlebih dahulu!", "error");
@@ -2025,6 +2032,14 @@
 
             const encodedMsg = encodeURIComponent(msg);
             window.open(`https://wa.me/${formattedPhone}?text=${encodedMsg}`, '_blank');
+            
+            // Tandai sebagai terkirim
+            sentBlastingIds.add(id);
+            const btn = document.getElementById(`btn-blast-${id}`);
+            if (btn) {
+                btn.className = "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0";
+                btn.innerHTML = `<i class="fas fa-check-double mr-1 text-sm"></i> Terkirim`;
+            }
         }
 
         function updateDropdownUI(elementId, dataArray, placeholder) {
