@@ -79,7 +79,7 @@
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi Divisi CS</h1>
                     <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 6.0.0</div>
-                    <p class="text-gray-500 text-[11px] mt-1">Fitur Tambah Blasting Manual</p>
+                    <p class="text-gray-500 text-[11px] mt-1">Sistem Manajemen Terpadu</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
@@ -376,6 +376,7 @@
                             <h2 class="text-sm font-semibold text-gray-800"><i class="fas fa-bullhorn text-orange-600 mr-2"></i>Kirim Pesan Massal</h2>
                             <p class="text-[10px] text-gray-500">Pilih filter otomatis atau tambah target spesifik secara manual.</p>
                         </div>
+                        <!-- Area ini bisa scroll secara keseluruhan -->
                         <div class="p-4 flex flex-col space-y-4 overflow-y-auto flex-1">
                             
                             <!-- Filter & Tambah Manual -->
@@ -479,15 +480,17 @@
                                 <p class="text-[9px] text-gray-500 mt-1">Sistem otomatis mengganti <b>{sapaan}</b> & <b>{nama}</b> dengan data setiap kontak saat tombol kirim ditekan.</p>
                             </div>
 
-                            <!-- List Penerima -->
+                            <!-- List Penerima (Bisa otomatis tambah panjang tanpa scroll ganda di dalam) -->
                             <div class="border-t border-gray-100 pt-4 mt-2">
                                 <div class="flex justify-between items-center mb-3">
                                     <h3 class="text-xs font-bold text-gray-800">Daftar Eksekusi</h3>
                                     <span class="bg-gray-800 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm"><span id="blasting-count">0</span> Orang</span>
                                 </div>
+                                
                                 <ul id="blasting-list" class="space-y-2 pb-1">
                                     <li class="text-center text-gray-400 py-4 text-xs">Pilih target penerima di atas.</li>
                                 </ul>
+                                
                                 <!-- Pagination Blasting -->
                                 <div class="pt-3 mt-3 border-t border-gray-100 flex justify-between items-center text-[10px]">
                                     <select id="blasting-rows" onchange="changeBlastingRows()" class="border border-gray-300 rounded px-1 py-1 bg-white outline-none">
@@ -593,14 +596,7 @@
                             </form>
                         </div>
 
-                        <!-- Instal Aplikasi (PWA) -->
-                        <div class="bg-emerald-50 rounded-xl shadow-sm border border-emerald-100 p-4 hidden" id="pwa-install-section">
-                            <h2 class="text-sm font-semibold text-emerald-800 mb-1"><i class="fas fa-mobile-alt mr-2"></i> Instal Aplikasi</h2>
-                            <p class="text-[10px] text-emerald-600 mb-3">Pasang di layar utama HP Anda agar lebih cepat diakses layaknya aplikasi biasa.</p>
-                            <button onclick="installPWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-medium shadow-sm transition"><i class="fas fa-download mr-2"></i> Download Aplikasi</button>
-                        </div>
-
-                        <!-- CSV -->
+                        <!-- CSV Data -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                             <h2 class="text-sm font-semibold text-gray-800 mb-3"><i class="fas fa-database text-emerald-600 mr-2"></i>Data CSV</h2>
                             <div class="grid grid-cols-2 gap-2 mb-4">
@@ -1005,7 +1001,7 @@
             </div>
         </div>
 
-        <!-- Modal Edit Donatur -->
+        <!-- Modal Edit Donatur (Lengkap) -->
         <div id="modal-edit-dn" class="absolute inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden fade-in px-4">
             <div class="bg-white rounded-xl shadow-2xl p-5 w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <h3 class="text-sm font-bold text-gray-800 mb-3"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Donatur</h3>
@@ -1260,7 +1256,7 @@
             }
         }
         
-        // State Pagination & Filter
+        // State Pagination & Filter Donatur
         let donaturPage = 1;
         let donaturRows = 10;
         let dnSortBy = 'id_desc';
@@ -1272,6 +1268,7 @@
         let dnMinDonasi = 0;
         let dnMaxDonasi = Infinity;
 
+        // State Pagination & Filter Transaksi
         let transaksiPage = 1;
         let transaksiRows = 10;
         let txSortBy = 'tanggal_desc';
@@ -1374,7 +1371,7 @@
                 } else if (error.code === 'auth/user-not-found') {
                     errorMsg = "Akun tidak ditemukan. Hubungi Admin.";
                 } else if (error.code === 'auth/operation-not-allowed') {
-                    errorMsg = "Fitur Login Email belum diaktifkan di Firebase CS 4!";
+                    errorMsg = "Fitur Login Email belum diaktifkan di Firebase!";
                 } else if (error.code === 'auth/network-request-failed') {
                     errorMsg = "Koneksi internet terputus atau diblokir.";
                 } else if (error.code === 'auth/api-key-not-valid') {
@@ -2110,16 +2107,17 @@
                 const manualBadge = d.isManual ? `<span class="bg-purple-100 text-purple-600 border border-purple-200 px-1.5 py-0.5 rounded text-[8px] whitespace-nowrap ml-1 font-bold"><i class="fas fa-hand-pointer mr-0.5"></i>Manual</span>` : '';
 
                 const isSent = sentBlastingIds.has(d.id);
-                const btnClass = isSent ? "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0" : "bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0";
+                const btnClass = isSent ? "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0 z-10 relative" : "bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0 z-10 relative";
                 const btnIcon = isSent ? "fas fa-check-double" : "fab fa-whatsapp";
                 const btnText = isSent ? "Terkirim" : "Kirim";
 
                 const fmtAmount = new Intl.NumberFormat('id-ID').format(d.txAmount || 0);
                 const lastTxStr = d.rawLastTxDate ? new Date(d.rawLastTxDate).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'2-digit'}) : '-';
 
+                // Menambahkan onclick pada elemen <li> untuk memunculkan modal edit (dengan event.stopPropagation di button)
                 listEl.innerHTML += `
-                    <li class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-300 group">
-                        <button onclick="removeBlastingTarget('${d.id}')" class="text-gray-300 hover:text-red-500 mr-2 p-1 transition-colors" title="Hapus dari daftar hari ini">
+                    <li onclick="editDonatur('${d.id}')" class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-300 group cursor-pointer">
+                        <button onclick="event.stopPropagation(); removeBlastingTarget('${d.id}')" class="text-gray-300 hover:text-red-500 mr-2 p-1 transition-colors z-10 relative" title="Hapus dari daftar hari ini">
                             <i class="fas fa-times-circle"></i>
                         </button>
                         <div class="flex-1 truncate pr-2">
@@ -2131,7 +2129,7 @@
                             <span class="block text-[10px] text-gray-500"><i class="fas fa-phone-alt text-[9px] mr-1"></i>${d.whatsapp || '-'}</span>
                             <span class="block text-[9px] text-gray-400 mt-0.5"><i class="fas fa-receipt mr-0.5"></i> ${d.txCount}x | Rp ${fmtAmount} | <i class="far fa-calendar-alt ml-1 mr-0.5"></i> ${lastTxStr}</span>
                         </div>
-                        <button id="btn-blast-${d.id}" onclick="sendBlastingWA('${d.id}', '${phoneSafe}', '${sapaanSafe}', '${namaSafe}')" class="${btnClass}">
+                        <button id="btn-blast-${d.id}" onclick="event.stopPropagation(); sendBlastingWA('${d.id}', '${phoneSafe}', '${sapaanSafe}', '${namaSafe}')" class="${btnClass}">
                             <i class="${btnIcon} mr-1 text-sm"></i> ${btnText}
                         </button>
                     </li>
@@ -2221,7 +2219,7 @@
             sentBlastingIds.add(id);
             const btn = document.getElementById(`btn-blast-${id}`);
             if (btn) {
-                btn.className = "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0";
+                btn.className = "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center shadow-sm transition active:scale-95 shrink-0 z-10 relative";
                 btn.innerHTML = `<i class="fas fa-check-double mr-1 text-sm"></i> Terkirim`;
             }
         }
@@ -2714,16 +2712,9 @@
             }
         }
 
-        window.filterDonatur = function() {
-            donaturPage = 1; window.renderDonaturTable();
-        }
-        window.changeDonaturPage = function(dir) {
-            donaturPage += dir; window.renderDonaturTable();
-        }
-        window.changeDonaturRows = function() {
-            donaturRows = parseInt(document.getElementById('donatur-rows').value);
-            donaturPage = 1; window.renderDonaturTable();
-        }
+        window.filterDonatur = function() { donaturPage = 1; window.renderDonaturTable(); }
+        window.changeDonaturPage = function(dir) { donaturPage += dir; window.renderDonaturTable(); }
+        window.changeDonaturRows = function() { donaturRows = parseInt(document.getElementById('donatur-rows').value); donaturPage = 1; window.renderDonaturTable(); }
 
         window.renderTransaksiTable = function() {
             const tbody = document.getElementById('table-transaksi-body');
@@ -2799,16 +2790,9 @@
             }
         }
 
-        window.filterTransaksi = function() {
-            transaksiPage = 1; window.renderTransaksiTable();
-        }
-        window.changeTransaksiPage = function(dir) {
-            transaksiPage += dir; window.renderTransaksiTable();
-        }
-        window.changeTransaksiRows = function() {
-            transaksiRows = parseInt(document.getElementById('transaksi-rows').value);
-            transaksiPage = 1; window.renderTransaksiTable();
-        }
+        window.filterTransaksi = function() { transaksiPage = 1; window.renderTransaksiTable(); }
+        window.changeTransaksiPage = function(dir) { transaksiPage += dir; window.renderTransaksiTable(); }
+        window.changeTransaksiRows = function() { transaksiRows = parseInt(document.getElementById('transaksi-rows').value); transaksiPage = 1; window.renderTransaksiTable(); }
 
         document.getElementById('t-id').addEventListener('input', (e) => {
             const val = e.target.value.toUpperCase();
