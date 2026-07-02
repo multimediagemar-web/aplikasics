@@ -608,11 +608,20 @@
                                 <button onclick="exportCSV('blasting')" class="bg-orange-50 border border-orange-500 text-orange-700 py-1.5 rounded-lg text-[10px] font-medium"><i class="fas fa-bullhorn"></i> Blasting Aktif</button>
                             </div>
                             <button onclick="exportCSV('transaksi')" class="w-full border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium mb-4"><i class="fas fa-download"></i> Transaksi</button>
+                            
+                            <div class="border-t border-gray-100 pt-3 mb-3">
+                                <p class="text-[10px] text-gray-500 mb-2 font-medium">Impor Data Donatur (CSV)</p>
+                                <input type="file" id="csv-file-donatur" accept=".csv" class="w-full text-[10px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 border border-gray-300 rounded-md">
+                                <button onclick="importDonaturCSV()" id="btn-import-donatur" class="w-full bg-blue-600 text-white py-2 rounded-lg text-xs font-medium">
+                                    Mulai Impor Donatur <i id="import-donatur-spinner" class="fas fa-spinner fa-spin hidden ml-1"></i>
+                                </button>
+                            </div>
+
                             <div class="border-t border-gray-100 pt-3">
                                 <p class="text-[10px] text-gray-500 mb-2 font-medium">Impor Data Transaksi (CSV)</p>
                                 <input type="file" id="csv-file" accept=".csv" class="w-full text-[10px] mb-2 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 border border-gray-300 rounded-md">
                                 <button onclick="importCSV()" id="btn-import" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs font-medium">
-                                    Mulai Impor <i id="import-spinner" class="fas fa-spinner fa-spin hidden ml-1"></i>
+                                    Mulai Impor Transaksi <i id="import-spinner" class="fas fa-spinner fa-spin hidden ml-1"></i>
                                 </button>
                             </div>
                         </div>
@@ -2818,7 +2827,7 @@
             let csvContent = "";
             let filename = "";
             if (type === 'donatur' || type === 'blasting') {
-                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori,jadwalBlasting\n";
+                csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori,jadwalBlasting,namaAyah,namaIbu,tanggalLahir,terakhirBlasting,terakhirDibalas,catatan\n";
                 
                 let targetDonors = allDonors;
                 if (type === 'blasting') {
@@ -2871,8 +2880,15 @@
                     else if (d.blastingType === 'Tidak Blasting') txtBlasting = "Tidak Blasting";
                     else if (d.blastingType === 'Blokir') txtBlasting = "Blokir";
 
-                    const nm = d.namaLengkap.replace(/"/g, '""');
-                    csvContent += `${d.id},${d.sapaan},${d.namaPanggilan},"${nm}",${d.whatsapp},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori},"${txtBlasting}"\n`;
+                    const nm = (d.namaLengkap || '').replace(/"/g, '""');
+                    const ayah = (d.namaAyah || '').replace(/"/g, '""');
+                    const ibu = (d.namaIbu || '').replace(/"/g, '""');
+                    const tLahir = d.tglLahir || '';
+                    const tBlast = d.lastBlasting || '';
+                    const tReply = d.lastReply || '';
+                    const cat = (d.catatan || '').replace(/"/g, '""').replace(/\n/g, ' '); 
+
+                    csvContent += `${d.id},${d.sapaan || ''},${d.namaPanggilan || ''},"${nm}",${d.whatsapp || ''},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori},"${txtBlasting}","${ayah}","${ibu}",${tLahir},${tBlast},${tReply},"${cat}"\n`;
                 });
                 
                 if (targetDonors.length === 0) {
@@ -2895,6 +2911,121 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        window.importDonaturCSV = async function() {
+            if(!user) return;
+            const fileInput = document.getElementById('csv-file-donatur');
+            const file = fileInput.files[0];
+            if (!file) return showToast("Pilih file CSV Donatur", "error");
+
+            const btn = document.getElementById('btn-import-donatur');
+            const spinner = document.getElementById('import-donatur-spinner');
+            btn.disabled = true; spinner.classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const lines = e.target.result.split('\n');
+                if (lines.length < 2) return errImport("Format CSV salah");
+                
+                // Ekstrak header dan buat peta index agar urutan kolom dari Excel bisa dinamis
+                const rawHeader = lines[0].toLowerCase().replace(/\r/g, '').replace(/"/g, '').split(',');
+                if (!rawHeader.includes('id')) {
+                    return errImport("CSV harus memiliki kolom 'id'!");
+                }
+
+                const headerMap = {};
+                rawHeader.forEach((h, idx) => { headerMap[h.trim()] = idx; });
+
+                try {
+                    let batch = writeBatch(db);
+                    let count = 0;
+                    let ops = 0;
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].replace(/\r/g, '');
+                        if (!line.trim()) continue;
+                        
+                        // Parser khusus untuk menangani tanda koma (,) di dalam catatan atau string
+                        const values = [];
+                        let inQuotes = false;
+                        let currentVal = '';
+                        for (let char of line) {
+                            if (char === '"') inQuotes = !inQuotes;
+                            else if (char === ',' && !inQuotes) { values.push(currentVal); currentVal = ''; }
+                            else currentVal += char;
+                        }
+                        values.push(currentVal);
+
+                        const idIndex = headerMap['id'];
+                        if(idIndex === undefined || !values[idIndex]) continue;
+                        
+                        const donorId = values[idIndex].trim().toUpperCase();
+                        if(!donorId) continue;
+
+                        let updateData = { lastUpdated: serverTimestamp() };
+                        
+                        const getVal = (colName) => {
+                            const idx = headerMap[colName.toLowerCase()];
+                            return idx !== undefined && values[idx] ? values[idx].replace(/^"|"$/g, '').trim() : undefined;
+                        };
+
+                        const sapaan = getVal('sapaan'); if(sapaan !== undefined) updateData.sapaan = sapaan;
+                        const namaPanggilan = getVal('namapanggilan'); if(namaPanggilan !== undefined) updateData.namaPanggilan = namaPanggilan;
+                        const namaLengkap = getVal('namalengkap'); if(namaLengkap !== undefined) updateData.namaLengkap = namaLengkap;
+                        const whatsapp = getVal('whatsapp'); if(whatsapp !== undefined) updateData.whatsapp = whatsapp;
+                        
+                        const ayah = getVal('namaayah'); if(ayah !== undefined) updateData.namaAyah = ayah;
+                        const ibu = getVal('namaibu'); if(ibu !== undefined) updateData.namaIbu = ibu;
+                        const lahir = getVal('tanggallahir'); if(lahir !== undefined && lahir !== '') updateData.tglLahir = lahir;
+                        const blast = getVal('terakhirblasting'); if(blast !== undefined && blast !== '') updateData.lastBlasting = blast;
+                        const reply = getVal('terakhirdibalas'); if(reply !== undefined && reply !== '') updateData.lastReply = reply;
+                        const cat = getVal('catatan'); if(cat !== undefined) updateData.catatan = cat;
+
+                        // Mengolah ulang format Jadwal Blasting ke format Database
+                        const jadwalRaw = getVal('jadwalblasting');
+                        if (jadwalRaw !== undefined && jadwalRaw !== '') {
+                            const j = jadwalRaw.toLowerCase();
+                            if (j === 'setiap hari' || j === 'harian') {
+                                updateData.blastingType = 'Harian';
+                                updateData.blastingValue = '';
+                            } else if (j.includes('mingguan')) {
+                                updateData.blastingType = 'Mingguan';
+                                const match = jadwalRaw.match(/\((.*?)\)/);
+                                updateData.blastingValue = match ? match[1] : '';
+                            } else if (j.includes('bulanan')) {
+                                updateData.blastingType = 'Bulanan';
+                                const match = jadwalRaw.match(/tgl (\d+)/i);
+                                updateData.blastingValue = match ? match[1] : '';
+                            } else if (j === 'tidak blasting') {
+                                updateData.blastingType = 'Tidak Blasting';
+                            } else if (j === 'blokir') {
+                                updateData.blastingType = 'Blokir';
+                            } else {
+                                updateData.blastingType = ''; 
+                                updateData.blastingValue = '';
+                            }
+                        }
+
+                        // Menyimpan/mengubah data donatur
+                        batch.set(doc(db, 'users', userId, 'donors', donorId), updateData, { merge: true });
+                        
+                        count++; ops++;
+                        // Fitur keamanan Batch: maksimal 400 perintah per kirim
+                        if (ops >= 400) { await batch.commit(); batch = writeBatch(db); ops = 0; }
+                    }
+                    if (ops > 0) await batch.commit();
+                    if (count > 0) showToast(`${count} profil donatur diimpor/diperbarui!`, "success");
+                    else showToast("Tidak ada data valid", "error");
+                } catch (err) { console.error(err); showToast("Gagal impor CSV", "error"); } 
+                finally { btn.disabled = false; spinner.classList.add('hidden'); fileInput.value = ''; }
+            };
+            reader.readAsText(file);
+
+            function errImport(msg) {
+                showToast(msg, "error");
+                btn.disabled = false; spinner.classList.add('hidden'); fileInput.value = '';
+            }
         }
 
         window.importCSV = async function() {
