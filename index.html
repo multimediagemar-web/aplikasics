@@ -472,13 +472,18 @@
                             <div class="shrink-0">
                                 <div class="flex justify-between items-end mb-1">
                                     <label class="block text-xs font-medium text-gray-700">Teks Pesan (Copywriting)</label>
-                                    <div class="flex space-x-1">
+                                    <div class="flex flex-wrap gap-1 justify-end ml-2">
                                         <button type="button" onclick="insertBlastingVar('{sapaan}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{sapaan}</button>
                                         <button type="button" onclick="insertBlastingVar('{nama}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{nama}</button>
+                                        <button type="button" onclick="insertBlastingVar('{nama ayah}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{nama ayah}</button>
+                                        <button type="button" onclick="insertBlastingVar('{nama ibu}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{nama ibu}</button>
+                                        <button type="button" onclick="insertBlastingVar('{total donasi}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{total donasi}</button>
+                                        <button type="button" onclick="insertBlastingVar('{donasi terakhir}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{donasi terakhir}</button>
+                                        <button type="button" onclick="insertBlastingVar('{donasi awal}')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded text-[9px] font-medium transition">{donasi awal}</button>
                                     </div>
                                 </div>
                                 <textarea id="blasting-template" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs outline-none focus:border-orange-500 resize-none leading-relaxed" placeholder="Assalamu'alaikum {sapaan} {nama}..."></textarea>
-                                <p class="text-[9px] text-gray-500 mt-1">Sistem otomatis mengganti <b>{sapaan}</b> & <b>{nama}</b> dengan data setiap kontak saat tombol kirim ditekan.</p>
+                                <p class="text-[9px] text-gray-500 mt-1 leading-relaxed">Sistem otomatis mengganti tag variabel di atas dengan data masing-masing kontak saat tombol kirim ditekan.</p>
                             </div>
 
                             <!-- List Penerima (Bisa otomatis tambah panjang tanpa scroll ganda di dalam) -->
@@ -2214,7 +2219,38 @@
                 return;
             }
 
-            let msg = template.replace(/{sapaan}/gi, sapaan).replace(/{nama}/gi, nama);
+            let namaAyah = '';
+            let namaIbu = '';
+            let totalDonasiStr = 'Rp 0';
+            let lastTxDateStr = '-';
+            let firstTxDateStr = '-';
+
+            const donor = allDonors.find(d => d.id === id);
+            if (donor) {
+                namaAyah = donor.namaAyah || '';
+                namaIbu = donor.namaIbu || '';
+            }
+
+            const txs = allTransactions.filter(t => t.donorId === id);
+            if (txs.length > 0) {
+                const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                const totalDonasi = sortedTxs.reduce((sum, t) => sum + t.jumlah, 0);
+                
+                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                totalDonasiStr = formatter.format(totalDonasi);
+                
+                lastTxDateStr = new Date(sortedTxs[0].tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                firstTxDateStr = new Date(sortedTxs[sortedTxs.length - 1].tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+
+            let msg = template
+                .replace(/{sapaan}/gi, sapaan)
+                .replace(/{nama}/gi, nama)
+                .replace(/{nama ayah}/gi, namaAyah)
+                .replace(/{nama ibu}/gi, namaIbu)
+                .replace(/{total donasi}/gi, totalDonasiStr)
+                .replace(/{donasi terakhir}/gi, lastTxDateStr)
+                .replace(/{donasi awal}/gi, firstTxDateStr);
 
             let formattedPhone = phone;
             if (formattedPhone.startsWith('0')) {
