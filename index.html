@@ -78,8 +78,8 @@
                         <i class="fas fa-user-lock text-emerald-600 text-3xl"></i>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800" id="form-title">Aplikasi Divisi CS</h1>
-                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 6.0.0</div>
-                    <p class="text-gray-500 text-[11px] mt-1">Sistem Manajemen Terpadu</p>
+                    <div class="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold mt-2 mb-1 tracking-widest">VERSI 7.0.0</div>
+                    <p class="text-gray-500 text-[11px] mt-1">Eksport Data Donatur Per Kategori</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
@@ -611,6 +611,22 @@
                             </div>
                             <button onclick="exportCSV('transaksi')" class="w-full border border-emerald-600 text-emerald-700 py-1.5 rounded-lg text-[10px] font-medium mb-4"><i class="fas fa-download"></i> Transaksi</button>
                             
+                            <!-- Tambahan Ekspor Kategori Donatur -->
+                            <div class="border-t border-gray-100 pt-3 mb-3">
+                                <p class="text-[10px] text-gray-500 font-medium mb-2">Ekspor Donatur per Kategori</p>
+                                <div class="flex gap-2">
+                                    <select id="export-kategori-select" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-[10px] sm:text-xs outline-none focus:border-emerald-500 bg-white shadow-sm">
+                                        <option value="Baru">Baru</option>
+                                        <option value="Istiqomah">Istiqomah</option>
+                                        <option value="Jenuh">Jenuh</option>
+                                        <option value="Belum Donasi">Belum Donasi</option>
+                                    </select>
+                                    <button onclick="exportCSV('kategori')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-medium transition shadow-sm whitespace-nowrap">
+                                        <i class="fas fa-download mr-1"></i> Ekspor
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="border-t border-gray-100 pt-3 mb-3">
                                 <div class="flex justify-between items-center mb-2">
                                     <p class="text-[10px] text-gray-500 font-medium">Impor Data Donatur (CSV)</p>
@@ -2134,7 +2150,6 @@
                 const fmtAmount = new Intl.NumberFormat('id-ID').format(d.txAmount || 0);
                 const lastTxStr = d.rawLastTxDate ? new Date(d.rawLastTxDate).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'2-digit'}) : '-';
 
-                // Menambahkan onclick pada elemen <li> untuk memunculkan modal edit (dengan event.stopPropagation di button)
                 listEl.innerHTML += `
                     <li onclick="editDonatur('${d.id}')" class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-300 group cursor-pointer">
                         <button onclick="event.stopPropagation(); removeBlastingTarget('${d.id}')" class="text-gray-300 hover:text-red-500 mr-2 p-1 transition-colors z-10 relative" title="Hapus dari daftar hari ini">
@@ -2187,7 +2202,6 @@
                 return;
             }
 
-            // Jika sebelumnya dibuang manual, kita kembalikan
             excludedBlastingIds.delete(donor.id);
             manualBlastingIds.add(donor.id);
             
@@ -2266,7 +2280,6 @@
             const encodedMsg = encodeURIComponent(msg);
             window.open(`https://wa.me/${formattedPhone}?text=${encodedMsg}`, '_blank');
             
-            // Tandai sebagai terkirim
             sentBlastingIds.add(id);
             const btn = document.getElementById(`btn-blast-${id}`);
             if (btn) {
@@ -2861,10 +2874,12 @@
             if(!user) return;
             let csvContent = "";
             let filename = "";
-            if (type === 'donatur' || type === 'blasting') {
+            if (type === 'donatur' || type === 'blasting' || type === 'kategori') {
                 csvContent += "id,sapaan,namaPanggilan,namaLengkap,whatsapp,totalTransaksi,totalDonasi,tanggalPertamaDonasi,tanggalTerakhirDonasi,kategori,jadwalBlasting,namaAyah,namaIbu,tanggalLahir,terakhirBlasting,terakhirDibalas,catatan\n";
                 
                 let targetDonors = allDonors;
+                let selectedKategoriStr = '';
+
                 if (type === 'blasting') {
                     targetDonors = allDonors.filter(d => 
                         d.blastingType && 
@@ -2873,9 +2888,14 @@
                         d.blastingType !== 'Blokir'
                     );
                     filename = "data_blasting_aktif.csv";
+                } else if (type === 'kategori') {
+                    selectedKategoriStr = document.getElementById('export-kategori-select').value;
+                    filename = `data_donatur_${selectedKategoriStr.toLowerCase().replace(/\s+/g, '_')}.csv`;
                 } else {
                     filename = "data_semua_donatur.csv";
                 }
+
+                let exportCount = 0;
 
                 targetDonors.forEach(d => {
                     const txs = allTransactions.filter(t => t.donorId === d.id);
@@ -2908,6 +2928,11 @@
                         }
                     }
                     
+                    if (type === 'kategori' && kategori !== selectedKategoriStr) {
+                        return; // Lompati donatur jika tidak sesuai kategori filter
+                    }
+                    exportCount++;
+
                     let txtBlasting = "Belum Diatur";
                     if (d.blastingType === 'Harian') txtBlasting = "Setiap Hari";
                     else if (d.blastingType === 'Mingguan') txtBlasting = `Mingguan (${d.blastingValue})`;
@@ -2926,7 +2951,7 @@
                     csvContent += `${d.id},${d.sapaan || ''},${d.namaPanggilan || ''},"${nm}",${d.whatsapp || ''},${txCount},${txAmount},${firstTxDate},${lastTxDate},${kategori},"${txtBlasting}","${ayah}","${ibu}",${tLahir},${tBlast},${tReply},"${cat}"\n`;
                 });
                 
-                if (targetDonors.length === 0) {
+                if (exportCount === 0) {
                     showToast("Tidak ada data untuk diekspor", "error");
                     return;
                 }
@@ -2989,7 +3014,6 @@
                 const lines = e.target.result.split('\n');
                 if (lines.length < 2) return errImport("Format CSV salah");
                 
-                // Ekstrak header dan buat peta index agar urutan kolom dari Excel bisa dinamis
                 const rawHeader = lines[0].toLowerCase().replace(/\r/g, '').replace(/"/g, '').split(',');
                 if (!rawHeader.includes('id')) {
                     return errImport("CSV harus memiliki kolom 'id'!");
@@ -3007,7 +3031,6 @@
                         const line = lines[i].replace(/\r/g, '');
                         if (!line.trim()) continue;
                         
-                        // Parser khusus untuk menangani tanda koma (,) di dalam catatan atau string
                         const values = [];
                         let inQuotes = false;
                         let currentVal = '';
@@ -3043,7 +3066,6 @@
                         const reply = getVal('terakhirdibalas'); if(reply !== undefined && reply !== '') updateData.lastReply = reply;
                         const cat = getVal('catatan'); if(cat !== undefined) updateData.catatan = cat;
 
-                        // Mengolah ulang format Jadwal Blasting ke format Database
                         const jadwalRaw = getVal('jadwalblasting');
                         if (jadwalRaw !== undefined && jadwalRaw !== '') {
                             const j = jadwalRaw.toLowerCase();
@@ -3068,11 +3090,9 @@
                             }
                         }
 
-                        // Menyimpan/mengubah data donatur
                         batch.set(doc(db, 'users', userId, 'donors', donorId), updateData, { merge: true });
                         
                         count++; ops++;
-                        // Fitur keamanan Batch: maksimal 400 perintah per kirim
                         if (ops >= 400) { await batch.commit(); batch = writeBatch(db); ops = 0; }
                     }
                     if (ops > 0) await batch.commit();
@@ -3370,68 +3390,6 @@
             finally { btn.innerHTML = 'Simpan'; btn.disabled = false; }
         });
 
-        window.showWaModal = function(phone, name) {
-            document.getElementById('wa-target-name').textContent = name;
-            
-            let formattedPhone = phone.replace(/\D/g, '');
-            if (formattedPhone.startsWith('0')) {
-                formattedPhone = '62' + formattedPhone.substring(1);
-            }
-            
-            document.getElementById('wa-target-phone').value = formattedPhone;
-            document.getElementById('wa-message').value = `Assalamu'alaikum Warahmatullahi Wabarakatuh, ${name}...\n\n`;
-            document.getElementById('modal-wa').classList.remove('hidden');
-        }
-
-        window.hideWaModal = function() {
-            document.getElementById('modal-wa').classList.add('hidden');
-        }
-
-        window.sendWaMessage = function() {
-            const phone = document.getElementById('wa-target-phone').value;
-            const message = document.getElementById('wa-message').value;
-            if (!phone) {
-                showToast("Nomor WA tidak valid", "error");
-                return;
-            }
-            const encodedMsg = encodeURIComponent(message);
-            window.open(`https://wa.me/${phone}?text=${encodedMsg}`, '_blank');
-            hideWaModal();
-        }
-
-        window.showHistoryModal = function(donorId, donorName) {
-            document.getElementById('history-target-name').textContent = donorName;
-            const historyList = document.getElementById('history-list');
-            historyList.innerHTML = '';
-
-            const txs = allTransactions.filter(t => t.donorId === donorId);
-            const sortedTxs = [...txs].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-            
-            if (sortedTxs.length === 0) {
-                historyList.innerHTML = '<li class="p-4 text-center text-gray-400">Tidak ada riwayat donasi</li>';
-            } else {
-                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-                sortedTxs.forEach(tx => {
-                    const dateObj = new Date(tx.tanggal);
-                    const tglFormat = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-                    historyList.innerHTML += `
-                        <li class="p-3 flex justify-between items-center hover:bg-white transition-colors">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">${tx.program}</span>
-                                <span class="text-[10px] text-gray-500">${tglFormat}</span>
-                            </div>
-                            <span class="font-bold text-emerald-600">${formatter.format(tx.jumlah)}</span>
-                        </li>
-                    `;
-                });
-            }
-            document.getElementById('modal-history').classList.remove('hidden');
-        }
-
-        window.hideHistoryModal = function() {
-            document.getElementById('modal-history').classList.add('hidden');
-        }
-
     </script>
 
     <!-- Navigation & UI Core -->
@@ -3542,54 +3500,6 @@
             toast.classList.remove('translate-y-0', 'opacity-100');
         }
 
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            const installSection = document.getElementById('pwa-install-section');
-            if (installSection) installSection.classList.remove('hidden');
-        });
-
-        window.installPWA = async function() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            const installSection = document.getElementById('pwa-install-section');
-            if (installSection) installSection.classList.add('hidden');
-        }
-
-        window.addEventListener('appinstalled', () => {
-            showToast("Aplikasi berhasil dipasang di layar HP!", "success");
-            const installSection = document.getElementById('pwa-install-section');
-            if (installSection) installSection.classList.add('hidden');
-        });
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
-                                }
-                            });
-                        });
-                    })
-                    .catch(error => console.log('Pendaftaran ServiceWorker gagal: ', error));
-            });
-
-            let refreshing;
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
-                showToast("Update terbaru tersedia! Memperbarui aplikasi...", "success");
-                setTimeout(() => window.location.reload(), 2000);
-            });
-        }
     </script>
 </body>
 </html>
